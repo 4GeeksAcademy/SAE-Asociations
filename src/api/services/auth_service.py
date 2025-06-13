@@ -15,7 +15,7 @@ class AuthService:
     
     @staticmethod
     def generate_token(user: User) -> dict:
-        # Determinar el rol basado en si tiene asociación - versión simple 4Geeks
+        # Determine user role based on association
         user_role = 'association' if user.association else 'volunteer'
         
         payload = {
@@ -24,27 +24,49 @@ class AuthService:
             'role': user_role,
             'exp': datetime.utcnow() + timedelta(days=1)
         }
-        token = jwt.encode(payload, current_app.config['SECRET_KEY'], algorithm='HS256')
+        
+        token = jwt.encode(
+            payload,
+            current_app.config['SECRET_KEY'],
+            algorithm='HS256'
+        )
+        
+        user_data = {
+            'id': user.id,
+            'email': user.email,
+            'name': user.name,
+            'lastname': user.lastname,
+            'phone': user.phone,
+            'role': user_role
+        }
+        
+        if user.association:
+            user_data['association'] = {
+                'id': user.association.id,
+                'name': user.association.name,
+                'cif': user.association.cif
+            }
         
         return {
             'token': token,
-            'user': {
-                'id': user.id,
-                'email': user.email,
-                'name': user.name,
-                'lastname': user.lastname,
-                'phone': user.phone,
-                'role': user_role,
-                'association_id': user.association.id if user.association else None
-            }
+            'user': user_data
         }
     
     @staticmethod
-    def create_user(email: str, password: str, **kwargs) -> User:
+    def create_user(email: str, password: str, name: str = None, lastname: str = None, phone: str = None) -> User:
         hashed_password = AuthService.hash_password(password)
-        user = User(email=email, password=hashed_password, **kwargs)
+        
+        user = User(
+            email=email,
+            password=hashed_password,
+            name=name,
+            lastname=lastname,
+            phone=phone
+        )
+        
         db.session.add(user)
         db.session.commit()
+        
         return user
     
     @staticmethod

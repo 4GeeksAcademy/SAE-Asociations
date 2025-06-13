@@ -2,18 +2,18 @@ import re
 from flask import jsonify
 
 def validate_email(email):
-    """Validar formato de email - función simple 4Geeks"""
+    """Validate email format"""
     return re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email) is not None
 
 def validate_url(url):
-    """Validar URL básica"""
+    """Validate URL format"""
     return url.startswith(('http://', 'https://')) and '.' in url
 
 def validate_association_data(data):
-    """Validar datos de asociación - versión simplificada 4Geeks"""
+    """Validate association data"""
     errors = {}
     
-    # Campos obligatorios
+    # Required fields
     if not data.get('name'):
         errors['name'] = 'Nombre es obligatorio'
     elif len(data['name']) > 200:
@@ -34,7 +34,7 @@ def validate_association_data(data):
     elif not validate_email(data['contact_email']):
         errors['contact_email'] = 'Email inválido'
     
-    # Campos opcionales
+    # Optional fields
     if data.get('image_url') and not validate_url(data['image_url']):
         errors['image_url'] = 'URL de imagen inválida'
     
@@ -47,10 +47,10 @@ def validate_association_data(data):
     return errors
 
 def validate_association_registration(data):
-    """Validar registro completo (usuario + asociación)"""
+    """Validate complete registration data (user + association)"""
     errors = {}
     
-    # Datos del usuario
+    # User data validation
     if not data.get('email'):
         errors['email'] = 'Email es obligatorio'
     elif not validate_email(data['email']):
@@ -74,7 +74,7 @@ def validate_association_registration(data):
     elif len(data['lastname']) > 100:
         errors['lastname'] = 'Apellido muy largo'
     
-    # Datos de la asociación
+    # Association data validation
     if not data.get('association_name'):
         errors['association_name'] = 'Nombre de asociación es obligatorio'
     elif len(data['association_name']) > 200:
@@ -98,14 +98,14 @@ def validate_association_registration(data):
     return errors
 
 def check_association_data(data):
-    """Función simple para endpoints de asociación"""
+    """Validate association data and return error response if invalid"""
     errors = validate_association_data(data)
     if errors:
         return jsonify({'error': 'Datos inválidos', 'details': errors}), 400
     return None
 
 def check_association_registration(data):
-    """Función simple para registro de asociación"""
+    """Validate association registration and return error response if invalid"""
     errors = validate_association_registration(data)
     if errors:
         return jsonify({'error': 'Datos inválidos', 'details': errors}), 400

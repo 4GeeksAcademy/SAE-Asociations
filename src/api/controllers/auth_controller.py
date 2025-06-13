@@ -23,14 +23,14 @@ class AuthController:
             # Generate token
             auth_data = AuthService.generate_token(user)
             
-            # Serialización simple 4Geeks - convertir a diccionario
+            # Serialize user data
             user_data = {
                 'id': user.id,
                 'email': user.email,
                 'name': user.name,
                 'lastname': user.lastname,
                 'phone': user.phone,
-                'role': 'volunteer'  # Rol por defecto para usuarios
+                'role': 'volunteer'
             }
             
             return jsonify({
@@ -64,7 +64,7 @@ class AuthController:
             
             # Then create association
             association = AssociationService.create_association(
-                name=data['association_name'],  # Usar association_name del formulario
+                name=data['association_name'],
                 cif=data['cif'],
                 description=data['description'],
                 contact_email=data['contact_email'],
@@ -78,14 +78,14 @@ class AuthController:
             # Generate token
             auth_data = AuthService.generate_token(user)
             
-            # Serialización simple 4Geeks - convertir a diccionarios
+            # Serialize response data
             user_data = {
                 'id': user.id,
                 'email': user.email,
                 'name': user.name,
                 'lastname': user.lastname,
                 'phone': user.phone,
-                'role': 'association'  # Rol para usuarios de asociación
+                'role': 'association'
             }
             
             association_data = {
