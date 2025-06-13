@@ -1,13 +1,3 @@
-# This file serves as a central point for model imports
-# It maintains compatibility with existing code while using our modular structure
-
-from .models.user import User
-from .models.association import Association
-from .models import db
-
-# Re-export the models and db instance
-__all__ = ['db', 'User', 'Association']
-
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
