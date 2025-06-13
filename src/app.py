@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from api.utils import APIException, generate_sitemap
 from api.models import db
-# Ya no importamos ma (Marshmallow) - usamos validación simple 4Geeks
+
 from api.routes import api
 # from api.admin import setup_admin
 from api.commands import setup_commands
@@ -45,9 +45,8 @@ db.init_app(app)
 setup_commands(app)
 
 # Create database tables
-with app.app_context():
-    db.create_all()
-    print("Database tables created successfully!")
+# En desarrollo y producción usamos migrations en lugar de db.create_all()
+# Para crear las tablas usar: pipenv run flask db init, pipenv run flask db migrate, pipenv run flask db upgrade
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
