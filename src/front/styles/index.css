@@ -1,0 +1,47 @@
+/* Importar Bootstrap */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Variables CSS */
+:root {
+  --primary-color: #4e73df;
+  --secondary-color: #2e59a9;
+  --accent-color: #36b9cc;
+  --light-color: #f8f9fc;
+  --dark-color: #5a5c69;
+}
+
+/* Estilos globales */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Asegurar que el layout ocupe toda la altura de la ventana */
+html, body, #root {
+  height: 100%;
+}
+
+/* Clase para el contenedor principal flex */
+.d-flex.flex-column.min-vh-100 {
+  min-height: 100vh;
+}
+
+/* Clase para que el contenido principal crezca */
+.flex-grow-1 {
+  flex-grow: 1;
+}
+
+/* Estilos para tarjetas */
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
