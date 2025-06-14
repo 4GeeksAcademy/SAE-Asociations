@@ -36,7 +36,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
-# Ya no inicializamos ma (Marshmallow)
 
 # add the admin
 # setup_admin(app)
