@@ -3,54 +3,48 @@ import { Link, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const location = useLocation();
-  
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
-        <Link className="navbar-brand" to="/">
-          <img 
-            src="/src/front/assets/img/rigo-baby.jpg" 
-            alt="Logo" 
-            width="30" 
-            height="30" 
-            className="d-inline-block align-top me-2"
-          />
-          Alfa Associations
+        <Link className="navbar-brand fw-bold" to="/">
+          <i className="bi bi-heart-fill text-danger me-2"></i>
+          SAE Associations
         </Link>
-        
-        <button 
-          className="navbar-toggler" 
-          type="button" 
-          data-bs-toggle="collapse" 
+
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        
+
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
-              <Link 
-                className={`nav-link ${location.pathname === '/' ? 'active' : ''}`} 
+              <Link
+                className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
                 to="/"
               >
                 Inicio
               </Link>
             </li>
             <li className="nav-item">
-              <Link 
-                className={`nav-link ${location.pathname === '/demo' ? 'active' : ''}`} 
-                to="/demo"
+              <Link
+                className={`nav-link ${location.pathname === '/register/user' ? 'active' : ''}`}
+                to="/register/user"
               >
-                Demo
+                Voluntarios
               </Link>
             </li>
             <li className="nav-item">
-              <Link 
-                className={`nav-link ${location.pathname === '/single' ? 'active' : ''}`} 
-                to="/single"
+              <Link
+                className={`nav-link ${location.pathname === '/register/association' ? 'active' : ''}`}
+                to="/register/association"
               >
-                Single
+                Asociaciones
               </Link>
             </li>
             <li className="nav-item ms-2">
