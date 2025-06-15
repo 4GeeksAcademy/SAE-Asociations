@@ -2,8 +2,8 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from '../pages/Layout';
 import Home from '../pages/Home';
-import Demo from '../pages/Demo';
-import Single from '../pages/Single';
+import {Demo} from '../pages/Demo';
+import {Single} from '../pages/Single';
 
 const AppRouter = () => {
   return (
