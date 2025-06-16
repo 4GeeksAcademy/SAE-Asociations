@@ -4,7 +4,6 @@ from datetime import datetime
 from . import db
 
 
-
 class Event(db.Model):
     __tablename__ = "events"
 
