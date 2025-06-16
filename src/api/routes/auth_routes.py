@@ -5,10 +5,6 @@ from ..schemas.association_schema import check_association_registration
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route('/test', methods=['GET'])
-def test():
-    return {'message': 'Auth routes working'}, 200
-
 @auth_bp.route('/register/user', methods=['POST'])
 def register_user():
     data = request.get_json()
