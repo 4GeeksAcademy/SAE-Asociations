@@ -10,7 +10,7 @@ from api.utils import APIException, generate_sitemap
 from api.models import db
 
 from api.routes import api
-# from api.admin import setup_admin
+from api.admin import setup_admin
 from api.commands import setup_commands
 
 # from models import Person
@@ -38,14 +38,12 @@ MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
 
 # add the admin
-# setup_admin(app)
+setup_admin(app)
 
 # add the admin
 setup_commands(app)
 
-# Create database tables
-# En desarrollo y producción usamos migrations en lugar de db.create_all()
-# Para crear las tablas usar: pipenv run flask db init, pipenv run flask db migrate, pipenv run flask db upgrade
+
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
