@@ -5,9 +5,11 @@ import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
+from flask_cors import CORS
 from api.utils import APIException, generate_sitemap
 from api.models import db
 from api.routes import api
+from api.admin import setup_admin
 from api.admin import setup_admin
 from api.commands import setup_commands
 
@@ -19,6 +21,9 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
+# Enable CORS for development
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3001"}})
+
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
 if db_url is not None:
@@ -28,10 +33,13 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:////tmp/test.db"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# JWT configuration - only addition needed
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key')
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
 
 # add the admin
+setup_admin(app)
 setup_admin(app)
 
 # add the admin
@@ -68,5 +76,5 @@ def serve_any_other_file(path):
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
-    PORT = int(os.environ.get('PORT', 3001))
+    PORT = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=PORT, debug=True)

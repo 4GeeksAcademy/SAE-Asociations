@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
-from .models import db, Event
+from ..models import db, Event
 from datetime import datetime, timezone
+from ..middleware.auth_middleware import token_required, role_required
 
 
 events_bp = Blueprint("events", __name__)
@@ -19,15 +20,20 @@ def get_event(event_id):
 
 
 @events_bp.route("/events", methods=["POST"])
-def create_event():
+@token_required
+@role_required("association")
+def create_event(current_user):
     data = request.get_json()
     
+    if not current_user.association:
+            return jsonify({"error": "No se encontró la asociación del usuario"}), 400
+
     new_event = Event(
         title = data["title"],
         description = data.get("description"),
         image_url = data.get("image_url"),
-        date = datetime.fromisoformat(data["date"])
-        association_id = 
+        date = datetime.fromisoformat(data["date"]),
+        association_id = current_user.association.id
     )
 
     db.session.add(new_event)
@@ -36,7 +42,9 @@ def create_event():
     return jsonify(new_event.serialize()),201
 
 @events_bp.route("/<int:event_id>", methods=["PUT"])
-def update_event(event_id):
+@token_required
+@role_required("association")
+def update_event(current_user,event_id):
     event = Event.query.get(event_id)
 
     if not event:
@@ -55,11 +63,16 @@ def update_event(event_id):
     return jsonify(event.serialize()), 200
 
 @events_bp.route("/<int:event_id>", methods=["DELETE"])
-def delete_event(event_id):
+@token_required
+@role_required("association")
+def delete_event(current_user,event_id):
     event = Event.query.get(event_id)
 
     if not event:
         return jsonify({"error": "Evento no encontrado"}), 404
+    
+    if event.association_id != current_user.association.id:
+        return jsonify({"error": "No tienes permiso para eliminar este evento"}), 403
 
     db.session.delete(event)
     db.session.commit()
