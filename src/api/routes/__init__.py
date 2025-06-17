@@ -1,5 +1,5 @@
 from flask import Blueprint
-from .event_routes import events_bp
+from .events_routes import events_bp
 
 api = Blueprint('api', __name__)
 

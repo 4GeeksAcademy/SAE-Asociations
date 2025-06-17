@@ -1,6 +1,6 @@
 from sqlalchemy import String, ForeignKey, Text, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from . import db
 
 
@@ -12,14 +12,21 @@ class Event(db.Model):
     description: Mapped[str] = mapped_column(Text, nullable=True)
     image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     association_id: Mapped[int] = mapped_column(ForeignKey("associations.id"), nullable=False)
-    volunteer_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
 
-    association = relationship ("Association", backref="events")  
-    volunteer = relationship ("User", backref="volunteered_events")
+    association = relationship("Association", backref="events")
+    event_volunteers = relationship(
+        "EventVolunteer",
+        back_populates="event",
+        cascade="all, delete-orphan"
+    )
 
-    def serializa(self):
+    @property
+    def volunteers(self):
+        return [ev.volunteer for ev in self.event_volunteers]
+    
+    def serialize(self):
         return {
             "id": self.id,
             "title": self.title,
@@ -28,6 +35,13 @@ class Event(db.Model):
             "date": self.date.isoformat(),
             "association_id": self.association_id,
             "association_name": self.association.name if self.association else None,
-            "volunteer_id": self.volunteer_id,
-            "volunteer_name": f"{self.volunteer.name} {self.volunteer.lastname}" if self.volunteer else None
+            "volunteers": [
+                {
+                    "id": ev.volunteer.id,
+                    "name": ev.volunteer.name,
+                    "lastname": ev.volunteer.lastname,
+                    "joined_at": ev.joined_at.isoformat()
+                }
+                for ev in self.event_volunteers
+            ]
         }
