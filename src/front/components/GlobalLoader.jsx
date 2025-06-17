@@ -1,10 +1,10 @@
 import React from 'react';
-import { useAppContext } from '../store.jsx';
+import useGlobalReducer from '../hooks/useGlobalReducer';
 
 const GlobalLoader = () => {
-    const { isLoading } = useAppContext();
+    const { store } = useGlobalReducer();
 
-    if (!isLoading) return null;
+    if (!store.isLoading) return null;
 
     return (
         <div
