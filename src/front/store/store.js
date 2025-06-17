@@ -9,11 +9,6 @@ export const initialStore = () => {
     // Estados globales de UI
     isLoading: false,
     message: null,
-
-    // Estados para futuras funcionalidades
-    events: [],
-    associations: [],
-    volunteers: [],
   };
 };
 
@@ -23,8 +18,6 @@ export default function storeReducer(store, action = {}) {
     // === ACCIONES DE AUTENTICACIÓN ===
     case "LOGIN_SUCCESS":
       const { user, token } = action.payload;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
       return {
         ...store,
         user: user,
@@ -34,8 +27,6 @@ export default function storeReducer(store, action = {}) {
       };
 
     case "LOGOUT":
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
       return {
         ...store,
         user: null,
@@ -45,7 +36,6 @@ export default function storeReducer(store, action = {}) {
       };
 
     case "UPDATE_USER":
-      localStorage.setItem("user", JSON.stringify(action.payload));
       return {
         ...store,
         user: action.payload,
@@ -62,7 +52,7 @@ export default function storeReducer(store, action = {}) {
     case "SET_MESSAGE":
       return {
         ...store,
-        message: action.payload, // { text: string, type: 'success'|'error'|'info' }
+        message: action.payload,
       };
 
     case "CLEAR_MESSAGE":

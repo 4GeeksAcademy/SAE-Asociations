@@ -1,5 +1,6 @@
 from flask import jsonify
 from http import HTTPStatus
+import logging
 from ..services.auth_service import AuthService
 from ..services.association_service import AssociationService
 
@@ -8,7 +9,7 @@ class AuthController:
     def register_user(data: dict):
         # Validate if user already exists
         if AuthService.get_user_by_email(data['email']):
-            return jsonify({'message': 'Email already registered'}), HTTPStatus.CONFLICT
+            return jsonify({'message': 'Este email ya está registrado. ¿Quieres iniciar sesión en su lugar?'}), HTTPStatus.CONFLICT
         
         try:
             # Create user
@@ -20,37 +21,28 @@ class AuthController:
                 phone=data.get('phone')
             )
             
-            # Generate token
+            # Generate token and get user data with correct role
             auth_data = AuthService.generate_token(user)
             
-            # Serialize user data
-            user_data = {
-                'id': user.id,
-                'email': user.email,
-                'name': user.name,
-                'lastname': user.lastname,
-                'phone': user.phone,
-                'role': 'volunteer'
-            }
-            
             return jsonify({
-                'message': 'User registered successfully',
-                'user': user_data,
+                'message': 'Tu cuenta de voluntario ha sido creada exitosamente. ¡Bienvenido a SAE!',
+                'user': auth_data['user'],
                 'token': auth_data['token']
             }), HTTPStatus.CREATED
             
         except Exception as e:
-            return jsonify({'message': str(e)}), HTTPStatus.BAD_REQUEST
+            logging.error(f"User registration error: {str(e)}")
+            return jsonify({'message': 'No pudimos crear tu cuenta en este momento. Por favor, inténtalo de nuevo o contacta con soporte si el problema persiste.'}), HTTPStatus.BAD_REQUEST
 
     @staticmethod
     def register_association(data: dict):
         # Validate if user already exists
         if AuthService.get_user_by_email(data['email']):
-            return jsonify({'message': 'Email already registered'}), HTTPStatus.CONFLICT
+            return jsonify({'message': 'Este email ya está registrado. ¿Quieres iniciar sesión en su lugar?'}), HTTPStatus.CONFLICT
             
         # Validate if association CIF already exists
         if AssociationService.get_association_by_cif(data['cif']):
-            return jsonify({'message': 'CIF already registered'}), HTTPStatus.CONFLICT
+            return jsonify({'message': 'Este CIF ya está registrado por otra asociación. Verifica que sea correcto o contacta con soporte.'}), HTTPStatus.CONFLICT
         
         try:
             # Create user first
@@ -75,19 +67,10 @@ class AuthController:
                 contact_phone=data.get('contact_phone')
             )
             
-            # Generate token
+            # Generate token and get user data with correct role
             auth_data = AuthService.generate_token(user)
             
-            # Serialize response data
-            user_data = {
-                'id': user.id,
-                'email': user.email,
-                'name': user.name,
-                'lastname': user.lastname,
-                'phone': user.phone,
-                'role': 'association'
-            }
-            
+            # Serialize association data
             association_data = {
                 'id': association.id,
                 'name': association.name,
@@ -101,29 +84,31 @@ class AuthController:
             }
             
             return jsonify({
-                'message': 'Association registered successfully',
-                'user': user_data,
+                'message': 'Tu asociación ha sido registrada exitosamente. ¡Ya puedes empezar a gestionar eventos y voluntarios!',
+                'user': auth_data['user'],
                 'association': association_data,
                 'token': auth_data['token']
             }), HTTPStatus.CREATED
             
         except Exception as e:
-            return jsonify({'message': str(e)}), HTTPStatus.BAD_REQUEST
+            logging.error(f"Association registration error: {str(e)}")
+            return jsonify({'message': 'No pudimos registrar tu asociación en este momento. Por favor, verifica todos los datos e inténtalo de nuevo.'}), HTTPStatus.BAD_REQUEST
     
     @staticmethod
     def login(data: dict):
         user = AuthService.get_user_by_email(data['email'])
         
         if not user or not AuthService.check_password(user, data['password']):
-            return jsonify({'message': 'Invalid credentials'}), HTTPStatus.UNAUTHORIZED
+            return jsonify({'message': 'Email o contraseña incorrectos. Por favor, verifica tus datos e inténtalo de nuevo.'}), HTTPStatus.UNAUTHORIZED
         
         try:
             auth_data = AuthService.generate_token(user)
             return jsonify({
-                'message': 'Login successful',
+                'message': '¡Bienvenido de vuelta! Has iniciado sesión correctamente.',
                 'user': auth_data['user'],
                 'token': auth_data['token']
             }), HTTPStatus.OK
             
         except Exception as e:
-            return jsonify({'message': str(e)}), HTTPStatus.BAD_REQUEST 
+            logging.error(f"Login error: {str(e)}")
+            return jsonify({'message': 'Hubo un problema al iniciar sesión. Por favor, inténtalo de nuevo en unos momentos.'}), HTTPStatus.BAD_REQUEST 

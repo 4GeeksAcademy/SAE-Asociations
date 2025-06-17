@@ -27,7 +27,7 @@ def generate_sitemap(app):
         # and rules that require parameters
         if "GET" in rule.methods and has_no_empty_params(rule):
             url = url_for(rule.endpoint, **(rule.defaults or {}))
-            if "/admin/" not in url:
+            if "/admin/" not in url and url != "/":  # Exclude admin and self-reference
                 links.append(url)
 
     links_html = "".join(["<li><a href='" + y + "'>" + y + "</a></li>" for y in links])

@@ -15,14 +15,13 @@ class AuthService:
     
     @staticmethod
     def generate_token(user: User) -> dict:
-        # Determine user role based on association
         user_role = 'association' if user.association else 'volunteer'
         
         payload = {
             'user_id': user.id,
             'email': user.email,
             'role': user_role,
-            'exp': datetime.utcnow() + timedelta(days=1)
+            'exp': datetime.utcnow() + timedelta(hours=2)
         }
         
         token = jwt.encode(
