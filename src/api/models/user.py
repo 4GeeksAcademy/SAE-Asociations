@@ -15,6 +15,9 @@ class User(db.Model):
     
     # Relationship with Association (one-to-one)
     association = relationship("Association", back_populates="user", uselist=False)
+    
+    # Relationship with EventVolunteer (many-to-many through EventVolunteer)
+    event_volunteers = relationship("EventVolunteer", back_populates="volunteer")
 
     def __init__(self, email, password, name=None, lastname=None, phone=None):
         self.email = email
