@@ -11,31 +11,35 @@ def validate_user_data(data):
     
     # Email validation
     if not data.get('email'):
-        errors['email'] = 'Email es obligatorio'
+        errors['email'] = 'El email es obligatorio'
     elif not validate_email(data['email']):
-        errors['email'] = 'Email inválido'
+        errors['email'] = 'Por favor, introduce un email válido (ejemplo: usuario@dominio.com)'
     
     # Password validation
     if not data.get('password'):
-        errors['password'] = 'Contraseña es obligatoria'
-    elif len(data['password']) < 6:
-        errors['password'] = 'Contraseña muy corta'
+        errors['password'] = 'La contraseña es obligatoria'
+    elif len(data['password']) < 8:
+        errors['password'] = 'La contraseña debe tener al menos 8 caracteres con letras y números'
+    elif not re.search(r'[A-Za-z]', data['password']):
+        errors['password'] = 'La contraseña debe contener al menos una letra'
+    elif not re.search(r'\d', data['password']):
+        errors['password'] = 'La contraseña debe contener al menos un número'
     
     # Name validation
     if not data.get('name'):
-        errors['name'] = 'Nombre es obligatorio'
+        errors['name'] = 'El nombre es obligatorio'
     elif len(data['name']) > 100:
-        errors['name'] = 'Nombre muy largo'
+        errors['name'] = 'El nombre debe tener máximo 100 caracteres'
     
     # Lastname validation
     if not data.get('lastname'):
-        errors['lastname'] = 'Apellido es obligatorio'
+        errors['lastname'] = 'El apellido es obligatorio'
     elif len(data['lastname']) > 100:
-        errors['lastname'] = 'Apellido muy largo'
+        errors['lastname'] = 'El apellido debe tener máximo 100 caracteres'
     
     # Phone validation (optional)
     if data.get('phone') and len(data['phone']) > 20:
-        errors['phone'] = 'Teléfono muy largo'
+        errors['phone'] = 'El teléfono debe tener máximo 20 caracteres'
     
     return errors
 
@@ -45,7 +49,7 @@ def validate_user_registration(data):
     
     # Confirmar password
     if data.get('password') != data.get('confirmPassword'):
-        errors['confirmPassword'] = 'Las contraseñas deben coincidir'
+        errors['confirmPassword'] = 'Las contraseñas deben coincidir exactamente'
     
     return errors
 
@@ -53,14 +57,14 @@ def check_user_data(data):
     """Validate user data and return error response if invalid"""
     errors = validate_user_data(data)
     if errors:
-        return jsonify({'error': 'Datos inválidos', 'details': errors}), 400
+        return jsonify({'error': 'Por favor, corrige los siguientes errores:', 'details': errors}), 400
     return None
 
 def check_user_registration(data):
     """Validate user registration and return error response if invalid"""
     errors = validate_user_registration(data)
     if errors:
-        return jsonify({'error': 'Datos inválidos', 'details': errors}), 400
+        return jsonify({'error': 'Por favor, corrige los siguientes errores:', 'details': errors}), 400
     return None
 
 # Create a schema object for compatibility with imports
