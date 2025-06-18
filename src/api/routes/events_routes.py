@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from ..models import db, Event
-from datetime import datetime, timezone
+from datetime import datetime
 from ..middleware.auth_middleware import token_required, role_required
 
 
