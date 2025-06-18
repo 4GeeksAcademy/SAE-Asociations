@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-# Import all models here
+from .events import Event
 from .user import User
-from .association import Association 
+from .association import Association
+from .event_volunteers import EventVolunteer
