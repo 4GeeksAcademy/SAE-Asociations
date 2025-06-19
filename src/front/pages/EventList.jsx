@@ -20,7 +20,10 @@ export const EventList = () => {
 
     return (
         <div className="container mt-4">
-            <h2>Eventos disponibles</h2>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2>Eventos disponibles</h2>
+                <button className="btn btn-success"onClick={() => navigate("/create-event")}>Crear evento</button>
+            </div>
             <div className="row">
                 {events.map(event => (
                     <div className="col-md-4" key={event.id}>
