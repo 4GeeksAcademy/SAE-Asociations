@@ -18,7 +18,6 @@ def get_event(event_id):
         return jsonify({"error": "Event not found"}), 404
     return jsonify(event.serialize()), 200
 
-
 @events_bp.route("/events", methods=["POST"])
 @token_required
 @role_required("association")
