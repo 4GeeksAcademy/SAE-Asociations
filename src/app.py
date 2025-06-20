@@ -5,6 +5,8 @@ import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_swagger import swagger
+from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
 from api.utils import APIException, generate_sitemap
 from api.models import db
@@ -30,8 +32,16 @@ else:
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///database.db"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# JWT configuration - required for token generation/validation
+
+# JWT configuration with Flask-JWT-Extended
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-for-development-only')
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', app.config['SECRET_KEY'])
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
+
+# Initialize JWT Manager
+jwt = JWTManager(app)
+
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
 

@@ -88,15 +88,7 @@ If you get migration errors in a new codespace:
 
 ```bash
 # Clean ghost migrations from PostgreSQL
-pipenv run python -c "
-import os, psycopg2
-conn = psycopg2.connect(os.getenv('DATABASE_URL'))
-cur = conn.cursor()
-cur.execute('DELETE FROM alembic_version WHERE version_num NOT IN (SELECT substring(filename from 1 for 12) FROM (VALUES (\'[YOUR_CURRENT_MIGRATION_FILE_NAME].py\')) AS t(filename));')
-conn.commit()
-conn.close()
-print('Ghost migrations cleaned')
-"
+pipenv reset_db
 
 # Apply current migrations
 pipenv run upgrade
