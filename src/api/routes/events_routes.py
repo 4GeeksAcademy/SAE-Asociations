@@ -3,23 +3,21 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from ..models import db, Event, User
 from datetime import datetime
 
-
 events_bp = Blueprint("events", __name__)
 
-@events_bp.route("/events", methods=["GET"])
+@events_bp.route("/", methods=["GET"])
 def get_all_events():
     events = Event.query.all()
     return jsonify([event.serialize() for event in events]), 200
 
-@events_bp.route("/events/<int:event_id>", methods=["GET"])
+@events_bp.route("/<int:event_id>", methods=["GET"])
 def get_event(event_id):
     event = Event.query.get(event_id)
     if not event:
         return jsonify({"error": "Event not found"}), 404
     return jsonify(event.serialize()), 200
 
-
-@events_bp.route("/events", methods=["POST"])
+@events_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_event():
     """Crear un nuevo evento (solo asociaciones)"""
@@ -38,11 +36,11 @@ def create_event():
         return jsonify({"error": "No se encontró la asociación del usuario"}), 400
 
     new_event = Event(
-        title = data["title"],
-        description = data.get("description"),
-        image_url = data.get("image_url"),
-        date = datetime.fromisoformat(data["date"]),
-        association_id = association_data['id']
+        title=data["title"],
+        description=data.get("description"),
+        image_url=data.get("image_url"),
+        date=datetime.fromisoformat(data["date"]),
+        association_id=association_data['id']
     )
 
     db.session.add(new_event)

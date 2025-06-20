@@ -34,7 +34,7 @@ VITE_BACKEND_URL=http://localhost:3001
 
 ```bash
 # Apply existing migrations
-pipenv run upgrade
+pipenv upgrade
 ```
 
 ### 4. Start Development

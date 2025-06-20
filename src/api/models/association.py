@@ -6,19 +6,17 @@ class Association(db.Model):
     __tablename__ = 'associations'
     
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(200), nullable=False)
-    cif: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
-    description: Mapped[str] = mapped_column(String(1000), nullable=False)
-    image_url: Mapped[str] = mapped_column(String(500), nullable=True)
-    website_url: Mapped[str] = mapped_column(String(500), nullable=True)
-    social_media_url: Mapped[str] = mapped_column(String(500), nullable=True)
-    contact_phone: Mapped[str] = mapped_column(String(20), nullable=True)
-    contact_email: Mapped[str] = mapped_column(String(120), nullable=False)
+    name: Mapped[str] = mapped_column(String(50), nullable=False)
+    cif: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
+    description: Mapped[str] = mapped_column(String(2000), nullable=False)
+    image_url: Mapped[str] = mapped_column(String(20000), nullable=True)
+    website_url: Mapped[str] = mapped_column(String(200), nullable=True)
+    social_media_url: Mapped[str] = mapped_column(String(200), nullable=True)
+    contact_phone: Mapped[str] = mapped_column(String(15), nullable=True)
+    contact_email: Mapped[str] = mapped_column(String(50), nullable=False)
     
-    # Foreign key to User
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
     
-    # Relationship with User (one-to-one)
     user = relationship("User", back_populates="association")
 
     def __init__(self, name, cif, description, contact_email, user_id, 

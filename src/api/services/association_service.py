@@ -33,6 +33,14 @@ class AssociationService:
     def get_association_by_cif(cif: str) -> Optional[Association]:
         return Association.query.filter_by(cif=cif).first()
     
+    @staticmethod 
+    def get_all_associations(): 
+        return Association.query.all()
+    
+    @staticmethod
+    def get_association_by_id(id):
+        return Association.query.get(id)
+
     @staticmethod
     def get_association_by_user_id(user_id: int) -> Optional[Association]:
         return Association.query.filter_by(user_id=user_id).first() 
