@@ -8,7 +8,7 @@ export const EventDetail = () => {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await fetch(`${id}`);
+        const res = await fetch(`${API_BASE_URL}/api/events/${id}`);
         const data = await res.json();
         setEvent(data);
       } catch (error) {

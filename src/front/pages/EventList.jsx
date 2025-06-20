@@ -7,7 +7,7 @@ export const EventList = () => {
 
     const getEvents = async () => {
         try {
-            const res = await fetch("");
+            const res = await fetch(`${API_BASE_URL}/api/events/`);
             const data = await res.json();
             setEvents(data);  
         } catch (error) {

@@ -5,9 +5,9 @@ import Home from '../pages/Home';
 import Login from '../pages/Login';
 import RegisterUser from '../pages/RegisterUser';
 import RegisterAssociation from '../pages/RegisterAssociation';
-import EventDetail from '../pages/EventDetail';
-import EventList from '../pages/EventList';
-import EventCreation from '../pages/EventCreation';
+import {EventDetail} from '../pages/EventDetail';
+import {EventList} from '../pages/EventList';
+import {EventCreation} from '../pages/EventCreation';
 
 const AppRouter = () => {
   return (

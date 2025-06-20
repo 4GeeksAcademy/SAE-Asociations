@@ -11,5 +11,5 @@ CORS(api)
 
 # Register all blueprints with their respective URL prefixes
 api.register_blueprint(auth_bp, url_prefix='/auth')
-api.register_blueprint(events_bp, url_prefix='/event')
+api.register_blueprint(events_bp, url_prefix='/events')
 api.register_blueprint(volunteers_bp, url_prefix='/volunteers')
