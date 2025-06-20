@@ -1,3 +1,7 @@
+from . import db
+from ..models.association import Association
+from ..services.association_service import AssociationService
+
 # Base de datos simulada
 associations_db = [
     {"id": 1, "name": "Asociación Animalista", "type": "animales", "location": "Madrid"},
@@ -7,11 +11,12 @@ associations_db = [
 ]
 
 def get_all_associations():
-    try:
+    try: 
+        associations = AssociationService.get_all_associations()
         return {
             "success": True,
-            "count": len(associations_db),
-            "associations": associations_db
+            "count": len(associations),
+            "associations": associations
         }
     except Exception as e:
         return {
@@ -21,8 +26,8 @@ def get_all_associations():
 
 def get_association_by_id(association_id):
     try:
+        association = AssociationService.get_association_by_id(association_id)
         # Buscar asociación por ID
-        association = next((a for a in associations_db if a["id"] == association_id), None)
         
         if association:
             return {
