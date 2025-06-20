@@ -4,7 +4,7 @@ export const EventForm = () => {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        image_url: "",
+        image_url: null,
         date: "",
     });
 
