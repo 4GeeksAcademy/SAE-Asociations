@@ -27,7 +27,8 @@ class AuthController:
             return jsonify({
                 'message': 'Tu cuenta de voluntario ha sido creada exitosamente. ¡Bienvenido a SAE!',
                 'user': auth_data['user'],
-                'token': auth_data['token']
+                'access_token': auth_data['access_token'],
+                'refresh_token': auth_data['refresh_token']
             }), HTTPStatus.CREATED
             
         except Exception as e:
@@ -87,7 +88,8 @@ class AuthController:
                 'message': 'Tu asociación ha sido registrada exitosamente. ¡Ya puedes empezar a gestionar eventos y voluntarios!',
                 'user': auth_data['user'],
                 'association': association_data,
-                'token': auth_data['token']
+                'access_token': auth_data['access_token'],
+                'refresh_token': auth_data['refresh_token']
             }), HTTPStatus.CREATED
             
         except Exception as e:
@@ -106,7 +108,8 @@ class AuthController:
             return jsonify({
                 'message': '¡Bienvenido de vuelta! Has iniciado sesión correctamente.',
                 'user': auth_data['user'],
-                'token': auth_data['token']
+                'access_token': auth_data['access_token'],
+                'refresh_token': auth_data['refresh_token']
             }), HTTPStatus.OK
             
         except Exception as e:
