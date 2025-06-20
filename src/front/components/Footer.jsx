@@ -1,30 +1,11 @@
-import React from 'react';
-
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
-  return (
-    <footer className="bg-dark text-white py-4 mt-auto">
-      <div className="container">
-        <div className="row">
-          <div className="col-md-6">
-            <h5>SAE Associations</h5>
-            <p className="mb-0">Conectando voluntarios con asociaciones para crear impacto social.</p>
-          </div>
-          <div className="col-md-6 text-md-end mt-3 mt-md-0">
-            <div className="d-flex flex-column">
-              <span>&copy; {currentYear} SAE Associations. Todos los derechos reservados.</span>
-              <div className="mt-2">
-                <a href="#" className="text-white me-3">Términos</a>
-                <a href="#" className="text-white me-3">Privacidad</a>
-                <a href="#" className="text-white">Contacto</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-};
-
-export default Footer;
+export const Footer = () => (
+	<footer className="footer mt-auto py-3 text-center">
+		<p>
+			Check the <a target="_blank" href="https://4geeks.com/docs/start/react-flask-template">template documentation</a> <i className="fa-solid fa-file"></i> for help.
+		</p>
+		<p>
+			Made with <i className="fa fa-heart text-danger" /> by{" "}
+			<a href="http://www.4geeksacademy.com">4Geeks Academy</a>
+		</p>
+	</footer>
+);
