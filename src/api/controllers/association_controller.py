@@ -1,6 +1,5 @@
-from . import db
-from ..models.association import Association
-from ..services.association_service import AssociationService
+from api.models.association import Association
+from api.services.association_service import AssociationService
 
 # Base de datos simulada
 associations_db = [
@@ -13,10 +12,12 @@ associations_db = [
 def get_all_associations():
     try: 
         associations = AssociationService.get_all_associations()
+        # Serializar las asociaciones para que sean JSON-compatible
+        serialized_associations = [association.serialize() for association in associations]
         return {
             "success": True,
-            "count": len(associations),
-            "associations": associations
+            "count": len(serialized_associations),
+            "associations": serialized_associations
         }
     except Exception as e:
         return {
@@ -27,12 +28,11 @@ def get_all_associations():
 def get_association_by_id(association_id):
     try:
         association = AssociationService.get_association_by_id(association_id)
-        # Buscar asociación por ID
         
         if association:
             return {
                 "success": True,
-                "association": association
+                "association": association.serialize()  # Serializar el objeto
             }
         else:
             return {
