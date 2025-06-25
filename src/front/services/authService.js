@@ -143,8 +143,9 @@ const authService = {
       }
 
       // Guardar datos en localStorage
-      if (data.token) {
-        localStorage.setItem("token", data.token);
+      if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        localStorage.setItem("refresh_token", data.refresh_token);
         localStorage.setItem("user", JSON.stringify(data.user));
       }
 
@@ -165,6 +166,7 @@ const authService = {
 
   logout() {
     localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
     // Retornar datos para el dispatch si se necesita
     return {

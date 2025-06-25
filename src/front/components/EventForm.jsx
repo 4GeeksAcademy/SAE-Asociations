@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
 export const EventForm = () => {
     const [formData, setFormData] = useState({
@@ -19,10 +21,23 @@ export const EventForm = () => {
         e.preventDefault();
 
         try {
+
+            // 1. Obtener el token del localStorage
+            const token = localStorage.getItem("token"); 
+
+            // 2. Verificar si el token existe
+            if (!token) {
+                alert("Debes iniciar sesión para crear un evento.");
+                // O redirigir al login
+                // navigate('/login'); 
+                return; // Detener la ejecución si no hay token
+            }
+
             const response = await fetch(`${API_BASE_URL}/api/events`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
                 },
                 body: JSON.stringify(formData),
             });
@@ -49,7 +64,6 @@ export const EventForm = () => {
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    required
                 />
             </div>
 

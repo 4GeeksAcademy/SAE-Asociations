@@ -1,193 +1,101 @@
-# SAE Associations - Guía de Setup
+# SAE Associations - Setup Guide
 
-Sistema de gestión de asociaciones y voluntarios desarrollado con React + Flask.
+## Quick Start
 
-## Setup Rápido
+### 1. Install Dependencies
 
-### **Para GitHub Codespace**
+```bash
+pipenv install
+npm install
+```
 
-1. **Configurar Backend:**
+### 2. Environment Variables
 
+**For Local Development:**
+Create `.env` file in project root:
+
+```
+VITE_BACKEND_URL=http://localhost:3001
+```
+
+**For GitHub Codespaces:**
+
+1. First start the backend to get the URL:
    ```bash
-   pipenv install
-   pipenv run init && pipenv run migrate && pipenv run upgrade
-
-   # ⚠️ IMPORTANTE: Configurar FLASK_DEBUG para desarrollo
-   export FLASK_DEBUG=1
    pipenv run start
    ```
-
-2. **Configurar Frontend:**
-
-   ```bash
-   npm install
+2. Copy the codespace URL that appears (like `https://xyz-3001.app.github.dev`)
+3. Create `.env` file:
+   ```
+   VITE_BACKEND_URL=https://your-codespace-name-3001.app.github.dev
    ```
 
-3. **Configurar Variables de Entorno:**
-
-   ```bash
-   # Copiar archivo de ejemplo
-   cp .env.example .env
-
-   # Actualizar con la URL real del codespace
-   # Después de ejecutar 'pipenv run start', copia la URL que aparece
-   echo "VITE_BACKEND_URL=https://[tu-codespace]-3001.app.github.dev" > .env
-   ```
-
-4. **Ejecutar Frontend:**
-   ```bash
-   npm run dev
-   ```
-
-### **Para Desarrollo Local**
-
-1. **Backend:**
-
-   ```bash
-   pipenv install
-   pipenv run init && pipenv run migrate && pipenv run upgrade
-
-   # ⚠️ IMPORTANTE: Configurar FLASK_DEBUG para desarrollo
-   export FLASK_DEBUG=1
-   pipenv run start  # Ejecuta en http://localhost:3001
-   ```
-
-2. **Frontend:**
-   ```bash
-   npm install
-   cp .env.example .env  # VITE_BACKEND_URL ya está configurado para localhost
-   npm run dev  # Ejecuta en http://localhost:3000
-   ```
-
-## 🔧 Comandos Útiles
-
-### **Base de Datos**
+### 3. Database Setup
 
 ```bash
-# Crear usuarios de prueba
-pipenv run flask insert-test-users 3
-
-# Resetear migraciones (si hay problemas)
-pipenv run downgrade
-pipenv run upgrade
+# Apply existing migrations
+pipenv upgrade
 ```
 
-### **Desarrollo**
+### 4. Start Development
 
 ```bash
-# Backend con auto-reload
-export FLASK_DEBUG=1  # ⚠️ CRÍTICO para desarrollo
+# Backend (Flask)
 pipenv run start
 
-# Frontend con hot-reload
+# Frontend (React) - new terminal
 npm run dev
-
-# Linting
-npm run lint
 ```
 
-## 📁 Estructura del Proyecto
+## Project Structure
 
 ```
 src/
-├── api/                 # Backend Flask
-│   ├── controllers/     # Lógica de controladores
-│   ├── models/         # Modelos de base de datos
-│   ├── routes/         # Rutas de la API
-│   ├── services/       # Lógica de negocio
-│   └── schemas/        # Validaciones
-├── front/              # Frontend React
-│   ├── components/     # Componentes reutilizables
-│   ├── pages/         # Páginas principales
-│   ├── hooks/         # Custom hooks (useGlobalReducer)
-│   └── services/      # Servicios de API
-└── app.py             # Punto de entrada Flask
+├── api/
+│   ├── models/          # Database models
+│   ├── routes/          # API endpoints
+│   ├── controllers/     # Business logic
+│   ├── services/        # Data access layer
+│   └── schemas/         # Data validation
+├── front/
+│   ├── components/      # React components
+│   ├── pages/           # React pages
+│   ├── context/         # Global state
+│   └── services/        # API calls
+└── app.py              # Flask application
 ```
 
-## 🌐 URLs del Proyecto
+## API Endpoints
 
-### **Local:**
+- `POST /api/auth/login` - User authentication
+- `GET /api/auth/info` - User profile info
+- `POST /api/auth/register` - User registration
+- `GET /api/events` - List events
+- `POST /api/volunteers` - Register volunteer
 
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:3001
-- Backend Sitemap: http://localhost:3001/
+## Main Models
 
-### **Codespace:**
+- **User**: Authentication and profile data
+- **Association**: Organization management
+- **Event**: Event information and management
+- **EventVolunteer**: Volunteer registration for events
 
-- Frontend: https://[codespace]-3000.app.github.dev
-- Backend API: https://[codespace]-3001.app.github.dev
-- Backend Sitemap: https://[codespace]-3001.app.github.dev/
+## Troubleshooting
 
-## 🔑 Funcionalidades Implementadas
+### Migration Issues in Codespaces
 
-- ✅ Registro de usuarios (voluntarios)
-- ✅ Registro de asociaciones
-- ✅ Login con JWT
-- ✅ Validaciones de formularios
-- ✅ Manejo de errores user-friendly
-- ✅ Estado global con useReducer
-- ✅ Diseño responsive con Bootstrap
-
-## 🛠️ Tecnologías
-
-**Backend:**
-
-- Flask + SQLAlchemy
-- JWT para autenticación
-- Alembic para migraciones
-
-**Frontend:**
-
-- React 18 + Vite
-- React Router v6
-- Bootstrap 5 + Bootstrap Icons
-- Estado global con useReducer
-
-## ⚠️ Troubleshooting
-
-### **🚨 PROBLEMA MÁS COMÚN: Sitemap no visible en Codespace**
-
-**Síntoma:** Al ir a la URL del backend solo aparece una página en blanco o el frontend de React, no el sitemap de rutas de la API.
-
-**Causa:** Flask está ejecutándose en modo producción en lugar de desarrollo.
-
-**Solución:**
+If you get migration errors in a new codespace:
 
 ```bash
-# 1. Detener Flask si está ejecutándose (Ctrl+C)
-# 2. Configurar variable de entorno
-export FLASK_DEBUG=1
+# Clean ghost migrations from PostgreSQL
+pipenv reset_db
 
-# 3. Reiniciar Flask
-pipenv run start
-```
-
-**Explicación:** Sin `FLASK_DEBUG=1`, Flask determina automáticamente que está en producción y sirve el frontend de React en lugar de mostrar el sitemap de la API.
-
-### **Error de conexión Frontend ↔ Backend**
-
-Verificar que `VITE_BACKEND_URL` en `.env` coincida con la URL real del backend.
-
-### **Error de CORS**
-
-Asegurar que el backend esté ejecutándose y que la URL sea correcta.
-
-### **Error de base de datos**
-
-```bash
-pipenv run downgrade
+# Apply current migrations
 pipenv run upgrade
 ```
 
-### **Múltiples procesos Flask ejecutándose**
+### Local vs Codespace Differences
 
-```bash
-# Encontrar procesos Flask
-ps aux | grep flask
-
-# Terminar procesos específicos
-kill [PID]
-
-# O terminar todos los procesos Python
-pkill -f python
-```
+- **Local**: Uses SQLite database (`database.db`)
+- **Codespaces**: Uses PostgreSQL database
+- **URLs**: Different between localhost and codespace domains
