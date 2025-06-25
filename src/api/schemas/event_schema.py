@@ -1,11 +1,11 @@
-# src/schemas/event_schema.py
 import re
 from flask import jsonify
+from datetime import datetime
 
 # Función de ayuda para validar URLs
 def validate_url(url):
     """Validate URL format"""
-    return re.match(r'^https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?$', url) is not None
+    return url.startswith('http://') or url.startswith('https://')
 
 def validate_event_data(data):
     """Validate event creation data"""

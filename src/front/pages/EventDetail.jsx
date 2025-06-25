@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const EventDetail = () => {
   const { id } = useParams();
@@ -24,7 +25,7 @@ export const EventDetail = () => {
   return (
     <div className="container mt-4">
       <h2>{event.title}</h2>
-      <img src={event.image_url} alt={event.title} className="img-fluid mb-3" />
+      <img src={event.image_url} className="img-fluid mb-3" />
       <p><strong>Fecha:</strong> {new Date(event.date).toLocaleString()}</p>
       <p>{event.description}</p>
     </div>

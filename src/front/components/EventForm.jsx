@@ -6,7 +6,7 @@ export const EventForm = () => {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        image_url: null,
+        image_url: "",
         date: "",
     });
 
@@ -33,16 +33,27 @@ export const EventForm = () => {
                 return; // Detener la ejecución si no hay token
             }
 
+            const dataToSend = { ...formData };
+            if (dataToSend.date === "") {
+                dataToSend.date = null; // Convierte la cadena vacía a null
+            }
+            console.log("Enviando datos:", JSON.stringify(dataToSend));
+
             const response = await fetch(`${API_BASE_URL}/api/events`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`,
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(dataToSend),
             });
 
-            if (!response.ok) throw new Error("Error al crear evento");
+            if (!response.ok) {
+                // Si la respuesta no es OK, intentamos leer el cuerpo del error
+                const errorData = await response.json(); 
+                console.error("Error al crear evento (respuesta no OK):", errorData);
+                throw new Error(errorData.error || "Error al crear evento");
+            }
 
             const result = await response.json();
             alert("Evento creado con éxito");

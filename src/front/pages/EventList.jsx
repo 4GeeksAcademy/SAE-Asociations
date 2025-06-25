@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { EventCard } from "../components/EventCard.jsx";
 
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 export const EventList = () => {
     const [events, setEvents] = useState([]);
 
