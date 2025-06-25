@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from controllers.association_controller import (
+from ..controllers.association_controller import (
     get_all_associations,
     get_association_by_id,
     filter_associations_post

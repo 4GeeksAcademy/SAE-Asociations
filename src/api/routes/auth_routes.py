@@ -56,19 +56,28 @@ def login():
 @jwt_required()
 def get_profile():
     """Endpoint para obtener el perfil del usuario autenticado"""
-    current_user_id = get_jwt_identity()
-    claims = get_jwt()
-    
-    # Puedes acceder a todos los datos del JWT directamente
-    return jsonify({
-        'user_id': current_user_id,
-        'email': claims.get('email'),
-        'name': claims.get('name'),
-        'lastname': claims.get('lastname'),
-        'phone': claims.get('phone'),
-        'role': claims.get('role'),
-        'association': claims.get('association')  # Solo si es asociación
-    }), 200
+    try:
+        current_user_id = int(get_jwt_identity())  # Convertir de string a int
+        claims = get_jwt()
+        
+        # Buscar usuario en base de datos como fallback
+        user = User.query.get(current_user_id)
+        if not user:
+            return jsonify({'message': 'Usuario no encontrado'}), 404
+        
+        # Usar claims del JWT si están disponibles, sino usar datos de BD
+        return jsonify({
+            'user_id': current_user_id,
+            'email': claims.get('email', user.email),
+            'name': claims.get('name', user.name),
+            'lastname': claims.get('lastname', user.lastname),
+            'phone': claims.get('phone', user.phone),
+            'role': claims.get('role', 'volunteer'),
+            'association': claims.get('association', None)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Error al obtener perfil: {str(e)}'}), 500
 
 
 @auth_bp.route('/refresh', methods=['POST'])
