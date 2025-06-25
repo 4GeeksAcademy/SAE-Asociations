@@ -8,6 +8,8 @@ import RegisterAssociation from '../pages/RegisterAssociation';
 import { EventDetail } from '../pages/EventDetail';
 import { EventList } from '../pages/EventList';
 import { EventCreation } from '../pages/EventCreation';
+import { AssociationList } from '../pages/AssociationList';
+import { AssociationDetail } from '../pages/AssociationDetail';
 import Donations from '../pages/Donations';
 import DonateForm from '../pages/DonateForm';
 
@@ -26,6 +28,10 @@ const AppRouter = () => {
         <Route path="event/detail/:id" element={<EventDetail />} />
         <Route path="event/list" element={<EventList />} />
         <Route path="event/creation" element={<EventCreation />} />
+
+        {/* Association Routes */}
+        <Route path="associations" element={<AssociationList />} />
+        <Route path="association/:id" element={<AssociationDetail />} />
 
         {/* Donations Routes */}
         <Route path="donations" element={<Donations />} />

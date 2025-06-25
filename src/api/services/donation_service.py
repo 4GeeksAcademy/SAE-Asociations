@@ -51,23 +51,40 @@ class DonationService:
         return donation
     
     @staticmethod
+    def create_stripe_price_object(donation: Donation) -> str:
+        """Crear Price Object de Stripe para la donación"""
+        
+        # Crear Product y Price en una sola operación más simple
+        price = stripe.Price.create(
+            unit_amount=int(donation.amount * 100),
+            currency='eur',
+            product_data={
+                'name': f'Donación a {donation.association.name}',
+                'metadata': {
+                    'donation_id': str(donation.id),
+                    'association_id': str(donation.association_id)
+                }
+            },
+            metadata={
+                'donation_id': str(donation.id),
+                'association_id': str(donation.association_id),
+                'donor_id': str(donation.donor_id)
+            }
+        )
+        
+        return price.id
+    
+    @staticmethod
     def create_stripe_checkout_url(donation: Donation, success_url: str, cancel_url: str) -> str:
-        """Crear URL de checkout de Stripe"""
+        """Crear URL de checkout de Stripe usando Price Objects"""
+        
+        # Crear Price Object para esta donación
+        price_id = DonationService.create_stripe_price_object(donation)
         
         # Crear sesión de pago con Stripe
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'eur',
-                    'product_data': {
-                        'name': f'Donación a {donation.association.name}',
-                        'description': donation.description or 'Donación para una buena causa',
-                    },
-                    'unit_amount': int(donation.amount * 100),
-                },
-                'quantity': 1,
-            }],
+            line_items=[{'price': price_id, 'quantity': 1}],
             mode='payment',
             success_url=success_url + f'?donation_id={donation.id}',
             cancel_url=cancel_url + f'?donation_id={donation.id}',
