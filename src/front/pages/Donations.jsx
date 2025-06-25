@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import authService from '../services/authService';
+
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || window.location.origin;
 
 const Donations = () => {
     const [donations, setDonations] = useState([]);
     const [statistics, setStatistics] = useState({});
     const [loading, setLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     useEffect(() => {
+        setIsAuthenticated(authService.isAuthenticated());
         fetchDonations();
         fetchStatistics();
     }, []);
 
     const fetchDonations = async () => {
         try {
-            const response = await fetch('/api/donations');
+            const response = await fetch(`${API_BASE_URL}/api/donations`, {
+                headers: {
+                    'Authorization': `Bearer ${authService.getToken()}`
+                }
+            });
             const data = await response.json();
             setDonations(data.donations || []);
         } catch (error) {
@@ -23,7 +32,7 @@ const Donations = () => {
 
     const fetchStatistics = async () => {
         try {
-            const response = await fetch('/api/donations/statistics');
+            const response = await fetch(`${API_BASE_URL}/api/donations/statistics`);
             const data = await response.json();
             setStatistics(data);
             setLoading(false);
@@ -38,6 +47,18 @@ const Donations = () => {
             <div className="container py-5 text-center">
                 <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (!isAuthenticated) {
+        return (
+            <div className="container py-5 text-center">
+                <div className="alert alert-warning">
+                    <h4>Debes iniciar sesión para ver las donaciones</h4>
+                    <p>Para acceder al centro de donaciones, primero debes autenticarte en el sistema.</p>
+                    <Link to="/login" className="btn btn-primary">Iniciar Sesión</Link>
                 </div>
             </div>
         );

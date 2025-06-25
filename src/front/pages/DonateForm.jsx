@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useGlobalReducer from '../hooks/useGlobalReducer';
 
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || window.location.origin;
+
 const DonateForm = () => {
     const { type } = useParams(); // "association" o "event"
     const navigate = useNavigate();
@@ -20,24 +22,39 @@ const DonateForm = () => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        // Por ahora usamos datos de ejemplo hasta que tengas endpoints para listar
-        setAssociations([
-            { id: 1, name: 'Cruz Roja' },
-            { id: 2, name: 'Médicos Sin Fronteras' },
-            { id: 3, name: 'Unicef España' }
-        ]);
-
-        setEvents([
-            { id: 1, title: 'Limpieza de Playa', association_id: 1 },
-            { id: 2, title: 'Recogida de Alimentos', association_id: 2 },
-            { id: 3, title: 'Ayuda a Refugiados', association_id: 3 }
-        ]);
+        fetchAssociations();
+        fetchEvents();
     }, []);
+
+    const fetchAssociations = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/associations/`);
+            const data = await response.json();
+            if (data.success) {
+                setAssociations(data.associations || []);
+            }
+        } catch (error) {
+            console.error('Error fetching associations:', error);
+            setAssociations([]);
+        }
+    };
+
+    const fetchEvents = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/events/`);
+            const data = await response.json();
+            if (data.success) {
+                setEvents(data.events || []);
+            }
+        } catch (error) {
+            console.error('Error fetching events:', error);
+            setEvents([]);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Verificar que el usuario esté logueado
         if (!store.token) {
             setError('Debes iniciar sesión para hacer una donación');
             return;
@@ -53,12 +70,11 @@ const DonateForm = () => {
                 description: formData.description || `Donación ${type === 'event' ? 'para evento' : 'directa'}`
             };
 
-            // Si es donación por evento, añadir event_id
             if (type === 'event' && formData.event_id) {
                 donationData.event_id = parseInt(formData.event_id);
             }
 
-            const response = await fetch('/api/donations/create', {
+            const response = await fetch(`${API_BASE_URL}/api/donations/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -70,9 +86,7 @@ const DonateForm = () => {
             const data = await response.json();
 
             if (response.ok) {
-                // Simular redirección a Stripe (por ahora)
-                alert(`¡Donación creada! En producción te redirigiremos a: ${data.checkout_url}`);
-                navigate('/donations');
+                window.location.href = data.checkout_url;
             } else {
                 setError(data.error || 'Error al crear la donación');
             }

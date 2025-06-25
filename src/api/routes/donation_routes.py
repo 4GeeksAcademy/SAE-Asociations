@@ -4,18 +4,6 @@ from ..services.donation_service import DonationService
 
 donation_bp = Blueprint('donation', __name__)
 
-@donation_bp.route('/info', methods=['GET'])
-def donation_info():
-    """Endpoint de información del sistema de donaciones"""
-    return jsonify({
-        "message": "Sistema de Donaciones SAE funcionando",
-        "endpoints": [
-            "POST /api/donations/create - Crear donación y obtener link de pago",
-            "POST /api/donations/webhook - Webhook de Stripe (automático)",
-            "GET /api/donations - Ver donaciones con filtros",
-            "GET /api/donations/statistics - Estadísticas de donaciones"
-        ]
-    }), 200
 
 @donation_bp.route('/create', methods=['POST'])
 @jwt_required()
@@ -37,7 +25,6 @@ def create_donation():
         
         data = request.get_json()
         
-        # SEGURIDAD: Validaciones robustas
         if not data or not isinstance(data, dict):
             return jsonify({'error': 'Invalid request data'}), 400
             
@@ -49,24 +36,21 @@ def create_donation():
                 'error': 'amount y association_id son requeridos'
             }), 400
         
-        # SEGURIDAD: Validar rangos
         try:
             amount = float(amount)
-            if amount <= 0 or amount > 10000:  # Límite académico razonable
+            if amount <= 0 or amount > 10000:
                 return jsonify({'error': 'Monto debe estar entre 0.01 y 10,000 EUR'}), 400
         except (ValueError, TypeError):
             return jsonify({'error': 'Monto debe ser un número válido'}), 400
         
-        # 1. Crear donación en BD
         donation = DonationService.create_donation(
-            amount=amount,  # Ya validado arriba
-            donor_id=current_user_id,  # De JWT
+            amount=amount,
+            donor_id=current_user_id,
             association_id=int(association_id),
             event_id=data.get('event_id'),
-            description=data.get('description', '').strip()[:500]  # SEGURIDAD: Limitar descripción
+            description=data.get('description', '').strip()[:500]
         )
         
-        # 2. Crear checkout URL de Stripe  
         checkout_url = DonationService.create_stripe_checkout_url(
             donation,
             data.get('success_url', 'http://localhost:3000/donation-success'),
@@ -92,28 +76,27 @@ def stripe_webhook():
     Webhook de Stripe para confirmar pagos automáticamente
     """
     try:
-        # SEGURIDAD: Verificar que viene de Stripe (básico)
         stripe_signature = request.headers.get('Stripe-Signature')
         if not stripe_signature:
             return jsonify({'error': 'Missing stripe signature'}), 400
         
-        # Por ahora simulamos - luego validaremos signature de Stripe
-        data = request.get_json()
+        payload = request.get_data()
         
-        # SEGURIDAD: Validar estructura del webhook
-        if not data or not isinstance(data, dict):
-            return jsonify({'error': 'Invalid webhook data'}), 400
+        # Procesar webhook
+        result = DonationService.process_stripe_webhook(payload, stripe_signature)
         
-        # Simular confirmación de pago
-        if data.get('session_id'):
-            donation = DonationService.complete_donation_by_session_id(data['session_id'])
-            if donation:
-                return jsonify({'status': 'donation_completed'}), 200
+        if result:
+            if result['status'] == 'success':
+                return jsonify(result), 200
+            elif result['status'] == 'error':
+                return jsonify(result), 400
+            else:  # ignored
+                return jsonify({'status': 'received'}), 200
         
-        return jsonify({'status': 'received'}), 200
+        return jsonify({'status': 'received', 'message': 'Webhook recibido'}), 200
         
     except Exception as e:
-        # SEGURIDAD: No exponer detalles del error
+        print(f"Webhook error: {e}")
         return jsonify({'error': 'Webhook processing failed'}), 400
 
 @donation_bp.route('', methods=['GET'])
@@ -129,13 +112,10 @@ def get_donations():
     Ejemplo: GET /api/donations?association_id=1&status=completed
     """
     try:
-        # Obtener filtros de query params
         user_id = request.args.get('user_id', type=int)
         association_id = request.args.get('association_id', type=int)
         event_id = request.args.get('event_id', type=int)
         status = request.args.get('status')
-        
-        # Aplicar filtros según lo que se solicite
         if user_id:
             donations = DonationService.get_donations_by_user(user_id)
         elif association_id:
@@ -145,7 +125,6 @@ def get_donations():
         else:
             donations = DonationService.get_all_donations()
         
-        # Filtrar por status si se especifica
         if status:
             donations = [d for d in donations if d.status.value == status]
         
