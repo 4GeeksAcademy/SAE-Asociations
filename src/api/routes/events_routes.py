@@ -98,12 +98,6 @@ def update_event(event_id):
     if data is None:
         return jsonify({"error": "Formato de petición JSON inválido."}), 400
 
-    # Podrías añadir una validación de datos similar a `create_event` aquí
-    # Si quieres que las actualizaciones también pasen por `check_event_data`
-    # validation_error_response = check_event_data(data)
-    # if validation_error_response:
-    #     return validation_error_response
-
     try:
         # Actualizar campos del evento si están presentes en la petición
         event.title = data.get("title", event.title)

@@ -19,12 +19,6 @@ def validate_event_data(data):
     elif len(data['title']) > 200:
         errors['title'] = 'El título debe tener un máximo de 200 caracteres.'
 
-    # Validar 'description' (opcional, string, max 1000)
-    if data.get('description') is not None and not isinstance(data['description'], str):
-        errors['description'] = 'La descripción debe ser una cadena de texto.'
-    elif data.get('description') is not None and len(data['description']) > 1000:
-        errors['description'] = 'La descripción debe tener un máximo de 1000 caracteres.'
-    
     # Validar 'image_url' (opcional, formato URL o null/vacío)
     # Si image_url está presente y no está vacío, validamos que sea una URL válida
     if data.get('image_url'): # Solo validamos si hay algo en image_url
@@ -32,8 +26,6 @@ def validate_event_data(data):
             errors['image_url'] = 'La URL de la imagen debe ser una cadena de texto.'
         elif not validate_url(data['image_url']):
             errors['image_url'] = 'La URL de la imagen no es válida (debe empezar con http:// o https://).'
-    # Si image_url es "" (cadena vacía), se permite, ya que el modelo lo permite.
-    # Si es null, también se permite.
 
     # Validar 'date' (obligatorio, formato ISO datetime-local)
     if not data.get('date'):
@@ -42,7 +34,6 @@ def validate_event_data(data):
         errors['date'] = 'La fecha y hora deben ser una cadena de texto.'
     else:
         try:
-            # Intentar convertir la fecha para validar el formato
             # El formato de datetime-local es YYYY-MM-DDTHH:MM
             datetime.fromisoformat(data['date']) 
         except ValueError:
