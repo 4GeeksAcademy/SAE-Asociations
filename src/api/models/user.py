@@ -30,6 +30,19 @@ class User(db.Model):
         self.lastname = lastname
         self.phone = phone
 
+    def __repr__(self):
+        """Representación más descriptiva para Flask-Admin dropdowns"""
+        if self.name and self.lastname:
+            return f"{self.name} {self.lastname} ({self.email})"
+        elif self.name:
+            return f"{self.name} ({self.email})"
+        else:
+            return f"{self.email}"
+
+    def __str__(self):
+        """String representation para mostrar en dropdowns"""
+        return self.__repr__()
+
     def serialize(self):
         return {
             "id": self.id,

@@ -33,16 +33,16 @@ const Navbar = () => {
             </li>
             <li className="nav-item">
               <Link
-                className={`nav-link ${location.pathname === '/register/user' ? 'active' : ''}`}
-                to="/register/user"
+                className={`nav-link ${location.pathname === '/event/list' ? 'active' : ''}`}
+                to="/event/list"
               >
-                Voluntarios
+                Eventos
               </Link>
             </li>
             <li className="nav-item">
               <Link
-                className={`nav-link ${location.pathname === '/register/association' ? 'active' : ''}`}
-                to="/register/association"
+                className={`nav-link ${location.pathname === '/associations' ? 'active' : ''}`}
+                to="/associations"
               >
                 Asociaciones
               </Link>

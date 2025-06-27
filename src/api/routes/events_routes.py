@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-from ..models import db, Event # Asegúrate de que User no se necesite si no se usa directamente aquí
+from ..models import db, Event 
 from datetime import datetime
 from ..schemas.event_schema import check_event_data
 

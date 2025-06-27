@@ -10,7 +10,6 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-swagger = "*"
 psycopg2-binary = "*"
-python-dotenv = "*"
 flask-cors = "*"
 gunicorn = "*"
 cloudinary = "*"
@@ -20,12 +19,14 @@ flask-jwt-extended = "==4.6.0"
 wtforms = "==3.1.2"
 sqlalchemy = "*"
 flask-migrate = "*"
+python-dotenv = "*"
+stripe = "*"
 
 [requires]
 python_version = "3.13"
 
 [scripts]
-start="flask run -p 3001 -h 0.0.0.0"
+start="flask --app src/app.py run -p 3001 -h 0.0.0.0"
 init="flask db init"
 migrate="flask db migrate"
 local="heroku local"
