@@ -21,6 +21,8 @@ class User(db.Model):
 
     event_volunteers = relationship("EventVolunteer", back_populates="volunteer")
 
+    event_volunteers = relationship("EventVolunteer", back_populates="volunteer")
+
     def __init__(self, email, password, name=None, lastname=None, phone=None):
         self.email = email
         self.password = password
