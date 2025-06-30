@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from ..models import db, Event 
 from datetime import datetime
 from ..schemas.event_schema import check_event_data
+from sqlalchemy import desc
 
 events_bp = Blueprint("events", __name__)
 
@@ -147,3 +148,20 @@ def delete_event(event_id):
     return jsonify({
         "message": "Evento eliminado con éxito."
     }), 200
+
+@events_bp.route('/events', methods=['GET'])
+def get_events():
+    # Obtener parámetro de filtro
+    association_id = request.args.get('association_id')
+    
+    query = Event.query.order_by(desc(Event.date))
+    
+    # Aplicar filtro si existe
+    if association_id:
+        query = query.filter_by(association_id=association_id)
+    
+    events = query.all()
+    return jsonify({
+        "success": True,
+        "events": [event.serialize() for event in events]
+    })

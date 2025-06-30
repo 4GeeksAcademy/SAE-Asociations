@@ -219,16 +219,16 @@ export const AssociationDetail = () => {
                                     <p className="card-text">Participa en eventos organizados por esta asociación</p>
                                     <button
                                         className="btn btn-success"
-                                        onClick={() => navigate('/event/list')}
+                                        onClick={() => navigate(`/event/list?association_id=${id}`)}
                                     >
                                         Ver eventos
                                     </button>
-                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        </div >
     );
 }; 
