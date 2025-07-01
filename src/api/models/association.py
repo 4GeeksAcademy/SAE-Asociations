@@ -18,6 +18,7 @@ class Association(db.Model):
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
     
     user = relationship("User", back_populates="association")
+    events = relationship("Event", back_populates="association", cascade="all, delete-orphan")
 
     def __init__(self, name, cif, description, contact_email, user_id, 
                  image_url=None, website_url=None, social_media_url=None, 

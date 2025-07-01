@@ -3,6 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from ..models import db, Event 
 from datetime import datetime
 from ..schemas.event_schema import check_event_data
+from sqlalchemy import desc
 
 events_bp = Blueprint("events", __name__)
 
@@ -13,14 +14,22 @@ def get_all_events():
     """Obtener todos los eventos disponibles."""
     claims = get_jwt()
     
-    # Si es una asociación, mostrar todos sus eventos (activos e inactivos)
-    if claims and claims.get('role') == 'association':
+    association_id_param = request.args.get('association_id')
+
+    if association_id_param:
+        # Filtrar eventos por asociación específica (solo activos para usuarios no autenticados)
+        try:
+            association_id = int(association_id_param)
+            events = Event.query.filter_by(association_id=association_id, is_active=True).all()
+        except ValueError:
+            return jsonify({"error": "ID de asociación inválido."}), 400
+    elif claims and claims.get('role') == 'association':
         association_data = claims.get('association')
         if association_data:
-            # Mostrar todos los eventos de la asociación (activos e inactivos)
+            
             events = Event.query.filter_by(association_id=association_data['id']).all()
         else:
-            # Si hay error en los datos de la asociación, mostrar solo activos
+           
             events = Event.query.filter_by(is_active=True).all()
     else:
         # Para usuarios normales y no autenticados, mostrar solo eventos activos

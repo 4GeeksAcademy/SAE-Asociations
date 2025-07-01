@@ -54,7 +54,7 @@ const authService = {
 
   async registerAssociation(associationData) {
     try {
-      const response = await fetch(
+      const response = await fetch (
         `${API_BASE_URL}/api/auth/register/association`,
         {
           method: "POST",
