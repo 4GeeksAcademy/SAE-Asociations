@@ -17,22 +17,19 @@ def get_all_events():
     association_id_param = request.args.get('association_id')
 
     if association_id_param:
-        # Filtrar eventos por asociación específica (solo activos para usuarios no autenticados)
         try:
             association_id = int(association_id_param)
-            events = Event.query.filter_by(association_id=association_id, is_active=True).all()
+            if claims and claims.get('role') == 'association':
+                association_data = claims.get('association')
+                if association_data and association_data['id'] == association_id:
+                    events = Event.query.filter_by(association_id=association_id).all()
+                else:
+                    events = Event.query.filter_by(association_id=association_id, is_active=True).all()
+            else:
+                events = Event.query.filter_by(association_id=association_id, is_active=True).all()
         except ValueError:
             return jsonify({"error": "ID de asociación inválido."}), 400
-    elif claims and claims.get('role') == 'association':
-        association_data = claims.get('association')
-        if association_data:
-            
-            events = Event.query.filter_by(association_id=association_data['id']).all()
-        else:
-           
-            events = Event.query.filter_by(is_active=True).all()
     else:
-        # Para usuarios normales y no autenticados, mostrar solo eventos activos
         events = Event.query.filter_by(is_active=True).all()
     
     return jsonify([event.serialize() for event in events]), 200
@@ -46,7 +43,6 @@ def get_event(event_id):
     if not event:
         return jsonify({"error": "Evento no encontrado."}), 404
     
-    # Si el evento está inactivo, solo permitir acceso a la asociación propietaria
     if not event.is_active:
         claims = get_jwt()
         if not claims or claims.get('role') != 'association':
@@ -65,28 +61,22 @@ def create_event():
     """Crear un nuevo evento (solo asociaciones)."""
     claims = get_jwt()
 
-    # Verificar rol de usuario
     if claims.get('role') != 'association':
         return jsonify({"error": "Permiso denegado. Solo las asociaciones pueden crear eventos."}), 403
 
-    # Obtener y validar el JSON. `silent=True` evita errores si el body no es JSON válido.
     data = request.get_json(silent=True)
     if data is None:
         return jsonify({"error": "Formato de petición JSON inválido."}), 400
 
-    # Validar datos del evento con el esquema definido
     validation_error_response = check_event_data(data)
     if validation_error_response:
-        return validation_error_response # Esto ya devuelve un 422 con los errores detallados
+        return validation_error_response
 
-    # Obtener ID de la asociación del token JWT
     association_data = claims.get('association')
     if not association_data:
-        # Este caso es poco probable si el token está bien generado para una asociación
         return jsonify({"error": "Error de autenticación: Datos de asociación no encontrados."}), 401 
 
     try:
-        # Crear la instancia del evento
         new_event = Event(
             title=data["title"],
             description=data.get("description"),
@@ -104,9 +94,7 @@ def create_event():
         }), 201
 
     except Exception as e:
-        # Captura cualquier otro error inesperado durante la creación o el commit
-        # El `print` es útil para la depuración en los logs del servidor
-        print(f"DEBUG: Error inesperado al crear evento: {e}") 
+        print(f"Error al crear evento: {e}") 
         return jsonify({"error": "Error interno del servidor al crear el evento."}), 500
 
 
@@ -116,7 +104,6 @@ def update_event(event_id):
     """Actualizar un evento (solo la asociación propietaria)."""
     claims = get_jwt()
 
-    # Verificar rol de usuario
     if claims.get('role') != 'association':
         return jsonify({"error": "Permiso denegado. Solo las asociaciones pueden actualizar eventos."}), 403
 
@@ -124,18 +111,15 @@ def update_event(event_id):
     if not event:
         return jsonify({"error": "Evento no encontrado."}), 404
 
-    # Verificar permisos de propietario
     association_data = claims.get('association')
     if not association_data or event.association_id != association_data['id']:
         return jsonify({"error": "Permiso denegado. No eres el propietario de este evento."}), 403
 
-    # Obtener y validar el JSON de la petición
     data = request.get_json(silent=True)
     if data is None:
         return jsonify({"error": "Formato de petición JSON inválido."}), 400
 
     try:
-        # Actualizar campos del evento si están presentes en la petición
         event.title = data.get("title", event.title)
         event.description = data.get("description", event.description)
         event.image_url = data.get("image_url", event.image_url)
@@ -151,10 +135,9 @@ def update_event(event_id):
         }), 200
 
     except ValueError:
-        # Esto captura errores de formato de fecha si se intenta actualizar con un valor inválido
         return jsonify({"error": "El formato de la fecha es inválido."}), 422
     except Exception as e:
-        print(f"DEBUG: Error inesperado al actualizar evento: {e}") 
+        print(f"Error al actualizar evento: {e}") 
         return jsonify({"error": "Error interno del servidor al actualizar el evento."}), 500
 
 
@@ -164,7 +147,6 @@ def deactivate_event(event_id):
     """Desactivar un evento (solo la asociación propietaria)."""
     claims = get_jwt()
 
-    # Verificar rol de usuario
     if claims.get('role') != 'association':
         return jsonify({"error": "Permiso denegado. Solo las asociaciones pueden desactivar eventos."}), 403
 
@@ -172,12 +154,10 @@ def deactivate_event(event_id):
     if not event:
         return jsonify({"error": "Evento no encontrado."}), 404
 
-    # Verificar permisos de propietario
     association_data = claims.get('association')
     if not association_data or event.association_id != association_data['id']:
         return jsonify({"error": "Permiso denegado. No eres el propietario de este evento."}), 403
 
-    # Verificar si ya está desactivado
     if not event.is_active:
         return jsonify({"error": "El evento ya está desactivado."}), 400
 
@@ -191,5 +171,5 @@ def deactivate_event(event_id):
         }), 200
 
     except Exception as e:
-        print(f"DEBUG: Error inesperado al desactivar evento: {e}") 
+        print(f"Error al desactivar evento: {e}") 
         return jsonify({"error": "Error interno del servidor al desactivar el evento."}), 500

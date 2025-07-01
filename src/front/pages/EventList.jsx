@@ -10,10 +10,10 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 export const EventList = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState ('');
+    const [error, setError] = useState('');
     const [filteredByAssociation, setFilteredByAssociation] = useState(null);
     const location = useLocation();
-    const navigate = useNavigate ();
+    const navigate = useNavigate();
     const [user, setUser] = useState(null);
 
     const getEvents = async (associationId = null) => {
@@ -25,28 +25,25 @@ export const EventList = () => {
                 url += `?association_id=${associationId}`;
             }
 
-            const res = await fetch(url);
-            if (!res.ok) {
-                throw new Error('Eror al cargar eventos');
-            }
-
-            const data = await res.json();
-            setEvents(data);
-            setError('');  
             const token = authService.getToken();
             const headers = {};
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            // const res = await fetch(`${API_BASE_URL}/api/events/`, { headers });
-            // const data = await res.json();
-            // setEvents(data);
+            const res = await fetch(url, { headers });
+            if (!res.ok) {
+                throw new Error('Error al cargar eventos');
+            }
+
+            const data = await res.json();
+            setEvents(data);
+            setError('');
         } catch (error) {
             console.error("Error fetching events:", error);
             setError(error.message);
         }
-        finally{
+        finally {
             setLoading(false);
         }
     };
@@ -67,7 +64,6 @@ export const EventList = () => {
             });
 
             if (res.ok) {
-                // Actualizar la lista de eventos
                 getEvents();
                 alert('Evento desactivado correctamente');
             } else {
@@ -81,12 +77,10 @@ export const EventList = () => {
     };
 
     useEffect(() => {
-        //obtener el parámetro de la URL 
         const queryParams = new URLSearchParams(location.search);
         const associationId = queryParams.get('association_id');
         const currentUser = authService.getCurrentUser();
         setUser(currentUser);
-        
 
         if (associationId) {
             setFilteredByAssociation(associationId);
@@ -95,12 +89,12 @@ export const EventList = () => {
             setFilteredByAssociation(null);
             getEvents();
         }
-    }, [location.search]); //Se ejecuta cuando cambia la URL 
+    }, [location.search]);
 
     const handleClearFilter = () => {
-        navigate ('/event/list');
-     }; //Quita el filtro
-    
+        navigate('/event/list');
+    };
+
 
     if (loading) {
         return (
@@ -110,9 +104,9 @@ export const EventList = () => {
                 </div>
                 <p className="mt-3">Cargando eventos...</p>
             </div>
-        ); 
-     }
-    
+        );
+    }
+
     if (error) {
         return (
             <div className="container mt-4">
@@ -127,8 +121,8 @@ export const EventList = () => {
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <h2>
                     {filteredByAssociation
-                    ? `Eventos de la asociación`
-                    : "Eventos disponibles"}
+                        ? `Eventos de la asociación`
+                        : "Eventos disponibles"}
                 </h2>
 
                 <div>
@@ -140,7 +134,7 @@ export const EventList = () => {
                             Ver todos los eventos
                         </button>
                     )}
-                    <button 
+                    <button
                         className="btn btn-success"
                         onClick={() => navigate("/event/creation")}
                     >
@@ -157,16 +151,16 @@ export const EventList = () => {
                         </div>
                     </div>
                 ) : (
-                events.map(event => (
-                    <div className="col-md-4" key={event.id}>
-                        <EventCard
-                            event={event}
-                            user={user}
-                            onDeactivate={handleDeactivateEvent}
-                        />
-                    </div>
-                ))
-            )}
+                    events.map(event => (
+                        <div className="col-md-4" key={event.id}>
+                            <EventCard
+                                event={event}
+                                user={user}
+                                onDeactivate={handleDeactivateEvent}
+                            />
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );
