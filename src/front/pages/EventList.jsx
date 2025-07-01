@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { EventCard } from "../components/EventCard.jsx";
 import { useLocation } from "react-router-dom";
 import { Button } from "bootstrap";
+import authService from "../services/authService";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -13,6 +14,7 @@ export const EventList = () => {
     const [filteredByAssociation, setFilteredByAssociation] = useState(null);
     const location = useLocation();
     const navigate = useNavigate ();
+    const [user, setUser] = useState(null);
 
     const getEvents = async (associationId = null) => {
         try {
@@ -31,6 +33,15 @@ export const EventList = () => {
             const data = await res.json();
             setEvents(data);
             setError('');  
+            const token = authService.getToken();
+            const headers = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            // const res = await fetch(`${API_BASE_URL}/api/events/`, { headers });
+            // const data = await res.json();
+            // setEvents(data);
         } catch (error) {
             console.error("Error fetching events:", error);
             setError(error.message);
@@ -40,10 +51,43 @@ export const EventList = () => {
         }
     };
 
+    const handleDeactivateEvent = async (eventId) => {
+        if (!window.confirm('¿Estás seguro de que quieres desactivar este evento? Los voluntarios ya no podrán verlo ni apuntarse.')) {
+            return;
+        }
+
+        try {
+            const token = authService.getToken();
+            const res = await fetch(`${API_BASE_URL}/api/events/${eventId}/deactivate`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (res.ok) {
+                // Actualizar la lista de eventos
+                getEvents();
+                alert('Evento desactivado correctamente');
+            } else {
+                const error = await res.json();
+                alert(`Error: ${error.error || 'No se pudo desactivar el evento'}`);
+            }
+        } catch (error) {
+            console.error("Error deactivating event:", error);
+            alert('Error de conexión al desactivar el evento');
+        }
+    };
+
     useEffect(() => {
         //obtener el parámetro de la URL 
-        const queryParams = new URLSearchParams(location.search);
+        // const queryParams = new URLSearchParams(location.search);
         const associationId = queryParams.get('association_id');
+        const currentUser = authService.getCurrentUser();
+        setUser(currentUser);
+        getEvents();
+    }, []);
 
         if (associationId) {
             setFilteredByAssociation(associationId);
@@ -52,11 +96,11 @@ export const EventList = () => {
             setFilteredByAssociation(null);
             getEvents();
         }
-    }, [location.search]); //Se ejecuta cuando cambia la URL 
+    }; [location.search]; //Se ejecuta cuando cambia la URL 
 
     const handleClearFilter = () => {
         navigate ('/event/list'); //Quita el filtro
-    };
+    
 
     if (loading) {
         return (
@@ -115,7 +159,11 @@ export const EventList = () => {
                 ): (
                 events.map(event => (
                     <div className="col-md-4" key={event.id}>
-                        <EventCard event={event} />
+                        <EventCard
+                            event={event}
+                            user={user}
+                            onDeactivate={handleDeactivateEvent}
+                        />
                     </div>
                 ))
             )}

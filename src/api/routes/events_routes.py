@@ -9,18 +9,45 @@ events_bp = Blueprint("events", __name__)
 
 
 @events_bp.route("/", methods=["GET"])
+@jwt_required(optional=True)
 def get_all_events():
     """Obtener todos los eventos disponibles."""
-    events = Event.query.all()
+    claims = get_jwt()
+    
+    # Si es una asociación, mostrar todos sus eventos (activos e inactivos)
+    if claims and claims.get('role') == 'association':
+        association_data = claims.get('association')
+        if association_data:
+            # Mostrar todos los eventos de la asociación (activos e inactivos)
+            events = Event.query.filter_by(association_id=association_data['id']).all()
+        else:
+            # Si hay error en los datos de la asociación, mostrar solo activos
+            events = Event.query.filter_by(is_active=True).all()
+    else:
+        # Para usuarios normales y no autenticados, mostrar solo eventos activos
+        events = Event.query.filter_by(is_active=True).all()
+    
     return jsonify([event.serialize() for event in events]), 200
 
 
 @events_bp.route("/<int:event_id>", methods=["GET"])
+@jwt_required(optional=True)
 def get_event(event_id):
     """Obtener los detalles de un evento específico por su ID."""
     event = Event.query.get(event_id)
     if not event:
         return jsonify({"error": "Evento no encontrado."}), 404
+    
+    # Si el evento está inactivo, solo permitir acceso a la asociación propietaria
+    if not event.is_active:
+        claims = get_jwt()
+        if not claims or claims.get('role') != 'association':
+            return jsonify({"error": "Evento no encontrado."}), 404
+        
+        association_data = claims.get('association')
+        if not association_data or event.association_id != association_data['id']:
+            return jsonify({"error": "Evento no encontrado."}), 404
+    
     return jsonify(event.serialize()), 200
 
 
@@ -123,15 +150,15 @@ def update_event(event_id):
         return jsonify({"error": "Error interno del servidor al actualizar el evento."}), 500
 
 
-@events_bp.route("/<int:event_id>", methods=["DELETE"])
+@events_bp.route("/<int:event_id>/deactivate", methods=["PATCH"])
 @jwt_required()
-def delete_event(event_id):
-    """Eliminar un evento (solo la asociación propietaria)."""
+def deactivate_event(event_id):
+    """Desactivar un evento (solo la asociación propietaria)."""
     claims = get_jwt()
 
     # Verificar rol de usuario
     if claims.get('role') != 'association':
-        return jsonify({"error": "Permiso denegado. Solo las asociaciones pueden eliminar eventos."}), 403
+        return jsonify({"error": "Permiso denegado. Solo las asociaciones pueden desactivar eventos."}), 403
 
     event = Event.query.get(event_id)
     if not event:
@@ -142,26 +169,19 @@ def delete_event(event_id):
     if not association_data or event.association_id != association_data['id']:
         return jsonify({"error": "Permiso denegado. No eres el propietario de este evento."}), 403
 
-    db.session.delete(event)
-    db.session.commit()
+    # Verificar si ya está desactivado
+    if not event.is_active:
+        return jsonify({"error": "El evento ya está desactivado."}), 400
 
-    return jsonify({
-        "message": "Evento eliminado con éxito."
-    }), 200
+    try:
+        event.is_active = False
+        db.session.commit()
 
-@events_bp.route('/events', methods=['GET'])
-def get_events():
-    # Obtener parámetro de filtro
-    association_id = request.args.get('association_id')
-    
-    query = Event.query.order_by(desc(Event.date))
-    
-    # Aplicar filtro si existe
-    if association_id:
-        query = query.filter_by(association_id=association_id)
-    
-    events = query.all()
-    return jsonify({
-        "success": True,
-        "events": [event.serialize() for event in events]
-    })
+        return jsonify({
+            "message": "Evento desactivado con éxito.",
+            "event": event.serialize()
+        }), 200
+
+    except Exception as e:
+        print(f"DEBUG: Error inesperado al desactivar evento: {e}") 
+        return jsonify({"error": "Error interno del servidor al desactivar el evento."}), 500
