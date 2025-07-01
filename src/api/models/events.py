@@ -16,7 +16,7 @@ class Event(db.Model):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     association_id: Mapped[int] = mapped_column(ForeignKey("associations.id"), nullable=False)
 
-    association = relationship("Association", backref="events")
+    association = relationship("Association", back_populates="events")
     event_volunteers = relationship(
         "EventVolunteer",
         back_populates="event",

@@ -25,7 +25,7 @@ export const EventList = () => {
                 url += `?association_id=${associationId}`;
             }
 
-            const res = await fetch(`${API_BASE_URL}/api/events/`);
+            const res = await fetch(url);
             if (!res.ok) {
                 throw new Error('Eror al cargar eventos');
             }
@@ -82,12 +82,11 @@ export const EventList = () => {
 
     useEffect(() => {
         //obtener el parámetro de la URL 
-        // const queryParams = new URLSearchParams(location.search);
+        const queryParams = new URLSearchParams(location.search);
         const associationId = queryParams.get('association_id');
         const currentUser = authService.getCurrentUser();
         setUser(currentUser);
-        getEvents();
-    }, []);
+        
 
         if (associationId) {
             setFilteredByAssociation(associationId);
@@ -96,10 +95,11 @@ export const EventList = () => {
             setFilteredByAssociation(null);
             getEvents();
         }
-    }; [location.search]; //Se ejecuta cuando cambia la URL 
+    }, [location.search]); //Se ejecuta cuando cambia la URL 
 
     const handleClearFilter = () => {
-        navigate ('/event/list'); //Quita el filtro
+        navigate ('/event/list');
+     }; //Quita el filtro
     
 
     if (loading) {
@@ -110,10 +110,10 @@ export const EventList = () => {
                 </div>
                 <p className="mt-3">Cargando eventos...</p>
             </div>
-        );
+        ); 
      }
     
-    if (error){
+    if (error) {
         return (
             <div className="container mt-4">
                 <div className="alert alert-danger" role="alert">
@@ -156,7 +156,7 @@ export const EventList = () => {
                             No se encontraron eventos
                         </div>
                     </div>
-                ): (
+                ) : (
                 events.map(event => (
                     <div className="col-md-4" key={event.id}>
                         <EventCard
