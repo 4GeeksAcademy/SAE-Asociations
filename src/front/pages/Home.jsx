@@ -22,10 +22,10 @@ const Home = () => {
               <i className="bi bi-building me-2"></i>
               <span className="d-none d-sm-inline">Soy una </span>Asociación
             </Link>
-            <Link to="/donations" className="btn btn-success btn-lg w-100 w-sm-auto">
-              <i className="bi bi-heart-fill me-2"></i>
-              <span className="d-none d-sm-inline">Centro de </span>Donaciones
-            </Link>
+            {/* <Link to="/associations" className="btn btn-success btn-lg w-100 w-sm-auto">
+              <i className="bi bi-building-check me-2"></i>
+              <span className="d-none d-sm-inline">Ver </span>Asociaciones
+            </Link> */}
           </div>
         </div>
       </div>
