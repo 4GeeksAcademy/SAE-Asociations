@@ -56,7 +56,7 @@ class Donation(db.Model):
             # Info del donante
             "donor": {
                 "id": self.donor.id,
-                "name": f"{self.donor.name} {self.donor.lastname}".strip(),
+                "name": self.donor.association.name if self.donor.association else f"{self.donor.name} {self.donor.lastname}".strip(),
                 "email": self.donor.email
             } if self.donor else None,
             
