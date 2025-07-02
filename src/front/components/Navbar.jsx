@@ -123,7 +123,6 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
-
             <li className="nav-item ms-2">
               {!isAuthenticated ? (
                 // No autenticado - mostrar botón de login
