@@ -11,6 +11,8 @@ import { EventCreation } from '../pages/EventCreation';
 import { AssociationList } from '../pages/AssociationList';
 import { AssociationDetail } from '../pages/AssociationDetail';
 import DonateForm from '../pages/DonateForm';
+import Donations from '../pages/Donations';
+import { AccountSettings } from '../pages/AccountSettings';
 
 const AppRouter = () => {
   return (
@@ -23,6 +25,9 @@ const AppRouter = () => {
         <Route path="register/user" element={<RegisterUser />} />
         <Route path="register/association" element={<RegisterAssociation />} />
 
+        {/* Account Routes */}
+        <Route path="account/settings" element={<AccountSettings />} />
+
         {/* Event Routes */}
         <Route path="event/detail/:id" element={<EventDetail />} />
         <Route path="event/list" element={<EventList />} />
@@ -32,7 +37,8 @@ const AppRouter = () => {
         <Route path="associations" element={<AssociationList />} />
         <Route path="association/:id" element={<AssociationDetail />} />
 
-        {/* Donation Route - Solo a través de asociaciones */}
+        {/* Donation Routes */}
+        <Route path="donations" element={<Donations />} />
         <Route path="donate/association/:id" element={<DonateForm />} />
 
         {/* Ruta para manejar URLs no definidas */}
