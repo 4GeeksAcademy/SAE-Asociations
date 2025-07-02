@@ -112,18 +112,6 @@ const Navbar = () => {
               </Link>
             </li>
 
-            {/* Donaciones - solo si está autenticado */}
-            {isAuthenticated && (
-              <li className="nav-item">
-                <Link
-                  className={`nav-link ${location.pathname === '/donations' ? 'active' : ''}`}
-                  to="/donations"
-                >
-                  Donaciones
-                </Link>
-              </li>
-            )}
-
             <li className="nav-item ms-2">
               {!isAuthenticated ? (
                 // No autenticado - mostrar botón de login
