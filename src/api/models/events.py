@@ -1,4 +1,4 @@
-from sqlalchemy import String, ForeignKey, Text, DateTime
+from sqlalchemy import String, ForeignKey, Text, DateTime, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone
 from . import db
@@ -14,6 +14,7 @@ class Event(db.Model):
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     association_id: Mapped[int] = mapped_column(ForeignKey("associations.id"), nullable=False)
+    max_volunteers: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
 
     association = relationship("Association", backref="events")
     event_volunteers = relationship(
@@ -35,6 +36,8 @@ class Event(db.Model):
             "date": self.date.isoformat(),
             "association_id": self.association_id,
             "association_name": self.association.name if self.association else None,
+            "max_volunteers": self.max_volunteers,
+            "Volunteers_count": len(self.event_volunteers),
             "volunteers": [
                 {
                     "id": ev.volunteer.id,

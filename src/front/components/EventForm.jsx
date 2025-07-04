@@ -116,6 +116,20 @@ export const EventForm = () => {
                 />
             </div>
 
+            <div className="col-md-6">
+                <label htmlFor="max_volunteers" className="form-label">Número Máximo de Voluntarios (opcional)</label>
+                <input
+                    type="number" 
+                    className="form-control"
+                    id="max_volunteers"
+                    name="max_volunteers"
+                    value={formData.max_volunteers}
+                    onChange={handleChange}
+                    min="0" 
+                    placeholder="Ilimitado si se deja en blanco"
+                />
+            </div>
+
             <div className="col-12">
                 <button type="submit" className="btn btn-primary">Crear evento</button>
             </div>

@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-from ..models import db, Event 
+from ..models import db, Event
 from datetime import datetime
 from ..schemas.event_schema import check_event_data
 
@@ -41,22 +41,31 @@ def create_event():
     # Validar datos del evento con el esquema definido
     validation_error_response = check_event_data(data)
     if validation_error_response:
-        return validation_error_response # Esto ya devuelve un 422 con los errores detallados
+        # Esto ya devuelve un 422 con los errores detallados
+        return validation_error_response
 
     # Obtener ID de la asociación del token JWT
     association_data = claims.get('association')
     if not association_data:
         # Este caso es poco probable si el token está bien generado para una asociación
-        return jsonify({"error": "Error de autenticación: Datos de asociación no encontrados."}), 401 
+        return jsonify({"error": "Error de autenticación: Datos de asociación no encontrados."}), 401
 
     try:
+
+        max_volunteers_value = data.get("max_volunteers")
+        if max_volunteers_value == "": # Si el frontend envía un string vacío
+            max_volunteers_value = None
+        elif max_volunteers_value is not None:
+            max_volunteers_value = int(max_volunteers_value) 
+
         # Crear la instancia del evento
         new_event = Event(
             title=data["title"],
             description=data.get("description"),
             image_url=data.get("image_url"),
             date=datetime.fromisoformat(data["date"]),
-            association_id=association_data['id']
+            association_id=association_data['id'],
+            max_volunteers=max_volunteers_value
         )
 
         db.session.add(new_event)
@@ -70,7 +79,7 @@ def create_event():
     except Exception as e:
         # Captura cualquier otro error inesperado durante la creación o el commit
         # El `print` es útil para la depuración en los logs del servidor
-        print(f"DEBUG: Error inesperado al crear evento: {e}") 
+        print(f"DEBUG: Error inesperado al crear evento: {e}")
         return jsonify({"error": "Error interno del servidor al crear el evento."}), 500
 
 
@@ -106,6 +115,17 @@ def update_event(event_id):
 
         if data.get("date"):
             event.date = datetime.fromisoformat(data["date"])
+
+        if "max_volunteers" in data:  # Solo si el campo está presente en la petición PUT
+                max_volunteers_value = data.get("max_volunteers")
+                if max_volunteers_value == "":  # Si el frontend envía un string vacío
+                    event.max_volunteers = None
+                elif max_volunteers_value is not None:
+                    # Ya se ha validado en check_event_data que si no es None/"" es convertible a int
+                    event.max_volunteers = int(max_volunteers_value)
+                else:  # Si se envía explícitamente null desde el JSON
+                    event.max_volunteers = None
+
 
         db.session.commit()
 
