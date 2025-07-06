@@ -72,7 +72,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container">
         <Link className="navbar-brand fw-bold" to="/">
-          <i className="bi bi-heart-fill text-danger me-2"></i>
+          <i className="bi bi-heart-fill text-danger me-2 "></i>
           SAE Associations
         </Link>
 
