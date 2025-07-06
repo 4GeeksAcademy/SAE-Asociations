@@ -4,13 +4,13 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const EventDetail = () => {
-  const {store} = useGlobalReducer();
-  const { id } = useParams();
-  const [event, setEvent] = useState(null);
-  const [userIsRegistered, setUserIsRegistered] =useState(false)
-  
+    const { store } = useGlobalReducer();
+    const { id } = useParams();
+    const [event, setEvent] = useState(null);
+    const [userIsRegistered, setUserIsRegistered] = useState(false)
 
-  // Función para obtener los detalles del evento del backend
+
+    // Función para obtener los detalles del evento del backend
     const fetchEventDetails = async () => {
         try {
             const res = await fetch(`${API_BASE_URL}/api/events/${id}`);
@@ -23,7 +23,7 @@ export const EventDetail = () => {
             }
             const eventData = await res.json();
             setEvent(eventData);
-
+            
             // Verificar si el usuario actual está registrado después de cargar el evento
             // Solo si hay un usuario logueado y el evento tiene la lista de voluntarios
             if (store.user && eventData.volunteers) {
@@ -48,9 +48,9 @@ export const EventDetail = () => {
             alert("Debes iniciar sesión como voluntario para apuntarte.");
             return;
         }
-        
+
         // Verificar si el evento ya está lleno (doble verificación, también se valida en backend)
-        if (event.max_volunteers !== null && event.current_volunteers_count >= event.max_volunteers) {
+        if (event.max_volunteers !== null && event.current_Volunteers_count >= event.max_volunteers) {
             alert("Este evento ya está lleno.");
             return;
         }
@@ -118,8 +118,11 @@ export const EventDetail = () => {
     if (!event) return <p>Cargando evento...</p>;
 
     // Variables de ayuda para el renderizado condicional
-    const isEventFull = event.max_volunteers !== null && event.current_volunteers_count >= event.max_volunteers;
-    const availableSlots = event.max_volunteers !== null ? event.max_volunteers - event.current_volunteers_count : null;
+    const currentVolunteers = parseInt(event.Volunteers_count) || 0; // <-- ¡CAMBIADO A event.Volunteers_count!
+    const maxVolunteers = parseInt(event.max_volunteers) || null; 
+    const isEventFull = maxVolunteers !== null && currentVolunteers >= maxVolunteers;
+    const availableSlots = maxVolunteers !== null ? maxVolunteers - currentVolunteers : null;
+
 
     return (
         <div className="container mt-4">
@@ -129,14 +132,14 @@ export const EventDetail = () => {
                     <h2>{event.title}</h2>
                     {/* Renderiza la imagen del evento si existe, si no, puedes poner una placeholder */}
                     {event.image_url && (
-                        <img 
-                            src={event.image_url} 
-                            className="img-fluid mb-3 rounded shadow-sm" 
-                            alt={event.title} 
-                            style={{ maxHeight: '400px', objectFit: 'cover', width: '100%' }} 
+                        <img
+                            src={event.image_url}
+                            className="img-fluid mb-3 rounded shadow-sm"
+                            alt={event.title}
+                            style={{ maxHeight: '400px', objectFit: 'cover', width: '100%' }}
                         />
                     )}
-                    
+
                     <p>
                         <strong>Fecha y Hora:</strong> {new Date(event.date).toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'short' })}
                     </p>
@@ -153,17 +156,16 @@ export const EventDetail = () => {
                     <div className="card shadow-sm">
                         <div className="card-body">
                             <h5 className="card-title text-primary mb-3">Detalles de Voluntariado</h5>
-                            
                             {/* Información de capacidad actual */}
                             <p className="card-text">
-                                Voluntarios apuntados: <strong>{event.current_volunteers_count}</strong>
-                                {event.max_volunteers !== null && ` de ${event.max_volunteers}`}
+                                Voluntarios apuntados: <strong>{currentVolunteers}</strong>
+                                {maxVolunteers !== null ? ` de ${maxVolunteers}` : ''}
                             </p>
 
                             {/* Mostrar plazas disponibles o si el evento está lleno */}
                             {event.max_volunteers !== null && (
                                 <p className={`card-text fw-bold ${isEventFull ? 'text-danger' : 'text-success'}`}>
-                                    {isEventFull 
+                                    {isEventFull
                                         ? "¡Este evento ha alcanzado su límite máximo de voluntarios!"
                                         : `Plazas disponibles: ${availableSlots}`
                                     }
@@ -184,9 +186,9 @@ export const EventDetail = () => {
                                             Desapuntarse
                                         </button>
                                     ) : (
-                                        <button 
-                                            className="btn btn-success w-100" 
-                                            onClick={handleJoinEvent} 
+                                        <button
+                                            className="btn btn-success w-100"
+                                            onClick={handleJoinEvent}
                                             disabled={isEventFull} // El botón se deshabilita si el evento está lleno
                                         >
                                             {isEventFull ? "Evento Lleno" : "Apuntarse al Evento"}

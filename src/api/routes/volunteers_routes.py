@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-from ..models import db, EventVolunteer
+from ..models import db, EventVolunteer,Event
 from datetime import datetime, timezone
 
 
 volunteers_bp = Blueprint("volunteers", __name__)
+
 
 @volunteers_bp.route("/<int:event_id>/join", methods=["POST"])
 @jwt_required()
@@ -12,11 +13,11 @@ def join_event(event_id):
     """Apuntarse a un evento (solo voluntarios)"""
     current_user_id = get_jwt_identity()
     claims = get_jwt()
-    
+
     # Verificar que el usuario sea un voluntario
     if claims.get('role') != 'volunteer':
         return jsonify({"error": "Solo los voluntarios pueden apuntarse a eventos"}), 403
-    
+
     volunteer_id = current_user_id
 
     # Obtener el evento para verificar la capacidad
@@ -24,8 +25,14 @@ def join_event(event_id):
     if not event:
         return jsonify({"message": "Evento no encontrado"}), 404
 
+    print(f"DEBUG_JOIN: Evento ID: {event.id}")
+    print(f"DEBUG_JOIN: max_volunteers: {event.max_volunteers}")
+    print(f"DEBUG_JOIN: current_volunteers count: {len(event.event_volunteers)}")
+
      # Verificar si el evento ya está lleno
     if event.max_volunteers is not None and len(event.event_volunteers) >= event.max_volunteers:
+        print(
+            f"DEBUG: Condición activada: EVENTO LLENO. Max: {event.max_volunteers}, Actual: {len(event.event_volunteers)}")
         return jsonify({"message": "Este evento ha alcanzado su número máximo de voluntarios"}), 400
 
     existing = EventVolunteer.query.filter_by(
@@ -33,6 +40,8 @@ def join_event(event_id):
     ).first()
 
     if existing:
+        print(
+            f"DEBUG: Condición activada: VOLUNTARIO YA APUNTADO. Evento ID: {event_id}, Voluntario ID: {volunteer_id}")
         return jsonify({"message": "Ya estás apuntado a este evento"}), 400
 
     ev = EventVolunteer(
