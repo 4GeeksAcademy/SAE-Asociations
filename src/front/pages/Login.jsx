@@ -76,7 +76,7 @@ const Login = () => {
                 type: 'LOGIN_SUCCESS',
                 payload: {
                     user: response.user,
-                    token: response.token
+                    token: response.access_token
                 }
             });
 

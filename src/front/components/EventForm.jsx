@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -12,9 +12,6 @@ export const EventForm = () => {
         date: "",
     });
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
-
     const handleChange = (e) => {
         setFormData({
             ...formData,
@@ -22,10 +19,9 @@ export const EventForm = () => {
         });
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
+
         try {
 
             // 1. Obtener el token del localStorage
@@ -34,7 +30,6 @@ export const EventForm = () => {
             // 2. Verificar si el token existe
             if (!token) {
                 alert("Debes iniciar sesión para crear un evento.");
-                setIsLoading(false);
                 // O redirigir al login
                 // navigate('/login'); 
                 return; // Detener la ejecución si no hay token
@@ -62,113 +57,88 @@ export const EventForm = () => {
                 throw new Error(errorData.error || "Error al crear evento");
             }
 
-            setShowSuccess(true);
+            const result = await response.json();
+            alert("Evento creado con éxito");
+            console.log(result);
 
             // Redirigir a la lista de eventos
-            setTimeout(() => {
-                setShowSuccess(false);
-                navigate('/event/list');
-            }, 3000);
+            navigate('/event/list');
 
         } catch (error) {
             console.error("Error:", error);
-            alert(`Hubo un error al crear el evento: ${error.message || "Error desconocido"}`);
-        } finally {
-            setIsLoading(false);
+            alert("Hubo un error al crear el evento");
         }
     };
 
-    useEffect(() => {
-        if (showSuccess) {
-            window.scrollTo({
-                top: document.body.scrollHeight / 2 - 200,
-                behavior: 'smooth'
-            });
-        }
-    }, [showSuccess]);
-
-
-
     return (
-        <><div className="event-form.container">
-            {/*Banner de éxito*/}
-            {showSuccess && (
-                <div className="success-banner" role="alert">
-                    <div banner-content>
-                        <i className="bi bi-check-circle-fill text-success me-2"></i>
-                        <h2>¡Evento creado con éxito!</h2>
-                    </div>
-                </div>
-            )}
+        <form className="row g-3" onSubmit={handleSubmit}>
+            <div className="col-12">
+                <label htmlFor="title" className="form-label">Título del evento</label>
+                <input
+                    type="text"
+                    className="form-control"
+                    id="title"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleChange}
+                />
+            </div>
 
-        </div>
-            <form className={`row g-3 ${showSuccess ? "form-blurred" : ""}`} onSubmit={handleSubmit}>
-                <div className="col-12">
-                    <label htmlFor="title" className="form-label">Título del evento</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="title"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange} />
-                </div>
+            <div className="col-12">
+                <label htmlFor="description" className="form-label">Descripción</label>
+                <textarea
+                    className="form-control"
+                    id="description"
+                    name="description"
+                    rows="3"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
 
-                <div className="col-12">
-                    <label htmlFor="description" className="form-label">Descripción</label>
-                    <textarea
-                        className="form-control"
-                        id="description"
-                        name="description"
-                        rows="3"
-                        value={formData.description}
-                        onChange={handleChange}
-                        required />
-                </div>
+            <div className="col-12">
+                <label htmlFor="image_url" className="form-label">URL de la imagen</label>
+                <input
+                    type="url"
+                    className="form-control"
+                    id="image_url"
+                    name="image_url"
+                    value={formData.image_url}
+                    onChange={handleChange}
+                />
+            </div>
 
-                <div className="col-12">
-                    <label htmlFor="image_url" className="form-label">URL de la imagen</label>
-                    <input
-                        type="url"
-                        className="form-control"
-                        id="image_url"
-                        name="image_url"
-                        value={formData.image_url}
-                        onChange={handleChange} />
-                </div>
+            <div className="col-md-6">
+                <label htmlFor="date" className="form-label">Fecha</label>
+                <input
+                    type="datetime-local"
+                    className="form-control"
+                    id="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
 
-                <div className="col-md-6">
-                    <label htmlFor="date" className="form-label">Fecha</label>
-                    <input
-                        type="datetime-local"
-                        className="form-control"
-                        id="date"
-                        name="date"
-                        value={formData.date}
-                        onChange={handleChange}
-                        required />
-                </div>
+            <div className="col-md-6">
+                <label htmlFor="max_volunteers" className="form-label">Número Máximo de Voluntarios (opcional)</label>
+                <input
+                    type="number" 
+                    className="form-control"
+                    id="max_volunteers"
+                    name="max_volunteers"
+                    value={formData.max_volunteers}
+                    onChange={handleChange}
+                    min="0" 
+                    placeholder="Ilimitado si se deja en blanco"
+                />
+            </div>
 
-                <div className="col-12">
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                        disabled={isLoading}
-                    >
-                        {isLoading ? (
-                            <>
-                                <span
-                                    className="spinner-border spinner-border-sm"
-                                    role="status"
-                                    aria-hidden="true"
-                                ></span>
-                                <span className="ms-2">Creando evento...</span>
-                            </>
-                        ) : (
-                            "Crear evento"
-                        )}
-                    </button>
-                </div>
-            </form></>
+            <div className="col-12">
+                <button type="submit" className="btn btn-primary">Crear evento</button>
+            </div>
+        </form>
     );
 };
