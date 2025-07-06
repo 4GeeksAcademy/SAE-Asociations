@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
 export const EventForm = () => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -23,7 +25,7 @@ export const EventForm = () => {
         try {
 
             // 1. Obtener el token del localStorage
-            const token = localStorage.getItem("token"); 
+            const token = localStorage.getItem("token");
 
             // 2. Verificar si el token existe
             if (!token) {
@@ -50,7 +52,7 @@ export const EventForm = () => {
 
             if (!response.ok) {
                 // Si la respuesta no es OK, intentamos leer el cuerpo del error
-                const errorData = await response.json(); 
+                const errorData = await response.json();
                 console.error("Error al crear evento (respuesta no OK):", errorData);
                 throw new Error(errorData.error || "Error al crear evento");
             }
@@ -58,6 +60,10 @@ export const EventForm = () => {
             const result = await response.json();
             alert("Evento creado con éxito");
             console.log(result);
+
+            // Redirigir a la lista de eventos
+            navigate('/event/list');
+
         } catch (error) {
             console.error("Error:", error);
             alert("Hubo un error al crear el evento");

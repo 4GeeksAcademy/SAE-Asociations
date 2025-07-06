@@ -56,7 +56,7 @@ export const AssociationList = () => {
     }
 
     return (
-        <div className="container mt-4">
+        <div className="container mt-4 mb-5">
             {/* Header */}
             <div className="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -98,9 +98,9 @@ export const AssociationList = () => {
                     </button>
                 </div>
             ) : (
-                <div className="row g-4">
+                <div className="row g-4 pb-4">
                     {associations.map(association => (
-                        <div className="col-md-4" key={association.id}>
+                        <div className="col-lg-4 col-md-6 col-sm-12" key={association.id}>
                             <AssociationCard association={association} />
                         </div>
                     ))}

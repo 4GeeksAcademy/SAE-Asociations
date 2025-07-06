@@ -13,10 +13,11 @@ class Event(db.Model):
     image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     association_id: Mapped[int] = mapped_column(ForeignKey("associations.id"), nullable=False)
     max_volunteers: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
 
-    association = relationship("Association", backref="events")
+    association = relationship("Association", back_populates="events")
     event_volunteers = relationship(
         "EventVolunteer",
         back_populates="event",
@@ -34,6 +35,7 @@ class Event(db.Model):
             "description": self.description,
             "image_url": self.image_url,
             "date": self.date.isoformat(),
+            "is_active": self.is_active,
             "association_id": self.association_id,
             "association_name": self.association.name if self.association else None,
             "max_volunteers": self.max_volunteers,

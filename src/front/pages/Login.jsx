@@ -80,9 +80,9 @@ const Login = () => {
                 }
             });
 
-            // Redirigir después de 1 segundo
+            // Redirigir a la página de eventos después de 1 segundo
             setTimeout(() => {
-                navigate('/');
+                navigate('/event/list');
             }, 1000);
         } catch (error) {
             console.error('Error en login:', error);

@@ -5,50 +5,37 @@ import useGlobalReducer from '../hooks/useGlobalReducer';
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || window.location.origin;
 
 const DonateForm = () => {
-    const { type } = useParams(); // "association" o "event"
+    const { id } = useParams(); // ID de la asociación
     const navigate = useNavigate();
     const { store, dispatch } = useGlobalReducer();
 
     const [formData, setFormData] = useState({
         amount: '',
-        association_id: '',
-        event_id: '',
         description: ''
     });
 
-    const [associations, setAssociations] = useState([]);
-    const [events, setEvents] = useState([]);
+    const [association, setAssociation] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     useEffect(() => {
-        fetchAssociations();
-        fetchEvents();
-    }, []);
-
-    const fetchAssociations = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/associations/`);
-            const data = await response.json();
-            if (data.success) {
-                setAssociations(data.associations || []);
-            }
-        } catch (error) {
-            console.error('Error fetching associations:', error);
-            setAssociations([]);
+        if (id) {
+            fetchAssociation();
         }
-    };
+    }, [id]);
 
-    const fetchEvents = async () => {
+    const fetchAssociation = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/events/`);
+            const response = await fetch(`${API_BASE_URL}/api/associations/${id}`);
             const data = await response.json();
             if (data.success) {
-                setEvents(data.events || []);
+                setAssociation(data.association);
+            } else {
+                setError('Asociación no encontrada');
             }
         } catch (error) {
-            console.error('Error fetching events:', error);
-            setEvents([]);
+            console.error('Error fetching association:', error);
+            setError('Error al cargar la asociación');
         }
     };
 
@@ -66,13 +53,9 @@ const DonateForm = () => {
         try {
             const donationData = {
                 amount: parseFloat(formData.amount),
-                association_id: parseInt(formData.association_id),
-                description: formData.description || `Donación ${type === 'event' ? 'para evento' : 'directa'}`
+                association_id: parseInt(id),
+                description: formData.description || 'Donación directa a la asociación'
             };
-
-            if (type === 'event' && formData.event_id) {
-                donationData.event_id = parseInt(formData.event_id);
-            }
 
             const response = await fetch(`${API_BASE_URL}/api/donations/create`, {
                 method: 'POST',
@@ -105,9 +88,15 @@ const DonateForm = () => {
         });
     };
 
-    const isEventDonation = type === 'event';
-    const title = isEventDonation ? 'Donar a un Evento' : 'Donar a una Asociación';
-    const icon = isEventDonation ? 'bi-calendar-event' : 'bi-building';
+    if (!association && !error) {
+        return (
+            <div className="container py-5 text-center">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container py-3 py-md-5">
@@ -116,15 +105,27 @@ const DonateForm = () => {
 
                     {/* Header */}
                     <div className="text-center mb-4">
-                        <i className={`${icon} text-primary`} style={{ fontSize: '3rem' }}></i>
-                        <h1 className="h2 mt-3 mb-2">{title}</h1>
+                        <i className="bi bi-heart-fill text-primary" style={{ fontSize: '3rem' }}></i>
+                        <h1 className="h2 mt-3 mb-2">Donar a {association?.name}</h1>
                         <p className="text-muted">
-                            {isEventDonation
-                                ? 'Contribuye a un evento específico organizado por una asociación'
-                                : 'Apoya directamente a una asociación para sus necesidades generales'
-                            }
+                            Apoya directamente a esta asociación para sus necesidades y proyectos
                         </p>
                     </div>
+
+                    {/* Info de la asociación */}
+                    {association && (
+                        <div className="card bg-light mb-4">
+                            <div className="card-body p-3">
+                                <div className="d-flex align-items-center">
+                                    <i className="bi bi-building text-primary me-3" style={{ fontSize: '2rem' }}></i>
+                                    <div>
+                                        <h5 className="mb-1">{association.name}</h5>
+                                        <p className="text-muted small mb-0">{association.description}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Form */}
                     <div className="card shadow-sm">
@@ -162,63 +163,6 @@ const DonateForm = () => {
                                     <div className="form-text">Mínimo €1, máximo €10,000</div>
                                 </div>
 
-                                {/* Asociación */}
-                                <div className="mb-3">
-                                    <label htmlFor="association_id" className="form-label">
-                                        <i className="bi bi-building me-2"></i>
-                                        Asociación {isEventDonation ? 'organizadora' : 'destinataria'} *
-                                    </label>
-                                    <select
-                                        className="form-select"
-                                        id="association_id"
-                                        name="association_id"
-                                        value={formData.association_id}
-                                        onChange={handleChange}
-                                        required
-                                    >
-                                        <option value="">Selecciona una asociación</option>
-                                        {associations.map(association => (
-                                            <option key={association.id} value={association.id}>
-                                                {association.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                {/* Evento (solo si es donación por evento) */}
-                                {isEventDonation && (
-                                    <div className="mb-3">
-                                        <label htmlFor="event_id" className="form-label">
-                                            <i className="bi bi-calendar-event me-2"></i>
-                                            Evento específico *
-                                        </label>
-                                        <select
-                                            className="form-select"
-                                            id="event_id"
-                                            name="event_id"
-                                            value={formData.event_id}
-                                            onChange={handleChange}
-                                            required
-                                        >
-                                            <option value="">Selecciona un evento</option>
-                                            {events
-                                                .filter(event => !formData.association_id || event.association_id == formData.association_id)
-                                                .map(event => (
-                                                    <option key={event.id} value={event.id}>
-                                                        {event.title}
-                                                    </option>
-                                                ))
-                                            }
-                                        </select>
-                                        <div className="form-text">
-                                            {!formData.association_id
-                                                ? 'Primero selecciona una asociación'
-                                                : 'Eventos de la asociación seleccionada'
-                                            }
-                                        </div>
-                                    </div>
-                                )}
-
                                 {/* Descripción */}
                                 <div className="mb-4">
                                     <label htmlFor="description" className="form-label">
@@ -243,10 +187,10 @@ const DonateForm = () => {
                                     <button
                                         type="button"
                                         className="btn btn-outline-secondary flex-fill"
-                                        onClick={() => navigate('/donations')}
+                                        onClick={() => navigate(`/association/${id}`)}
                                         disabled={loading}
                                     >
-                                        Cancelar
+                                        Volver
                                     </button>
                                     <button
                                         type="submit"

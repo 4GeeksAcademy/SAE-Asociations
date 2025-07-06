@@ -1,5 +1,6 @@
 /* Importar Bootstrap */
-@import 'bootstrap/dist/css/bootstrap.min.css';
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
 /* Variables CSS */
 :root {
@@ -12,14 +13,16 @@
 
 /* Estilos globales */
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f8f9fa;
   color: #333;
   line-height: 1.6;
 }
 
 /* Asegurar que el layout ocupe toda la altura de la ventana */
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -44,4 +47,11 @@ html, body, #root {
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-body-user {
+  font-size: '100px';
+  width: '100px';
+  height: '100px';
+
 }
