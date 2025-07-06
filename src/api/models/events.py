@@ -1,4 +1,4 @@
-from sqlalchemy import String, ForeignKey, Text, DateTime, Integer
+from sqlalchemy import String, ForeignKey, Text, DateTime, Integer, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone
 from . import db
@@ -12,10 +12,14 @@ class Event(db.Model):
     description: Mapped[str] = mapped_column(Text, nullable=True)
     image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
-    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
-    association_id: Mapped[int] = mapped_column(ForeignKey("associations.id"), nullable=False)
-    max_volunteers: Mapped[int] = mapped_column(Integer, nullable=True, default=None)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    is_active: Mapped[bool] = mapped_column(
+        Boolean, default=True, nullable=False)
+    association_id: Mapped[int] = mapped_column(
+        ForeignKey("associations.id"), nullable=False)
+    max_volunteers: Mapped[int] = mapped_column(
+        Integer, nullable=True, default=None)
 
     association = relationship("Association", back_populates="events")
     event_volunteers = relationship(
@@ -27,7 +31,7 @@ class Event(db.Model):
     @property
     def volunteers(self):
         return [ev.volunteer for ev in self.event_volunteers]
-    
+
     def serialize(self):
         return {
             "id": self.id,
