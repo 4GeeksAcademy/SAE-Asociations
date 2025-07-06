@@ -1,14 +1,8 @@
 """empty message
 
-HEAD:migrations/versions/fe8b71d0bb86_.py
 Revision ID: fe8b71d0bb86
-Revises: 
+Revises: None # O el ID de la migración anterior real, si la hubo. Si esta fue la primera de tu rama, es None.
 Create Date: 2025-07-04 16:47:11.688317
-
-Revision ID: 22bbac8fb605
-Revises: 
-Create Date: 2025-07-02 16:17:09.696412
-develop:migrations/versions/22bbac8fb605_.py
 
 """
 from alembic import op
@@ -16,12 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-HEAD: migrations/versions/fe8b71d0bb86_.py
 revision = 'fe8b71d0bb86'
-
-revision = '22bbac8fb605'
-develop: migrations/versions/22bbac8fb605_.py
-down_revision = None
+down_revision = None  # O el ID de la migración anterior real.
 branch_labels = None
 depends_on = None
 
