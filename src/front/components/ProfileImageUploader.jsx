@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../styles/cloudinary-widget.css';
 
 const ProfileImageUploader = ({
     onUploadSuccess,
@@ -58,6 +59,16 @@ const ProfileImageUploader = ({
             {
                 cloudName: cloudName,
                 uploadPreset: uploadPreset,
+                preBatch: (cb, data) => {
+                    // Añadir clase CSS al widget cuando se abre
+                    setTimeout(() => {
+                        const widget = document.querySelector('.cloudinary-widget');
+                        if (widget) {
+                            widget.classList.add('modern-widget');
+                        }
+                    }, 100);
+                    cb(data);
+                },
                 sources: ['local', 'url', 'camera'],
                 multiple: false,
                 cropping: true,
@@ -74,23 +85,36 @@ const ProfileImageUploader = ({
                 showUploadMoreButton: false,
                 showCompletedButton: false,
                 showSkipCropButton: false,
+                theme: 'modern',
+                showPoweredBy: false,
                 styles: {
                     palette: {
                         window: "#FFFFFF",
-                        windowBorder: "#90A0B3",
-                        tabIcon: "#0078FF",
-                        menuIcons: "#5A616A",
-                        textDark: "#000000",
+                        windowBorder: "#4dabf7",
+                        tabIcon: "#4dabf7",
+                        menuIcons: "#6C757D",
+                        textDark: "#212529",
                         textLight: "#FFFFFF",
-                        link: "#0078FF",
-                        action: "#FF620C",
-                        inactiveTabIcon: "#0E2F5A",
-                        error: "#F44235",
-                        inProgress: "#0078FF",
-                        complete: "#20B832",
-                        sourceBg: "#E4EBF1"
+                        link: "#4dabf7",
+                        action: "#4dabf7",
+                        inactiveTabIcon: "#ADB5BD",
+                        error: "#DC3545",
+                        inProgress: "#4dabf7",
+                        complete: "#198754",
+                        sourceBg: "#F8F9FA"
+                    },
+                    fonts: {
+                        default: null,
+                        "'Inter', 'Segoe UI', sans-serif": {
+                            url: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap",
+                            active: true
+                        }
+                    },
+                    frame: {
+                        background: "#FFFFFF"
                     }
-                }
+                },
+                buttonClass: 'modern-upload-btn'
             },
             (error, result) => {
                 setIsUploading(false);

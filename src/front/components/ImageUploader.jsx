@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../styles/cloudinary-widget.css';
 
 const ImageUploader = ({
     onUploadSuccess,
@@ -68,6 +69,16 @@ const ImageUploader = ({
             {
                 cloudName: cloudName,
                 uploadPreset: uploadPreset,
+                preBatch: (cb, data) => {
+                    // Añadir clase CSS al widget cuando se abre
+                    setTimeout(() => {
+                        const widget = document.querySelector('.cloudinary-widget');
+                        if (widget) {
+                            widget.classList.add('modern-widget');
+                        }
+                    }, 100);
+                    cb(data);
+                },
                 multiple: multiple,
                 maxFileSize: maxFileSize,
                 clientAllowedFormats: [acceptedFormats],
@@ -80,19 +91,24 @@ const ImageUploader = ({
                     alt: 'SAE Associations Upload',
                     caption: 'Uploaded via SAE platform'
                 },
+                theme: 'modern',
+                showPoweredBy: false,
+                showSkipCropButton: false,
+                showCompletedButton: false,
+                showUploadMoreButton: false,
                 styles: {
                     palette: {
                         window: "#FFFFFF",
-                        windowBorder: "#E0E6ED",
-                        tabIcon: "#0D6EFD",
+                        windowBorder: "#4dabf7",
+                        tabIcon: "#4dabf7",
                         menuIcons: "#6C757D",
                         textDark: "#212529",
                         textLight: "#FFFFFF",
-                        link: "#0D6EFD",
-                        action: "#198754",
+                        link: "#4dabf7",
+                        action: "#4dabf7",
                         inactiveTabIcon: "#ADB5BD",
                         error: "#DC3545",
-                        inProgress: "#0D6EFD",
+                        inProgress: "#4dabf7",
                         complete: "#198754",
                         sourceBg: "#F8F9FA"
                     },
@@ -102,8 +118,12 @@ const ImageUploader = ({
                             url: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap",
                             active: true
                         }
+                    },
+                    frame: {
+                        background: "#FFFFFF"
                     }
-                }
+                },
+                buttonClass: 'modern-upload-btn'
             },
             (error, result) => {
                 setIsUploading(false);

@@ -34,11 +34,19 @@ def validate_event_data(data):
         errors['date'] = 'La fecha y hora deben ser una cadena de texto.'
     else:
         try:
-            # El formato de datetime-local es YYYY-MM-DDTHH:MM
             datetime.fromisoformat(data['date']) 
         except ValueError:
             errors['date'] = 'El formato de fecha y hora no es válido. Debe ser YYYY-MM-DDTHH:MM.'
 
+    if 'max_volunteers' in data: 
+        max_v = data['max_volunteers']
+        if max_v is not None and max_v != "": # Permitimos que sea None o string vacío del frontend
+            try:
+                max_v = int(max_v) # Intentamos convertir a entero
+                if max_v < 0:
+                    errors['max_volunteers'] = 'El número máximo de voluntarios no puede ser negativo.'
+            except (ValueError, TypeError): # Si no se puede convertir a int
+                errors['max_volunteers'] = 'El número máximo de voluntarios debe ser un número entero válido o dejarse en blanco.'
     return errors
 
 def check_event_data(data):

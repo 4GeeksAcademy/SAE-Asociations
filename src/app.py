@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
+from flask_cors import CORS
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -26,6 +27,8 @@ static_file_dir = os.path.join(os.path.dirname(
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 
+# Initialize CORS
+CORS(app)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")

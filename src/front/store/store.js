@@ -18,6 +18,8 @@ export default function storeReducer(store, action = {}) {
     // === ACCIONES DE AUTENTICACIÓN ===
     case "LOGIN_SUCCESS":
       const { user, token } = action.payload;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
       return {
         ...store,
         user: user,
@@ -27,6 +29,8 @@ export default function storeReducer(store, action = {}) {
       };
 
     case "LOGOUT":
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       return {
         ...store,
         user: null,

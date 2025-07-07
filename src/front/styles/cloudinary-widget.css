@@ -1,0 +1,251 @@
+/* Estilos personalizados para el widget de Cloudinary */
+
+/* Estilos globales para el widget */
+:global(.cloudinary-widget) {
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif !important;
+}
+
+/* Selector más específico para el widget */
+:global(.cloudinary-widget iframe) {
+  border-radius: 16px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  border: 2px solid #4dabf7 !important;
+}
+
+/* Modernizar el overlay del widget */
+:global(.cloudinary-widget .upload-widget-overlay) {
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+}
+
+/* Modernizar el contenedor principal */
+:global(.cloudinary-widget .upload-widget) {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Mejorar la barra de navegación del widget */
+:global(.cloudinary-widget .upload-widget-tabs) {
+  background: linear-gradient(135deg, #4dabf7 0%, #3498db 100%) !important;
+  border-radius: 16px 16px 0 0 !important;
+  padding: 8px !important;
+}
+
+/* Botones de pestañas */
+:global(.cloudinary-widget .upload-widget-tab) {
+  border-radius: 12px !important;
+  margin: 4px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: none !important;
+  transition: all 0.3s ease !important;
+}
+
+:global(.cloudinary-widget .upload-widget-tab:hover) {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: translateY(-1px) !important;
+}
+
+:global(.cloudinary-widget .upload-widget-tab.active) {
+  background: rgba(255, 255, 255, 0.3) !important;
+  font-weight: 600 !important;
+}
+
+/* Área de contenido principal */
+:global(.cloudinary-widget .upload-widget-content) {
+  background: #ffffff !important;
+  padding: 24px !important;
+}
+
+/* Zona de arrastrar y soltar */
+:global(.cloudinary-widget .upload-widget-dropzone) {
+  border: 2px dashed #4dabf7 !important;
+  border-radius: 16px !important;
+  background: linear-gradient(
+    135deg,
+    rgba(77, 171, 247, 0.05) 0%,
+    rgba(116, 192, 252, 0.05) 100%
+  ) !important;
+  transition: all 0.3s ease !important;
+  padding: 32px !important;
+}
+
+:global(.cloudinary-widget .upload-widget-dropzone:hover) {
+  border-color: #3498db !important;
+  background: linear-gradient(
+    135deg,
+    rgba(77, 171, 247, 0.1) 0%,
+    rgba(116, 192, 252, 0.1) 100%
+  ) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Botones principales */
+:global(.cloudinary-widget .upload-widget-button) {
+  background: linear-gradient(135deg, #4dabf7 0%, #3498db 100%) !important;
+  border: none !important;
+  border-radius: 50px !important;
+  padding: 12px 24px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  color: white !important;
+}
+
+:global(.cloudinary-widget .upload-widget-button:hover) {
+  background: linear-gradient(135deg, #74c0fc 0%, #4dabf7 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(77, 171, 247, 0.3) !important;
+}
+
+/* Botones secundarios */
+:global(.cloudinary-widget .upload-widget-button-secondary) {
+  background: transparent !important;
+  border: 2px solid #4dabf7 !important;
+  border-radius: 50px !important;
+  color: #4dabf7 !important;
+  padding: 10px 20px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+:global(.cloudinary-widget .upload-widget-button-secondary:hover) {
+  background: #4dabf7 !important;
+  color: white !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Lista de archivos */
+:global(.cloudinary-widget .upload-widget-file-list) {
+  background: #f8f9fa !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  margin-top: 16px !important;
+}
+
+:global(.cloudinary-widget .upload-widget-file-item) {
+  background: white !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  margin-bottom: 8px !important;
+  border: 1px solid #e9ecef !important;
+  transition: all 0.3s ease !important;
+}
+
+:global(.cloudinary-widget .upload-widget-file-item:hover) {
+  border-color: #4dabf7 !important;
+  box-shadow: 0 2px 8px rgba(77, 171, 247, 0.1) !important;
+}
+
+/* Barra de progreso */
+:global(.cloudinary-widget .upload-widget-progress) {
+  background: #e9ecef !important;
+  border-radius: 50px !important;
+  height: 8px !important;
+  overflow: hidden !important;
+}
+
+:global(.cloudinary-widget .upload-widget-progress-bar) {
+  background: linear-gradient(90deg, #4dabf7 0%, #3498db 100%) !important;
+  border-radius: 50px !important;
+  height: 100% !important;
+  transition: width 0.3s ease !important;
+}
+
+/* Íconos */
+:global(.cloudinary-widget .upload-widget-icon) {
+  color: #4dabf7 !important;
+  font-size: 24px !important;
+}
+
+/* Texto */
+:global(.cloudinary-widget .upload-widget-text) {
+  color: #212529 !important;
+  font-weight: 500 !important;
+}
+
+:global(.cloudinary-widget .upload-widget-text-small) {
+  color: #6c757d !important;
+  font-size: 14px !important;
+}
+
+/* Botón de cierre */
+:global(.cloudinary-widget .upload-widget-close) {
+  background: #f8f9fa !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 36px !important;
+  height: 36px !important;
+  color: #6c757d !important;
+  transition: all 0.3s ease !important;
+}
+
+:global(.cloudinary-widget .upload-widget-close:hover) {
+  background: #e9ecef !important;
+  color: #495057 !important;
+  transform: scale(1.1) !important;
+}
+
+/* Footer del widget */
+:global(.cloudinary-widget .upload-widget-footer) {
+  background: #f8f9fa !important;
+  border-radius: 0 0 16px 16px !important;
+  padding: 16px 24px !important;
+  border-top: 1px solid #e9ecef !important;
+}
+
+/* Ocultar el "Powered by Cloudinary" */
+:global(.cloudinary-widget .upload-widget-powered-by) {
+  display: none !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  :global(.cloudinary-widget .upload-widget) {
+    border-radius: 0 !important;
+    height: 100vh !important;
+  }
+
+  :global(.cloudinary-widget .upload-widget-content) {
+    padding: 16px !important;
+  }
+
+  :global(.cloudinary-widget .upload-widget-dropzone) {
+    padding: 24px !important;
+  }
+}
+
+/* Mejoras adicionales para modernizar el widget */
+:global(.cloudinary-widget .upload-widget-container) {
+  background: #ffffff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  border: 2px solid #4dabf7 !important;
+  overflow: hidden !important;
+}
+
+/* Botones con estilo cápsula */
+:global(.cloudinary-widget .modern-upload-btn) {
+  border-radius: 50px !important;
+  background: linear-gradient(135deg, #4dabf7 0%, #3498db 100%) !important;
+  border: none !important;
+  color: white !important;
+  padding: 12px 24px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+}
+
+:global(.cloudinary-widget .modern-upload-btn:hover) {
+  background: linear-gradient(135deg, #74c0fc 0%, #4dabf7 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(77, 171, 247, 0.3) !important;
+}
+
+/* Eliminar estilos antiguos del widget */
+:global(.cloudinary-widget) {
+  --cld-color-primary: #4dabf7 !important;
+  --cld-color-secondary: #3498db !important;
+  --cld-color-accent: #74c0fc !important;
+  --cld-border-radius: 16px !important;
+  --cld-font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif !important;
+}

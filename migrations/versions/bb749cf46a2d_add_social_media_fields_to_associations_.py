@@ -1,7 +1,7 @@
 """Add social media fields to associations and update field lengths
 
 Revision ID: bb749cf46a2d
-Revises: 22bbac8fb605
+Revises: 87de51846dd3
 Create Date: 2025-07-04 21:39:44.443077
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = 'bb749cf46a2d'
-down_revision = '22bbac8fb605'
+down_revision = '87de51846dd3'
 branch_labels = None
 depends_on = None
 

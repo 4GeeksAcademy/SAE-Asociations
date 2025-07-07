@@ -4,11 +4,24 @@
 
 /* Variables CSS */
 :root {
-  --primary-color: #4e73df;
-  --secondary-color: #2e59a9;
-  --accent-color: #36b9cc;
+  --primary-color: #4dabf7;
+  --primary-dark: #3498db;
+  --primary-light: #74c0fc;
+  --teal-color: #20c997;
+  --teal-light: #63e6be;
+  --teal-dark: #12b886;
   --light-color: #f8f9fc;
   --dark-color: #5a5c69;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 8px 25px rgba(77, 171, 247, 0.2);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --card-bg: rgba(255, 255, 255, 0.95);
+  --card-border: rgba(77, 171, 247, 0.1);
+  --page-bg: #f8f9fa;
+
+  /* Variables para el banner */
+  --success-color: #28a745;
+  --success-light: #d4edda;
 }
 
 /* Estilos globales */
@@ -47,4 +60,101 @@ body,
 .card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card-body-user {
+  font-size: "100px";
+  width: "100px";
+  height: "100px";
+}
+
+/* ------------------------- */
+/* ESTILOS PARA EL BANNER DE ÉXITO */
+/* ------------------------- */
+
+.success-banner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  width: 90%;
+  max-width: 500px;
+  padding: 2.5rem 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: fadeIn 0.4s ease-out, slideIn 0.4s ease-out;
+}
+
+.success-banner-icon {
+  width: 80px;
+  height: 80px;
+  background-color: var(--success-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.success-banner-icon .bi {
+  font-size: 2.5rem;
+  color: var(--success-color);
+}
+
+.success-banner h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--success-color);
+  margin-bottom: 0.5rem;
+}
+
+.success-banner p {
+  font-size: 1.1rem;
+  color: var(--dark-color);
+  margin-bottom: 0;
+}
+
+.banner-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 1040;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translate(-50%, -40%);
+  }
+  to {
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* Para cuando el banner está visible */
+.form-blurred {
+  filter: blur(2px);
+  opacity: 0.7;
+  pointer-events: none;
+  transition: filter 0.3s, opacity 0.3s;
 }

@@ -195,6 +195,62 @@ const authService = {
   isAuthenticated() {
     return !!this.getToken();
   },
+
+  async updateProfile(profileData) {
+    const token = this.getToken();
+    const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(profileData),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.msg || "Error al actualizar perfil");
+    }
+    // Actualiza el objeto user en localStorage
+    this.updateUser({ ...this.getCurrentUser(), ...profileData });
+    return data;
+  },
+
+  async changePassword(passwordData) {
+    const token = this.getToken();
+    const response = await fetch(`${API_BASE_URL}/api/user/password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(passwordData),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Error al cambiar contraseña");
+    }
+    return data;
+  },
+
+  // Asegúrate de que estos dos métodos existen:
+  getCurrentUser() {
+    try {
+      const userStr = localStorage.getItem("user");
+      return userStr ? JSON.parse(userStr) : null;
+    } catch {
+      return null;
+    }
+  },
+
+  getToken() {
+    return localStorage.getItem("token");
+  },
+
+  updateUser(user) {
+    localStorage.setItem("user", JSON.stringify(user));
+  },
+
 };
+
 
 export default authService;
