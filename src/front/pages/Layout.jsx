@@ -8,8 +8,8 @@ const Layout = () => {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar />
-      <main className="flex-grow-1">
-        <Outlet /> {/* Aquí se renderizan las páginas */}
+      <main className="flex-grow-1 d-flex flex-column" style={{ paddingTop: '76px' }}>
+        <Outlet />
       </main>
       <Footer />
       <ScrollToTop />

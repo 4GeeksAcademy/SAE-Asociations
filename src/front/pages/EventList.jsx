@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { EventCard } from "../components/EventCard.jsx";
 import { useLocation } from "react-router-dom";
 import { Button } from "bootstrap";
@@ -15,6 +15,7 @@ export const EventList = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
+    const { association_id } = useParams();
 
     const getEvents = async (associationId = null) => {
         try {
@@ -64,7 +65,7 @@ export const EventList = () => {
             });
 
             if (res.ok) {
-                getEvents();
+                getEvents(association_id);
                 alert('Evento desactivado correctamente');
             } else {
                 const error = await res.json();
@@ -77,24 +78,31 @@ export const EventList = () => {
     };
 
     useEffect(() => {
-        const queryParams = new URLSearchParams(location.search);
-        const associationId = queryParams.get('association_id');
         const currentUser = authService.getCurrentUser();
         setUser(currentUser);
 
-        if (associationId) {
-            setFilteredByAssociation(associationId);
-            getEvents(associationId);
+        // Si hay un association_id en la URL, usarlo
+        if (association_id) {
+            setFilteredByAssociation(association_id);
+            getEvents(association_id);
         } else {
-            setFilteredByAssociation(null);
-            getEvents();
+            // Si no hay association_id, revisar si hay uno en los query params (para mantener compatibilidad)
+            const queryParams = new URLSearchParams(location.search);
+            const queryAssociationId = queryParams.get('association_id');
+
+            if (queryAssociationId) {
+                setFilteredByAssociation(queryAssociationId);
+                getEvents(queryAssociationId);
+            } else {
+                setFilteredByAssociation(null);
+                getEvents();
+            }
         }
-    }, [location.search]);
+    }, [location.search, association_id]);
 
     const handleClearFilter = () => {
         navigate('/event/list');
     };
-
 
     if (loading) {
         return (
@@ -134,12 +142,34 @@ export const EventList = () => {
                             Ver todos los eventos
                         </button>
                     )}
-                    <button
-                        className="btn btn-success"
-                        onClick={() => navigate("/event/creation")}
-                    >
-                        Crear evento
-                    </button>
+
+                    {/* Botón de crear evento - solo para asociaciones */}
+                    {user?.role === 'association' ? (
+                        <button
+                            className="btn btn-success"
+                            onClick={() => navigate("/event/creation")}
+                        >
+                            <i className="bi bi-plus-circle me-2"></i>
+                            Crear evento
+                        </button>
+                    ) : user?.role === 'volunteer' ? (
+                        <button
+                            className="btn btn-outline-info"
+                            onClick={() => navigate("/register/association")}
+                            title="Regístrate como asociación para poder crear eventos"
+                        >
+                            <i className="bi bi-building me-2"></i>
+                            Registrar asociación
+                        </button>
+                    ) : (
+                        <button
+                            className="btn btn-outline-primary"
+                            onClick={() => navigate("/login")}
+                        >
+                            <i className="bi bi-box-arrow-in-right me-2"></i>
+                            Iniciar sesión
+                        </button>
+                    )}
                 </div>
             </div>
 

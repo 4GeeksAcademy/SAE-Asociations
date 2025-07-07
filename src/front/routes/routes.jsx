@@ -12,6 +12,8 @@ import { AssociationList } from '../pages/AssociationList';
 import { AssociationDetail } from '../pages/AssociationDetail';
 import DonateForm from '../pages/DonateForm';
 import Donations from '../pages/Donations';
+import DonationSuccess from '../pages/DonationSuccess';
+import DonationCancel from '../pages/DonationCancel';
 import { AccountSettings } from '../pages/AccountSettings';
 
 const AppRouter = () => {
@@ -31,6 +33,7 @@ const AppRouter = () => {
         {/* Event Routes */}
         <Route path="event/detail/:id" element={<EventDetail />} />
         <Route path="event/list" element={<EventList />} />
+        <Route path="event/list/:association_id" element={<EventList />} />
         <Route path="event/creation" element={<EventCreation />} />
 
         {/* Association Routes */}
@@ -40,6 +43,8 @@ const AppRouter = () => {
         {/* Donation Routes */}
         <Route path="donations" element={<Donations />} />
         <Route path="donate/association/:id" element={<DonateForm />} />
+        <Route path="donation-success" element={<DonationSuccess />} />
+        <Route path="donation-cancel" element={<DonationCancel />} />
 
         {/* Ruta para manejar URLs no definidas */}
         <Route path="*" element={<Home />} />

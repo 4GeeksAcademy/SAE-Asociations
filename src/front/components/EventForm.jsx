@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ImageUploader from "./ImageUploader";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
@@ -17,6 +18,19 @@ export const EventForm = () => {
             ...formData,
             [e.target.name]: e.target.value,
         });
+    };
+
+    const handleImageUploadSuccess = (imageUrl, uploadInfo) => {
+        console.log('Imagen subida exitosamente:', imageUrl);
+        setFormData({
+            ...formData,
+            image_url: imageUrl
+        });
+    };
+
+    const handleImageUploadError = (error) => {
+        console.error('Error al subir imagen:', error);
+        alert('Error al subir la imagen. Por favor, inténtalo de nuevo.');
     };
 
     const handleSubmit = async (e) => {
@@ -98,15 +112,22 @@ export const EventForm = () => {
             </div>
 
             <div className="col-12">
-                <label htmlFor="image_url" className="form-label">URL de la imagen</label>
-                <input
-                    type="url"
-                    className="form-control"
-                    id="image_url"
-                    name="image_url"
-                    value={formData.image_url}
-                    onChange={handleChange}
+                <label className="form-label fw-medium">Imagen del evento</label>
+                <ImageUploader
+                    onUploadSuccess={handleImageUploadSuccess}
+                    onUploadError={handleImageUploadError}
+                    buttonText="Seleccionar imagen"
+                    buttonClass="btn-success"
+                    currentImageUrl={formData.image_url}
+                    showPreview={true}
                 />
+                {formData.image_url && (
+                    <div className="mt-2">
+                        <small className="text-success">
+                            ✓ Imagen seleccionada correctamente
+                        </small>
+                    </div>
+                )}
             </div>
 
             <div className="col-md-6">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import useGlobalReducer from '../hooks/useGlobalReducer';
+import ProfileImageUploader from '../components/ProfileImageUploader';
 
 const RegisterAssociation = () => {
     const navigate = useNavigate();
@@ -27,6 +28,12 @@ const RegisterAssociation = () => {
         cif: '',
         contact_email: '',
         contact_phone: '',
+        image_url: '',
+        // Nuevos campos de redes sociales
+        website_url: '',
+        facebook_url: '',
+        instagram_url: '',
+        twitter_url: '',
     });
 
     // Estados para validación y UI
@@ -47,6 +54,24 @@ const RegisterAssociation = () => {
                 [name]: ''
             }));
         }
+    };
+
+    // Manejar subida exitosa de imagen de la asociación
+    const handleAssociationImageUploadSuccess = (imageUrl, uploadInfo) => {
+        console.log('Logo de la asociación subido exitosamente:', imageUrl);
+        setFormData(prev => ({
+            ...prev,
+            image_url: imageUrl
+        }));
+    };
+
+    // Manejar error en subida de imagen
+    const handleImageUploadError = (error) => {
+        console.error('Error al subir imagen:', error);
+        dispatch({
+            type: 'SET_MESSAGE',
+            payload: { text: 'Error al subir la imagen. Puedes continuar sin imagen.', type: 'warning' }
+        });
     };
 
     // Validaciones del formulario
@@ -74,8 +99,8 @@ const RegisterAssociation = () => {
 
         if (!formData.phone.trim()) {
             newErrors.phone = 'El teléfono es obligatorio';
-        } else if (formData.phone.length > 20) {
-            newErrors.phone = 'El teléfono debe tener máximo 20 caracteres';
+        } else if (!/^(\+34)?[6789]\d{8}$/.test(formData.phone.replace(/[\s\-\(\)]/g, ''))) {
+            newErrors.phone = 'El teléfono no es válido (ejemplo: 612345678 o +34612345678)';
         }
 
         if (!formData.password.trim()) {
@@ -103,35 +128,63 @@ const RegisterAssociation = () => {
 
         if (!formData.description.trim()) {
             newErrors.description = 'La descripción es obligatoria';
-        } else if (formData.description.length > 1000) {
-            newErrors.description = 'La descripción debe tener máximo 1000 caracteres';
+        } else if (formData.description.length > 2000) {
+            newErrors.description = 'La descripción debe tener máximo 2000 caracteres';
         }
 
         if (!formData.cif.trim()) {
             newErrors.cif = 'El CIF es obligatorio';
-        } else if (formData.cif.length > 20) {
-            newErrors.cif = 'El CIF debe tener máximo 20 caracteres';
+        } else if (formData.cif.length > 30) {
+            newErrors.cif = 'El CIF debe tener máximo 30 caracteres';
+        } else if (!/^[ABCDEFGHJNPQRSUVW]\d{7}[0-9A-J]$/i.test(formData.cif.trim())) {
+            newErrors.cif = 'El CIF no es válido (ejemplo: A12345674)';
         }
 
         if (!formData.contact_email.trim()) {
             newErrors.contact_email = 'El email de contacto es obligatorio';
         } else if (!/\S+@\S+\.\S+/.test(formData.contact_email)) {
             newErrors.contact_email = 'Por favor, introduce un email de contacto válido';
+        } else if (formData.contact_email.length > 120) {
+            newErrors.contact_email = 'El email de contacto debe tener máximo 120 caracteres';
         }
 
         if (!formData.contact_phone.trim()) {
             newErrors.contact_phone = 'El teléfono de contacto es obligatorio';
-        } else if (formData.contact_phone.length > 20) {
-            newErrors.contact_phone = 'El teléfono de contacto debe tener máximo 20 caracteres';
+        } else if (!/^(\+34)?[6789]\d{8}$/.test(formData.contact_phone.replace(/[\s\-\(\)]/g, ''))) {
+            newErrors.contact_phone = 'El teléfono de contacto no es válido (ejemplo: 612345678 o +34612345678)';
         }
 
         // Validar URLs opcionales
-        if (formData.website_url && formData.website_url.trim() && !formData.website_url.match(/^https?:\/\/.+/)) {
-            newErrors.website_url = 'La URL del sitio web no es válida (debe empezar con http:// o https://)';
+        if (formData.website_url && formData.website_url.trim()) {
+            if (!formData.website_url.match(/^https?:\/\/.+/)) {
+                newErrors.website_url = 'La URL del sitio web no es válida (debe empezar con http:// o https://)';
+            } else if (formData.website_url.length > 200) {
+                newErrors.website_url = 'La URL del sitio web debe tener máximo 200 caracteres';
+            }
         }
 
-        if (formData.social_media_url && formData.social_media_url.trim() && !formData.social_media_url.match(/^https?:\/\/.+/)) {
-            newErrors.social_media_url = 'La URL de redes sociales no es válida (debe empezar con http:// o https://)';
+        if (formData.facebook_url && formData.facebook_url.trim()) {
+            if (!formData.facebook_url.match(/^https?:\/\/.+/)) {
+                newErrors.facebook_url = 'La URL de Facebook no es válida (debe empezar con http:// o https://)';
+            } else if (formData.facebook_url.length > 200) {
+                newErrors.facebook_url = 'La URL de Facebook debe tener máximo 200 caracteres';
+            }
+        }
+
+        if (formData.instagram_url && formData.instagram_url.trim()) {
+            if (!formData.instagram_url.match(/^https?:\/\/.+/)) {
+                newErrors.instagram_url = 'La URL de Instagram no es válida (debe empezar con http:// o https://)';
+            } else if (formData.instagram_url.length > 200) {
+                newErrors.instagram_url = 'La URL de Instagram debe tener máximo 200 caracteres';
+            }
+        }
+
+        if (formData.twitter_url && formData.twitter_url.trim()) {
+            if (!formData.twitter_url.match(/^https?:\/\/.+/)) {
+                newErrors.twitter_url = 'La URL de Twitter/X no es válida (debe empezar con http:// o https://)';
+            } else if (formData.twitter_url.length > 200) {
+                newErrors.twitter_url = 'La URL de Twitter/X debe tener máximo 200 caracteres';
+            }
         }
 
         if (formData.image_url && formData.image_url.trim() && !formData.image_url.match(/^https?:\/\/.+/)) {
@@ -230,6 +283,20 @@ const RegisterAssociation = () => {
                                     <strong>Información importante:</strong> Necesitamos tanto los datos del representante como de la asociación para completar el registro.
                                 </div>
 
+                                {/* Logo de la Asociación */}
+                                <div className="text-center mb-4">
+                                    <div className="d-flex justify-content-center mb-2">
+                                        <ProfileImageUploader
+                                            onUploadSuccess={handleAssociationImageUploadSuccess}
+                                            onUploadError={handleImageUploadError}
+                                            currentImageUrl={formData.image_url}
+                                            size="large"
+                                            disabled={store.isLoading}
+                                        />
+                                    </div>
+                                    <small className="text-muted">Logo de la asociación (opcional)</small>
+                                </div>
+
                                 {/* Datos Personales del Representante */}
                                 <div className="mb-4">
                                     <h4 className="text-primary mb-3 h5 h4-md">
@@ -305,7 +372,7 @@ const RegisterAssociation = () => {
                                                 name="phone"
                                                 id="phone"
                                                 className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-                                                placeholder="Tu teléfono"
+                                                placeholder="Ejemplo: 612345678"
                                                 value={formData.phone}
                                                 onChange={handleChange}
                                                 disabled={store.isLoading}
@@ -392,7 +459,7 @@ const RegisterAssociation = () => {
                                                 name="cif"
                                                 id="cif"
                                                 className={`form-control ${errors.cif ? 'is-invalid' : ''}`}
-                                                placeholder="CIF de la asociación"
+                                                placeholder="Ejemplo: A12345674"
                                                 value={formData.cif}
                                                 onChange={handleChange}
                                                 disabled={store.isLoading}
@@ -451,7 +518,7 @@ const RegisterAssociation = () => {
                                                 name="contact_phone"
                                                 id="contact_phone"
                                                 className={`form-control ${errors.contact_phone ? 'is-invalid' : ''}`}
-                                                placeholder="Teléfono de la asociación"
+                                                placeholder="Ejemplo: 987654321"
                                                 value={formData.contact_phone}
                                                 onChange={handleChange}
                                                 disabled={store.isLoading}
@@ -459,6 +526,93 @@ const RegisterAssociation = () => {
                                             {errors.contact_phone && (
                                                 <div className="text-danger small mt-1">{errors.contact_phone}</div>
                                             )}
+                                        </div>
+                                    </div>
+
+                                    {/* Redes Sociales y Sitio Web */}
+                                    <div className="mb-4">
+                                        <h5 className="text-secondary mb-3">
+                                            <i className="bi bi-share me-2"></i>
+                                            Redes Sociales y Sitio Web <span className="text-muted small">(opcional)</span>
+                                        </h5>
+                                        <div className="row">
+                                            <div className="col-md-6 mb-3">
+                                                <label htmlFor="website_url" className="form-label fw-semibold">
+                                                    <i className="bi bi-globe me-1"></i>Sitio Web
+                                                </label>
+                                                <input
+                                                    type="url"
+                                                    name="website_url"
+                                                    id="website_url"
+                                                    className={`form-control ${errors.website_url ? 'is-invalid' : ''}`}
+                                                    placeholder="https://www.asociacion.com"
+                                                    value={formData.website_url}
+                                                    onChange={handleChange}
+                                                    disabled={store.isLoading}
+                                                />
+                                                {errors.website_url && (
+                                                    <div className="text-danger small mt-1">{errors.website_url}</div>
+                                                )}
+                                            </div>
+
+                                            <div className="col-md-6 mb-3">
+                                                <label htmlFor="facebook_url" className="form-label fw-semibold">
+                                                    <i className="bi bi-facebook me-1"></i>Facebook
+                                                </label>
+                                                <input
+                                                    type="url"
+                                                    name="facebook_url"
+                                                    id="facebook_url"
+                                                    className={`form-control ${errors.facebook_url ? 'is-invalid' : ''}`}
+                                                    placeholder="https://www.facebook.com/asociacion"
+                                                    value={formData.facebook_url}
+                                                    onChange={handleChange}
+                                                    disabled={store.isLoading}
+                                                />
+                                                {errors.facebook_url && (
+                                                    <div className="text-danger small mt-1">{errors.facebook_url}</div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="row">
+                                            <div className="col-md-6 mb-3">
+                                                <label htmlFor="instagram_url" className="form-label fw-semibold">
+                                                    <i className="bi bi-instagram me-1"></i>Instagram
+                                                </label>
+                                                <input
+                                                    type="url"
+                                                    name="instagram_url"
+                                                    id="instagram_url"
+                                                    className={`form-control ${errors.instagram_url ? 'is-invalid' : ''}`}
+                                                    placeholder="https://www.instagram.com/asociacion"
+                                                    value={formData.instagram_url}
+                                                    onChange={handleChange}
+                                                    disabled={store.isLoading}
+                                                />
+                                                {errors.instagram_url && (
+                                                    <div className="text-danger small mt-1">{errors.instagram_url}</div>
+                                                )}
+                                            </div>
+
+                                            <div className="col-md-6 mb-3">
+                                                <label htmlFor="twitter_url" className="form-label fw-semibold">
+                                                    <i className="bi bi-twitter-x me-1"></i>Twitter/X
+                                                </label>
+                                                <input
+                                                    type="url"
+                                                    name="twitter_url"
+                                                    id="twitter_url"
+                                                    className={`form-control ${errors.twitter_url ? 'is-invalid' : ''}`}
+                                                    placeholder="https://www.twitter.com/asociacion"
+                                                    value={formData.twitter_url}
+                                                    onChange={handleChange}
+                                                    disabled={store.isLoading}
+                                                />
+                                                {errors.twitter_url && (
+                                                    <div className="text-danger small mt-1">{errors.twitter_url}</div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

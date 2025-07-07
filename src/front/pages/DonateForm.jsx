@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import useGlobalReducer from '../hooks/useGlobalReducer';
+import authService from '../services/authService';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || window.location.origin;
 
 const DonateForm = () => {
     const { id } = useParams(); // ID de la asociación
     const navigate = useNavigate();
-    const { store, dispatch } = useGlobalReducer();
 
     const [formData, setFormData] = useState({
         amount: '',
@@ -42,7 +41,7 @@ const DonateForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!store.token) {
+        if (!authService.isAuthenticated()) {
             setError('Debes iniciar sesión para hacer una donación');
             return;
         }
@@ -51,17 +50,22 @@ const DonateForm = () => {
         setError('');
 
         try {
+            // Obtener la URL base del frontend automáticamente
+            const frontendUrl = import.meta.env.VITE_FRONTEND_URL || window.location.origin;
+
             const donationData = {
                 amount: parseFloat(formData.amount),
                 association_id: parseInt(id),
-                description: formData.description || 'Donación directa a la asociación'
+                description: formData.description || 'Donación directa a la asociación',
+                success_url: `${frontendUrl}/donation-success`,
+                cancel_url: `${frontendUrl}/donation-cancel`
             };
 
             const response = await fetch(`${API_BASE_URL}/api/donations/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${store.token}`
+                    'Authorization': `Bearer ${authService.getToken()}`
                 },
                 body: JSON.stringify(donationData)
             });

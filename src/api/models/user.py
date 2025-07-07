@@ -11,6 +11,7 @@ class User(db.Model):
     name: Mapped[str] = mapped_column(String(100), nullable=True)
     lastname: Mapped[str] = mapped_column(String(100), nullable=True)
     phone: Mapped[str] = mapped_column(String(20), nullable=True)
+    profile_image: Mapped[str] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
     
     # Relationship with Association (one-to-one)
@@ -19,16 +20,13 @@ class User(db.Model):
     # Relationship with EventVolunteer (many-to-many through EventVolunteer)
     event_volunteers = relationship("EventVolunteer", back_populates="volunteer")
 
-    event_volunteers = relationship("EventVolunteer", back_populates="volunteer")
-
-    event_volunteers = relationship("EventVolunteer", back_populates="volunteer")
-
-    def __init__(self, email, password, name=None, lastname=None, phone=None):
+    def __init__(self, email, password, name=None, lastname=None, phone=None, profile_image=None):
         self.email = email
         self.password = password
         self.name = name
         self.lastname = lastname
         self.phone = phone
+        self.profile_image = profile_image
 
     def __repr__(self):
         """Representación más descriptiva para Flask-Admin dropdowns"""
@@ -50,5 +48,6 @@ class User(db.Model):
             "name": self.name,
             "lastname": self.lastname,
             "phone": self.phone,
+            "profile_image": self.profile_image,
             "is_active": self.is_active
         } 

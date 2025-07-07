@@ -15,8 +15,8 @@ def create_donation():
         "association_id": 1,
         "event_id": 2,  // opcional
         "description": "Donación para ayudar",  // opcional
-        "success_url": "https://miapp.com/success",
-        "cancel_url": "https://miapp.com/cancel"
+        "success_url": "http://tu-frontend/donation-success",  // URL completa del frontend
+        "cancel_url": "http://tu-frontend/donation-cancel"  // URL completa del frontend
     }
     """
     try:
@@ -51,10 +51,17 @@ def create_donation():
             description=data.get('description', '').strip()[:500]
         )
         
+        # Las URLs deben venir del frontend (que sabe su propia URL)
+        success_url = data.get('success_url')
+        cancel_url = data.get('cancel_url')
+        
+        if not success_url or not cancel_url:
+            return jsonify({'error': 'success_url y cancel_url son requeridas'}), 400
+        
         checkout_url = DonationService.create_stripe_checkout_url(
             donation,
-            data.get('success_url', 'http://localhost:3000/donation-success'),
-            data.get('cancel_url', 'http://localhost:3000/donation-cancel')
+            success_url,
+            cancel_url
         )
         
         return jsonify({

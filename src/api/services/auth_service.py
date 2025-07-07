@@ -23,6 +23,7 @@ class AuthService:
             'name': user.name,
             'lastname': user.lastname,
             'phone': user.phone,
+            'profile_image': user.profile_image,
             'role': user_role
         }
         
@@ -31,7 +32,8 @@ class AuthService:
             additional_claims['association'] = {
                 'id': user.association.id,
                 'name': user.association.name,
-                'cif': user.association.cif
+                'cif': user.association.cif,
+                'image_url': user.association.image_url
             }
         
         # Create tokens with Flask-JWT-Extended
@@ -47,6 +49,7 @@ class AuthService:
             'name': user.name,
             'lastname': user.lastname,
             'phone': user.phone,
+            'profile_image': user.profile_image,
             'role': user_role
         }
         
@@ -54,7 +57,8 @@ class AuthService:
             user_data['association'] = {
                 'id': user.association.id,
                 'name': user.association.name,
-                'cif': user.association.cif
+                'cif': user.association.cif,
+                'image_url': user.association.image_url
             }
         
         return {
@@ -64,7 +68,7 @@ class AuthService:
         }
     
     @staticmethod
-    def create_user(email: str, password: str, name: str = None, lastname: str = None, phone: str = None) -> User:
+    def create_user(email: str, password: str, name: str = None, lastname: str = None, phone: str = None, profile_image: str = None, commit: bool = True) -> User:
         hashed_password = AuthService.hash_password(password)
         
         user = User(
@@ -72,11 +76,13 @@ class AuthService:
             password=hashed_password,
             name=name,
             lastname=lastname,
-            phone=phone
+            phone=phone,
+            profile_image=profile_image
         )
         
         db.session.add(user)
-        db.session.commit()
+        if commit:
+            db.session.commit()
         
         return user
     

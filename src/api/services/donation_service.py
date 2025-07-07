@@ -3,16 +3,20 @@ from ..models.donation import DonationStatus
 from typing import List, Optional
 import os
 import stripe
-from dotenv import load_dotenv
 
-# Cargar variables de entorno
-load_dotenv()
+# Configurar Stripe dinámicamente en cada uso
+def _ensure_stripe_configured():
+    stripe.api_key = os.getenv('STRIPE_SECRET_KEY')  # Configurar cada vez
+    if not stripe.api_key:
+        raise ValueError("STRIPE_SECRET_KEY no configurada en variables de entorno")
 
-# Configurar Stripe
-stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
-
-if not stripe.api_key:
-    raise ValueError("STRIPE_SECRET_KEY no configurada en variables de entorno")
+def _get_donation_metadata(donation: Donation) -> dict:
+    """Generar metadatos consistentes para Stripe"""
+    return {
+        'donation_id': str(donation.id),
+        'association_id': str(donation.association_id),
+        'donor_id': str(donation.donor_id)
+    }
 
 class DonationService:
     
@@ -46,7 +50,7 @@ class DonationService:
         )
         
         db.session.add(donation)
-        db.session.commit()
+        db.session.flush()  # Obtener ID sin commit final
         
         return donation
     
@@ -55,21 +59,15 @@ class DonationService:
         """Crear Price Object de Stripe para la donación"""
         
         # Crear Product y Price en una sola operación más simple
+        metadata = _get_donation_metadata(donation)
         price = stripe.Price.create(
             unit_amount=int(donation.amount * 100),
             currency='eur',
             product_data={
                 'name': f'Donación a {donation.association.name}',
-                'metadata': {
-                    'donation_id': str(donation.id),
-                    'association_id': str(donation.association_id)
-                }
+                'metadata': metadata
             },
-            metadata={
-                'donation_id': str(donation.id),
-                'association_id': str(donation.association_id),
-                'donor_id': str(donation.donor_id)
-            }
+            metadata=metadata
         )
         
         return price.id
@@ -77,6 +75,9 @@ class DonationService:
     @staticmethod
     def create_stripe_checkout_url(donation: Donation, success_url: str, cancel_url: str) -> str:
         """Crear URL de checkout de Stripe usando Price Objects"""
+        
+        # Verificar configuración de Stripe
+        _ensure_stripe_configured()
         
         # Crear Price Object para esta donación
         price_id = DonationService.create_stripe_price_object(donation)
@@ -88,16 +89,13 @@ class DonationService:
             mode='payment',
             success_url=success_url + f'?donation_id={donation.id}',
             cancel_url=cancel_url + f'?donation_id={donation.id}',
-            metadata={
-                'donation_id': str(donation.id),
-                'donor_id': str(donation.donor_id),
-                'association_id': str(donation.association_id)
-            }
+            metadata=_get_donation_metadata(donation)
         )
         
+        # Actualizar donación con información de Stripe y hacer commit final
         donation.stripe_session_id = checkout_session.id
         donation.stripe_payment_intent_id = checkout_session.payment_intent
-        db.session.commit()
+        db.session.commit()  # Commit final con toda la información
         
         return checkout_session.url
     
@@ -198,14 +196,28 @@ class DonationService:
         if association_id:
             query = query.filter_by(association_id=association_id)
         
-        donations = query.all()
+        donations = query.order_by(Donation.created_at.desc()).all()
         
         total_amount = sum(d.amount for d in donations)
         total_count = len(donations)
         
+        # Obtener información de la última donación
+        last_donation = donations[0] if donations else None
+        last_donation_info = None
+        
+        if last_donation:
+            last_donation_info = {
+                'amount': float(last_donation.amount),
+                'date': last_donation.created_at.isoformat() if last_donation.created_at else None,
+                'donor_name': (
+                    last_donation.donor.association.name if last_donation.donor.association 
+                    else f"{last_donation.donor.name} {last_donation.donor.lastname}".strip()
+                ) if last_donation.donor else 'Donante anónimo'
+            }
+        
         return {
             'total_amount': float(total_amount),
             'total_count': total_count,
-            'average_amount': float(total_amount / total_count) if total_count > 0 else 0,
+            'last_donation': last_donation_info,
             'currency': 'EUR'
         } 

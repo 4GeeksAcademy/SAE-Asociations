@@ -7,6 +7,10 @@ from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 from api.utils import APIException, generate_sitemap
 from api.models import db

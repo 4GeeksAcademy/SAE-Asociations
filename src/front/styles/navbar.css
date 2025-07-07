@@ -1,0 +1,191 @@
+/* Variables - usar las mismas que en home.css */
+:root {
+  --primary-color: #4dabf7;
+  --primary-dark: #3498db;
+  --primary-light: #74c0fc;
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 8px 25px rgba(77, 171, 247, 0.2);
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Navbar principal */
+.navbar-main {
+  background: var(--primary-color);
+  box-shadow: 0 4px 20px rgba(77, 171, 247, 0.15);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+/* Logo container */
+.navbar-logo {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.navbar-logo:hover {
+  transform: translateY(-1px);
+}
+
+.navbar-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+/* Enlaces de navegación */
+.nav-link-custom {
+  color: white !important;
+  padding: 0.5rem 1.5rem !important;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none !important;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.nav-link-custom:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.nav-link-custom.active {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de menú móvil */
+.navbar-toggler-custom {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 0.5rem;
+  transition: var(--transition);
+}
+
+.navbar-toggler-custom:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* Dropdown del perfil */
+.profile-dropdown .dropdown-toggle {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  transition: var(--transition);
+}
+
+.profile-dropdown .dropdown-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.profile-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  object-fit: cover;
+}
+
+.profile-dropdown .dropdown-menu {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.98);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  padding: 0.5rem;
+  overflow: hidden;
+}
+
+.profile-dropdown .dropdown-item {
+  padding: 0.75rem 1.5rem;
+  transition: var(--transition);
+  border-radius: 0.5rem;
+  margin: 0.25rem;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.profile-dropdown .dropdown-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(77, 171, 247, 0.1);
+  border-radius: 0.5rem;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.profile-dropdown .dropdown-item:hover::before {
+  transform: translateX(0);
+}
+
+.profile-dropdown .dropdown-item.danger::before {
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.profile-dropdown .dropdown-item i {
+  transition: transform 0.3s ease;
+}
+
+.profile-dropdown .dropdown-item:hover i {
+  transform: translateX(3px);
+}
+
+/* Brand Text */
+.navbar-brand-text {
+  padding: 0.35rem 0;
+  transition: var(--transition);
+}
+
+.navbar-brand-text:hover {
+  transform: translateY(-1px);
+}
+
+.brand-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 1px;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    background: rgba(255, 255, 255, 0.98);
+    margin: 1rem -1rem -0.75rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .nav-link-custom {
+    color: var(--primary-color) !important;
+  }
+
+  .nav-link-custom:hover,
+  .nav-link-custom.active {
+    color: var(--accent-color) !important;
+    background: rgba(77, 171, 247, 0.1);
+  }
+}

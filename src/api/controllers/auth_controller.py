@@ -3,6 +3,7 @@ from http import HTTPStatus
 import logging
 from ..services.auth_service import AuthService
 from ..services.association_service import AssociationService
+from ..models import db
 
 class AuthController:
     @staticmethod
@@ -18,7 +19,8 @@ class AuthController:
                 password=data['password'],
                 name=data.get('name'),
                 lastname=data.get('lastname'),
-                phone=data.get('phone')
+                phone=data.get('phone'),
+                profile_image=data.get('profile_image')
             )
             
             # Generate token and get user data with correct role
@@ -46,16 +48,20 @@ class AuthController:
             return jsonify({'message': 'Este CIF ya está registrado por otra asociación. Verifica que sea correcto o contacta con soporte.'}), HTTPStatus.CONFLICT
         
         try:
-            # Create user first
+            # Create user first (without committing to database)
             user = AuthService.create_user(
                 email=data['email'],
                 password=data['password'],
                 name=data.get('name'),
                 lastname=data.get('lastname'),
-                phone=data.get('phone')
+                phone=data.get('phone'),
+                commit=False
             )
             
-            # Then create association
+            # Flush to get the user ID but don't commit yet
+            db.session.flush()
+            
+            # Then create association (without committing to database)
             association = AssociationService.create_association(
                 name=data['association_name'],
                 cif=data['cif'],
@@ -65,8 +71,15 @@ class AuthController:
                 image_url=data.get('image_url'),
                 website_url=data.get('website_url'),
                 social_media_url=data.get('social_media_url'),
-                contact_phone=data.get('contact_phone')
+                contact_phone=data.get('contact_phone'),
+                facebook_url=data.get('facebook_url'),
+                instagram_url=data.get('instagram_url'),
+                twitter_url=data.get('twitter_url'),
+                commit=False
             )
+            
+            # If both operations succeed, commit everything
+            db.session.commit()
             
             # Generate token and get user data with correct role
             auth_data = AuthService.generate_token(user)
@@ -81,7 +94,10 @@ class AuthController:
                 'image_url': association.image_url,
                 'website_url': association.website_url,
                 'social_media_url': association.social_media_url,
-                'contact_phone': association.contact_phone
+                'contact_phone': association.contact_phone,
+                'facebook_url': association.facebook_url,
+                'instagram_url': association.instagram_url,
+                'twitter_url': association.twitter_url
             }
             
             return jsonify({
@@ -93,6 +109,8 @@ class AuthController:
             }), HTTPStatus.CREATED
             
         except Exception as e:
+            # If any error occurs, rollback the transaction
+            db.session.rollback()
             logging.error(f"Association registration error: {str(e)}")
             return jsonify({'message': 'No pudimos registrar tu asociación en este momento. Por favor, verifica todos los datos e inténtalo de nuevo.'}), HTTPStatus.BAD_REQUEST
     

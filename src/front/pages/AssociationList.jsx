@@ -73,7 +73,7 @@ export const AssociationList = () => {
             </div>
 
             {/* Stats */}
-            <div className="row mb-4">
+            {/* <div className="row mb-4">
                 <div className="col-md-3">
                     <div className="card bg-primary text-white">
                         <div className="card-body text-center">
@@ -82,7 +82,7 @@ export const AssociationList = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
 
             {/* Lista de asociaciones */}
             {associations.length === 0 ? (

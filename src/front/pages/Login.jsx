@@ -80,9 +80,15 @@ const Login = () => {
                 }
             });
 
-            // Redirigir a la página de eventos después de 1 segundo
+            // Redirigir según el rol del usuario
             setTimeout(() => {
-                navigate('/event/list');
+                if (response.user.role === 'association') {
+                    // Si es una asociación, redirigir a sus eventos
+                    navigate(`/event/list/${response.user.association.id}`);
+                } else {
+                    // Si es un voluntario, redirigir a la lista general de eventos
+                    navigate('/event/list');
+                }
             }, 1000);
         } catch (error) {
             console.error('Error en login:', error);

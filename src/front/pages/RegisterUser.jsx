@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import useGlobalReducer from '../hooks/useGlobalReducer';
+import ProfileImageUploader from '../components/ProfileImageUploader';
 
 const RegisterUser = () => {
     const navigate = useNavigate();
@@ -20,6 +21,7 @@ const RegisterUser = () => {
         phone: '',
         password: '',
         confirmPassword: '',
+        profile_image: '',
     });
 
     // Estados para validación y UI
@@ -40,6 +42,24 @@ const RegisterUser = () => {
                 [name]: ''
             }));
         }
+    };
+
+    // Manejar subida exitosa de imagen
+    const handleImageUploadSuccess = (imageUrl, uploadInfo) => {
+        console.log('Imagen de perfil subida exitosamente:', imageUrl);
+        setFormData(prev => ({
+            ...prev,
+            profile_image: imageUrl
+        }));
+    };
+
+    // Manejar error en subida de imagen
+    const handleImageUploadError = (error) => {
+        console.error('Error al subir imagen de perfil:', error);
+        dispatch({
+            type: 'SET_MESSAGE',
+            payload: { text: 'Error al subir la imagen de perfil. Puedes continuar sin imagen.', type: 'warning' }
+        });
     };
 
     // Validaciones del formulario
@@ -168,6 +188,20 @@ const RegisterUser = () => {
                                     {store.message.text}
                                 </div>
                             )}
+
+                            {/* Imagen de Perfil */}
+                            <div className="text-center mb-4">
+                                <div className="d-flex justify-content-center mb-2">
+                                    <ProfileImageUploader
+                                        onUploadSuccess={handleImageUploadSuccess}
+                                        onUploadError={handleImageUploadError}
+                                        currentImageUrl={formData.profile_image}
+                                        size="large"
+                                        disabled={store.isLoading}
+                                    />
+                                </div>
+                                <small className="text-muted">Imagen de perfil (opcional)</small>
+                            </div>
 
                             <form onSubmit={handleSubmit}>
                                 <div className="row">

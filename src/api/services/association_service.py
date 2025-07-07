@@ -12,7 +12,11 @@ class AssociationService:
         image_url: Optional[str] = None,
         website_url: Optional[str] = None,
         social_media_url: Optional[str] = None,
-        contact_phone: Optional[str] = None
+        contact_phone: Optional[str] = None,
+        facebook_url: Optional[str] = None,
+        instagram_url: Optional[str] = None,
+        twitter_url: Optional[str] = None,
+        commit: bool = True
     ) -> Association:
         association = Association(
             name=name,
@@ -23,10 +27,14 @@ class AssociationService:
             image_url=image_url,
             website_url=website_url,
             social_media_url=social_media_url,
-            contact_phone=contact_phone
+            contact_phone=contact_phone,
+            facebook_url=facebook_url,
+            instagram_url=instagram_url,
+            twitter_url=twitter_url
         )
         db.session.add(association)
-        db.session.commit()
+        if commit:
+            db.session.commit()
         return association
     
     @staticmethod

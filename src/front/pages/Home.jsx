@@ -1,94 +1,136 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import saeLogo from '../assets/img/SAE-LOGO.png';
+import '../styles/home.css';
 
 const Home = () => {
   return (
-    <div className="container py-3 py-md-5">
+    <div className="min-vh-100">
       {/* Hero Section */}
-      <div className="row justify-content-center">
-        <div className="col-12 col-md-10 col-lg-8 text-center">
-          <h1 className="display-5 display-md-4 fw-bold mb-4">Bienvenido a SAE Associations</h1>
-          <p className="lead mb-4 mb-md-5">
-            Conectamos voluntarios con asociaciones para crear un impacto positivo en la comunidad.
-            <span className="d-none d-md-inline"> Únete a nuestra plataforma y forma parte del cambio.</span>
-          </p>
-
-          <div className="d-flex justify-content-center gap-3 flex-wrap flex-sm-nowrap">
-            <Link to="/register/user" className="btn btn-primary btn-lg w-100 w-sm-auto">
-              <i className="bi bi-person-plus me-2"></i>
-              <span className="d-none d-sm-inline">Quiero ser </span>Voluntario
-            </Link>
-            <Link to="/register/association" className="btn btn-outline-primary btn-lg w-100 w-sm-auto">
-              <i className="bi bi-building me-2"></i>
-              <span className="d-none d-sm-inline">Soy una </span>Asociación
-            </Link>
-            {/* <Link to="/associations" className="btn btn-success btn-lg w-100 w-sm-auto">
-              <i className="bi bi-building-check me-2"></i>
-              <span className="d-none d-sm-inline">Ver </span>Asociaciones
-            </Link> */}
-          </div>
-        </div>
-      </div>
-
-      {/* Sobre Nosotros Section */}
-      <div className="row mt-4 mt-md-5 mb-4 mb-md-5">
-        <div className="col-12 text-center">
-          <h2 className="h2 h1-md mb-3 mb-md-4">Sobre Nosotros</h2>
+      <div className="py-5 bg-gradient hero-section">
+        <div className="container">
           <div className="row justify-content-center">
-            <div className="col-12 col-md-10 col-lg-8">
-              <p className="lead text-muted">
-                SAE Associations es una plataforma innovadora que facilita la conexión entre
-                voluntarios comprometidos y asociaciones que necesitan apoyo.
-                <span className="d-none d-md-inline">
-                  Creemos en el poder de la colaboración para generar un impacto social positivo y duradero
-                  en nuestras comunidades.
-                </span>
+            <div className="col-12 col-md-10 col-lg-8 text-center">
+              {/* Logo */}
+              <div className="mb-4 d-flex justify-content-center">
+                <div className="logo-container mb-3">
+                  <div className="logo-wrapper">
+                    <img
+                      src={saeLogo}
+                      alt="SAE Logo"
+                      className="logo-image"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Título y descripción */}
+              <h1 className="display-4 fw-bold mb-3 text-dark fade-in">
+                Uniendo Corazones y Causas
+              </h1>
+              <p className="lead mb-4 text-secondary fade-in-delay">
+                Conectamos asociaciones con voluntarios apasionados. Juntos, creamos eventos significativos que transforman vidas y fortalecen nuestra comunidad.
               </p>
+
+              {/* Botones de acción */}
+              <div className="d-flex justify-content-center gap-4 flex-wrap fade-in-delay-2">
+                <Link
+                  to="/register/user"
+                  className="btn btn-outline-teal btn-lg"
+                >
+                  <i className="bi bi-heart-fill me-2"></i>
+                  Quiero ser Voluntario
+                </Link>
+
+                <Link
+                  to="/register/association"
+                  className="btn btn-outline-info btn-lg"
+                >
+                  <i className="bi bi-building me-2"></i>
+                  Somos una Asociación
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="row mt-4 mt-md-5 g-4">
-        <div className="col-12 col-sm-6 col-md-4">
-          <div className="card h-100 border-0 shadow-sm">
-            <div className="card-body text-center p-3 p-md-4">
-              <div className="mb-3">
-                <i className="bi bi-search text-primary" style={{ fontSize: '2rem' }}></i>
+      <div className="py-5 bg-white features-section">
+        <div className="container">
+          <div className="row g-4 justify-content-center">
+            {[
+              {
+                icon: 'calendar2-heart',
+                title: 'Encuentra tu Causa',
+                description: 'Explora eventos y asociaciones que se alineen con tus valores e intereses.',
+                colorClass: 'primary'
+              },
+              {
+                icon: 'people-fill',
+                title: 'Únete a la Comunidad',
+                description: 'Conecta con otros voluntarios y asociaciones que comparten tu pasión por ayudar.',
+                colorClass: 'success'
+              },
+              {
+                icon: 'hand-thumbs-up',
+                title: 'Crea Impacto Real',
+                description: 'Participa en eventos significativos y ve el cambio positivo que generas en la sociedad.',
+                colorClass: 'info'
+              }
+            ].map((feature, index) => (
+              <div key={index} className="col-12 col-md-4">
+                <div className="card h-100 border-0 shadow-hover feature-card">
+                  <div className="card-body text-center p-4">
+                    <div className={`icon-circle bg-${feature.colorClass} bg-opacity-10 mb-4`}>
+                      <i className={`bi bi-${feature.icon} text-${feature.colorClass} fs-2`}></i>
+                    </div>
+                    <h3 className="h4 mb-3 fw-bold">{feature.title}</h3>
+                    <p className="text-muted mb-0 px-lg-3">{feature.description}</p>
+                  </div>
+                </div>
               </div>
-              <h3 className="card-title h5 h4-md">Encuentra tu causa</h3>
-              <p className="card-text text-muted small">
-                Descubre oportunidades de voluntariado que se alineen con tus intereses y habilidades.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
+      </div>
 
-        <div className="col-12 col-sm-6 col-md-4">
-          <div className="card h-100 border-0 shadow-sm">
-            <div className="card-body text-center p-3 p-md-4">
-              <div className="mb-3">
-                <i className="bi bi-people text-primary" style={{ fontSize: '2rem' }}></i>
-              </div>
-              <h3 className="card-title h5 h4-md">Conecta con organizaciones</h3>
-              <p className="card-text text-muted small">
-                Las asociaciones pueden encontrar voluntarios comprometidos con su misión.
+      {/* Call to Action - Eventos */}
+      <div className="py-5 bg-light events-cta">
+        <div className="container">
+          <div className="row align-items-center justify-content-center text-center text-lg-start">
+            <div className="col-lg-5 mb-4 mb-lg-0">
+              <h2 className="display-6 fw-bold mb-3">
+                Descubre Eventos Inspiradores
+              </h2>
+              <p className="lead text-muted mb-4">
+                Explora una variedad de eventos sociales y encuentra oportunidades para marcar la diferencia en tu comunidad.
               </p>
+              <Link
+                to="/event/list"
+                className="btn btn-primary btn-lg px-4"
+              >
+                <i className="bi bi-calendar-event me-2"></i>
+                Ver Eventos
+              </Link>
             </div>
-          </div>
-        </div>
-
-        <div className="col-12 col-sm-6 col-md-4 mx-auto mx-md-0">
-          <div className="card h-100 border-0 shadow-sm">
-            <div className="card-body text-center p-3 p-md-4">
-              <div className="mb-3">
-                <i className="bi bi-heart text-primary" style={{ fontSize: '2rem' }}></i>
+            <div className="col-lg-5 offset-lg-1">
+              <div className="p-4 rounded-4 bg-white shadow-sm text-center">
+                <div className="events-illustration mb-4">
+                  <i className="bi bi-search-heart text-primary display-1"></i>
+                </div>
+                <h4 className="fw-bold mb-3">¿Buscas voluntarios?</h4>
+                <p className="text-muted mb-4">
+                  Crea eventos y conecta con personas comprometidas que quieren apoyar tu causa.
+                </p>
+                <Link
+                  to="/event/creation"
+                  className="btn btn-outline-primary btn-lg px-4"
+                >
+                  <i className="bi bi-calendar-plus me-2"></i>
+                  Crear Evento
+                </Link>
               </div>
-              <h3 className="card-title h5 h4-md">Crea impacto</h3>
-              <p className="card-text text-muted small">
-                Juntos podemos generar un cambio positivo y duradero en nuestra comunidad.
-              </p>
             </div>
           </div>
         </div>

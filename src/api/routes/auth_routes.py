@@ -3,7 +3,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from ..controllers.auth_controller import AuthController
 from ..schemas.user_schema import check_user_data
 from ..schemas.association_schema import check_association_registration
-from ..models import User
+from ..models import User, db
+from ..services.auth_service import AuthService
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -84,7 +85,6 @@ def get_profile():
 @jwt_required(refresh=True)
 def refresh():
     """Endpoint para refrescar el access token"""
-    from flask_jwt_extended import create_access_token
     current_user_id = get_jwt_identity()
     
     # Obtener usuario para regenerar claims
@@ -93,10 +93,44 @@ def refresh():
         return jsonify({'message': 'Usuario no encontrado'}), 404
     
     # Regenerar token con datos actualizados
-    from ..services.auth_service import AuthService
     auth_data = AuthService.generate_token(user)
     
     return jsonify({
         'access_token': auth_data['access_token'],
         'message': 'Token renovado exitosamente'
     }), 200
+
+
+@auth_bp.route('/update-profile-image', methods=['PATCH'])
+@jwt_required()
+def update_profile_image():
+    """Actualizar imagen de perfil del usuario"""
+    user_id = get_jwt_identity()
+    data = request.get_json()
+    
+    if not data or 'profile_image' not in data:
+        return jsonify({"error": "URL de imagen requerida"}), 400
+    
+    image_url = data['profile_image']
+    
+    # Validar que la URL sea de Cloudinary (opcional)
+    if image_url and not image_url.startswith('https://res.cloudinary.com/'):
+        return jsonify({"error": "Solo se permiten imágenes de Cloudinary"}), 400
+    
+    try:
+        user = User.query.get(user_id)
+        
+        if not user:
+            return jsonify({"error": "Usuario no encontrado"}), 404
+        
+        user.profile_image = image_url
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Imagen de perfil actualizada correctamente",
+            "profile_image": image_url
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Error interno del servidor"}), 500

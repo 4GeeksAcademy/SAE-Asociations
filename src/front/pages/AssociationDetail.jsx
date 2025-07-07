@@ -191,25 +191,50 @@ export const AssociationDetail = () => {
                             </div>
                         )}
 
-                        {association.social_media_url && (
-                            <div className="col-md-6 mt-3">
+                        {/* Redes Sociales */}
+                        {(association.facebook_url || association.instagram_url || association.twitter_url) && (
+                            <div className="col-12 mt-3">
                                 <div className="card h-100">
                                     <div className="card-body">
                                         <h5 className="card-title">
                                             <i className="bi bi-share text-warning me-2"></i>
-                                            Redes sociales
+                                            Redes Sociales
                                         </h5>
-                                        <p className="card-text">
-                                            <a
-                                                href={association.social_media_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-decoration-none"
-                                            >
-                                                Seguir en redes sociales
-                                                <i className="bi bi-box-arrow-up-right ms-1"></i>
-                                            </a>
-                                        </p>
+                                        <div className="d-flex gap-3 flex-wrap">
+                                            {association.facebook_url && (
+                                                <a
+                                                    href={association.facebook_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="btn btn-outline-primary btn-sm"
+                                                >
+                                                    <i className="bi bi-facebook me-1"></i>
+                                                    Facebook
+                                                </a>
+                                            )}
+                                            {association.instagram_url && (
+                                                <a
+                                                    href={association.instagram_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="btn btn-outline-danger btn-sm"
+                                                >
+                                                    <i className="bi bi-instagram me-1"></i>
+                                                    Instagram
+                                                </a>
+                                            )}
+                                            {association.twitter_url && (
+                                                <a
+                                                    href={association.twitter_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="btn btn-outline-info btn-sm"
+                                                >
+                                                    <i className="bi bi-twitter-x me-1"></i>
+                                                    Twitter/X
+                                                </a>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -250,182 +275,203 @@ export const AssociationDetail = () => {
                                     >
                                         Ver eventos
                                     </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Estadísticas de donaciones */}
-            {statistics && (
-                <div className="row mb-5">
-                    <div className="col-12">
-                        <h3 className="mb-4">Estadísticas de donaciones</h3>
-                        <div className="row">
-                            <div className="col-md-4">
-                                <div className="card border-success h-100">
-                                    <div className="card-body text-center">
-                                        <i className="bi bi-currency-euro text-success mb-3" style={{ fontSize: '2.5rem' }}></i>
-                                        <h4 className="card-title text-success">
-                                            €{statistics.total_amount.toFixed(2)}
-                                        </h4>
-                                        <p className="card-text text-muted">Total recaudado</p>
+                {/* Estadísticas de donaciones */}
+                {statistics && (
+                    <div className="row mb-5">
+                        <div className="col-12">
+                            <h3 className="mb-4">Estadísticas de donaciones</h3>
+                            <div className="row">
+                                <div className="col-md-4">
+                                    <div className="card border-success h-100">
+                                        <div className="card-body text-center">
+                                            <i className="bi bi-currency-euro text-success mb-3" style={{ fontSize: '2.5rem' }}></i>
+                                            <h4 className="card-title text-success">
+                                                €{statistics.total_amount.toFixed(2)}
+                                            </h4>
+                                            <p className="card-text text-muted">Total recaudado</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="col-md-4">
-                                <div className="card border-primary h-100">
-                                    <div className="card-body text-center">
-                                        <i className="bi bi-people text-primary mb-3" style={{ fontSize: '2.5rem' }}></i>
-                                        <h4 className="card-title text-primary">
-                                            {statistics.total_count}
-                                        </h4>
-                                        <p className="card-text text-muted">Donaciones recibidas</p>
+                                <div className="col-md-4">
+                                    <div className="card border-primary h-100">
+                                        <div className="card-body text-center">
+                                            <i className="bi bi-people text-primary mb-3" style={{ fontSize: '2.5rem' }}></i>
+                                            <h4 className="card-title text-primary">
+                                                {statistics.total_count}
+                                            </h4>
+                                            <p className="card-text text-muted">Donaciones recibidas</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="col-md-4">
-                                <div className="card border-info h-100">
-                                    <div className="card-body text-center">
-                                        <i className="bi bi-graph-up text-info mb-3" style={{ fontSize: '2.5rem' }}></i>
-                                        <h4 className="card-title text-info">
-                                            €{statistics.average_amount.toFixed(2)}
-                                        </h4>
-                                        <p className="card-text text-muted">Donación promedio</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {statistics.total_count === 0 && (
-                            <div className="text-center mt-4">
-                                <p className="text-muted">
-                                    <i className="bi bi-info-circle me-2"></i>
-                                    Esta asociación aún no ha recibido donaciones. ¡Sé el primero en apoyarlos!
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {/* Lista de Donaciones */}
-            <div className="row mb-5">
-                <div className="col-12">
-                    <div className="d-flex justify-content-between align-items-center mb-4">
-                        <h3 className="mb-0">
-                            <i className="bi bi-heart-fill text-danger me-2"></i>
-                            Donaciones recibidas
-                        </h3>
-                        {donations.length > 0 && (
-                            <span className="badge bg-secondary">
-                                {donations.length} {donations.length === 1 ? 'donación' : 'donaciones'}
-                            </span>
-                        )}
-                    </div>
-
-                    {donations.length === 0 ? (
-                        <div className="text-center py-5">
-                            <i className="bi bi-heart text-muted" style={{ fontSize: '3rem' }}></i>
-                            <p className="text-muted mt-3">Esta asociación aún no ha recibido donaciones.</p>
-                            <p className="text-muted">¡Sé el primero en apoyarlos!</p>
-                        </div>
-                    ) : (
-                        <>
-                            <div className="row g-3">
-                                {(showAllDonations ? donations : donations.slice(0, 6)).map((donation) => (
-                                    <div key={donation.id} className="col-12 col-md-6 col-lg-4">
-                                        <div className="card h-100 border-0 shadow-sm">
-                                            <div className="card-body p-3">
-                                                <div className="d-flex justify-content-between align-items-start mb-2">
-                                                    <h5 className="card-title text-success mb-0">
-                                                        €{donation.amount}
-                                                    </h5>
-                                                    <span className={`badge ${donation.status === 'completed'
-                                                        ? 'bg-success'
-                                                        : donation.status === 'pending'
-                                                            ? 'bg-warning text-dark'
-                                                            : 'bg-danger'
-                                                        }`}>
-                                                        {donation.status === 'completed' ? 'Completada' :
-                                                            donation.status === 'pending' ? 'Pendiente' :
-                                                                'Fallida'}
-                                                    </span>
-                                                </div>
-
-                                                <p className="text-muted small mb-2">
-                                                    <i className="bi bi-person me-1"></i>
-                                                    {donation.donor?.first_name && donation.donor?.last_name
-                                                        ? `${donation.donor.first_name} ${donation.donor.last_name}`
-                                                        : donation.donor?.name || 'Donante anónimo'
-                                                    }
-                                                </p>
-
-                                                {donation.event && (
-                                                    <p className="text-muted small mb-2">
-                                                        <i className="bi bi-calendar-event me-1"></i>
-                                                        {donation.event.title}
+                                <div className="col-md-4">
+                                    <div className="card border-info h-100">
+                                        <div className="card-body text-center">
+                                            <i className="bi bi-clock-history text-info mb-3" style={{ fontSize: '2.5rem' }}></i>
+                                            {statistics.last_donation ? (
+                                                <>
+                                                    <h4 className="card-title text-info">
+                                                        €{statistics.last_donation.amount.toFixed(2)}
+                                                    </h4>
+                                                    <p className="card-text text-muted small">
+                                                        {statistics.last_donation.donor_name}
                                                     </p>
-                                                )}
-
-                                                {donation.description && (
-                                                    <p className="card-text small text-muted mb-2">
-                                                        <i className="bi bi-chat-quote me-1"></i>
-                                                        "{donation.description}"
-                                                    </p>
-                                                )}
-
-                                                <div className="d-flex justify-content-between align-items-center">
-                                                    <small className="text-muted">
-                                                        <i className="bi bi-calendar3 me-1"></i>
-                                                        {new Date(donation.created_at).toLocaleDateString('es-ES', {
+                                                    <p className="card-text text-muted small">
+                                                        {new Date(statistics.last_donation.date).toLocaleDateString('es-ES', {
                                                             year: 'numeric',
                                                             month: 'short',
-                                                            day: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit'
+                                                            day: 'numeric'
                                                         })}
-                                                    </small>
+                                                    </p>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <h4 className="card-title text-info">
+                                                        -
+                                                    </h4>
+                                                    <p className="card-text text-muted">Sin donaciones</p>
+                                                </>
+                                            )}
+                                            <p className="card-text text-muted font-weight-bold">Última donación</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {statistics.total_count === 0 && (
+                                <div className="text-center mt-4">
+                                    <p className="text-muted">
+                                        <i className="bi bi-info-circle me-2"></i>
+                                        Esta asociación aún no ha recibido donaciones. ¡Sé el primero en apoyarlos!
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
 
-                                                    {donation.stripe_session_id && (
-                                                        <small className="text-muted">
-                                                            <i className="bi bi-credit-card me-1"></i>
-                                                            Stripe
-                                                        </small>
+                {/* Lista de Donaciones */}
+                <div className="row mb-5">
+                    <div className="col-12">
+                        <div className="d-flex justify-content-between align-items-center mb-4">
+                            <h3 className="mb-0">
+                                <i className="bi bi-heart-fill text-danger me-2"></i>
+                                Donaciones recibidas
+                            </h3>
+                            {donations.length > 0 && (
+                                <span className="badge bg-secondary">
+                                    {donations.length} {donations.length === 1 ? 'donación' : 'donaciones'}
+                                </span>
+                            )}
+                        </div>
+
+                        {donations.length === 0 ? (
+                            <div className="text-center py-5">
+                                <i className="bi bi-heart text-muted" style={{ fontSize: '3rem' }}></i>
+                                <p className="text-muted mt-3">Esta asociación aún no ha recibido donaciones.</p>
+                                <p className="text-muted">¡Sé el primero en apoyarlos!</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="row g-3">
+                                    {(showAllDonations ? donations : donations.slice(0, 6)).map((donation) => (
+                                        <div key={donation.id} className="col-12 col-md-6 col-lg-4">
+                                            <div className="card h-100 border-0 shadow-sm">
+                                                <div className="card-body p-3">
+                                                    <div className="d-flex justify-content-between align-items-start mb-2">
+                                                        <h5 className="card-title text-success mb-0">
+                                                            €{donation.amount}
+                                                        </h5>
+                                                        <span className={`badge ${donation.status === 'completed'
+                                                            ? 'bg-success'
+                                                            : donation.status === 'pending'
+                                                                ? 'bg-warning text-dark'
+                                                                : 'bg-danger'
+                                                            }`}>
+                                                            {donation.status === 'completed' ? 'Completada' :
+                                                                donation.status === 'pending' ? 'Pendiente' :
+                                                                    'Fallida'}
+                                                        </span>
+                                                    </div>
+
+                                                    <p className="text-muted small mb-2">
+                                                        <i className="bi bi-person me-1"></i>
+                                                        {donation.donor?.first_name && donation.donor?.last_name
+                                                            ? `${donation.donor.first_name} ${donation.donor.last_name}`
+                                                            : donation.donor?.name || 'Donante anónimo'
+                                                        }
+                                                    </p>
+
+                                                    {donation.event && (
+                                                        <p className="text-muted small mb-2">
+                                                            <i className="bi bi-calendar-event me-1"></i>
+                                                            {donation.event.title}
+                                                        </p>
                                                     )}
+
+                                                    {donation.description && (
+                                                        <p className="card-text small text-muted mb-2">
+                                                            <i className="bi bi-chat-quote me-1"></i>
+                                                            "{donation.description}"
+                                                        </p>
+                                                    )}
+
+                                                    <div className="d-flex justify-content-between align-items-center">
+                                                        <small className="text-muted">
+                                                            <i className="bi bi-calendar3 me-1"></i>
+                                                            {new Date(donation.created_at).toLocaleDateString('es-ES', {
+                                                                year: 'numeric',
+                                                                month: 'short',
+                                                                day: 'numeric',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit'
+                                                            })}
+                                                        </small>
+
+                                                        {donation.stripe_session_id && (
+                                                            <small className="text-muted">
+                                                                <i className="bi bi-credit-card me-1"></i>
+                                                                Stripe
+                                                            </small>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {donations.length > 6 && (
-                                <div className="text-center mt-4">
-                                    <button
-                                        className="btn btn-outline-primary"
-                                        onClick={() => setShowAllDonations(!showAllDonations)}
-                                    >
-                                        {showAllDonations ? (
-                                            <>
-                                                <i className="bi bi-chevron-up me-2"></i>
-                                                Mostrar menos
-                                            </>
-                                        ) : (
-                                            <>
-                                                <i className="bi bi-chevron-down me-2"></i>
-                                                Ver todas las donaciones ({donations.length - 6} más)
-                                            </>
-                                        )}
-                                    </button>
+                                    ))}
                                 </div>
-                            )}
-                        </>
-                    )}
+
+                                {donations.length > 6 && (
+                                    <div className="text-center mt-4">
+                                        <button
+                                            className="btn btn-outline-primary"
+                                            onClick={() => setShowAllDonations(!showAllDonations)}
+                                        >
+                                            {showAllDonations ? (
+                                                <>
+                                                    <i className="bi bi-chevron-up me-2"></i>
+                                                    Mostrar menos
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <i className="bi bi-chevron-down me-2"></i>
+                                                    Ver todas las donaciones ({donations.length - 6} más)
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
+
+
             </div>
-
-
-        </div>
         </div >
     );
 }; 

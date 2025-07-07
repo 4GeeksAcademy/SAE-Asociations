@@ -1,38 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
+import saeLogo from '../assets/img/SAE-LOGO.png';
+import '../styles/navbar.css';
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkAuthStatus = () => {
       const authenticated = authService.isAuthenticated();
       const currentUser = authService.getCurrentUser();
-
       setIsAuthenticated(authenticated);
       setUser(currentUser);
     };
 
-    // Check initial auth status
     checkAuthStatus();
-
-    // Listen for storage changes (when user logs in/out in another tab)
-    const handleStorageChange = () => {
-      checkAuthStatus();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    // Also check on navigation changes
-    checkAuthStatus();
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    window.addEventListener('storage', checkAuthStatus);
+    return () => window.removeEventListener('storage', checkAuthStatus);
   }, [location]);
 
   const handleLogout = () => {
@@ -42,133 +31,119 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const closeMenu = () => setIsMenuOpen(false);
+
+  useEffect(() => {
+    closeMenu();
+  }, [location.pathname]);
+
   const getUserDisplayName = () => {
     if (!user) return '';
-
-    // Si es una asociación, mostrar el nombre de la asociación
-    if (user.association) {
-      return user.association.name;
-    }
-
-    // Si es un usuario normal, mostrar nombre + apellido o email
-    if (user.name && user.lastname) {
-      return `${user.name} ${user.lastname}`;
-    } else if (user.name) {
-      return user.name;
-    } else {
-      return user.email;
-    }
+    if (user.association) return user.association.name;
+    if (user.name && user.lastname) return `${user.name} ${user.lastname}`;
+    if (user.name) return user.name;
+    return user.email;
   };
 
   const getUserAvatar = () => {
-    // Por ahora retornamos null, más adelante se puede implementar con imagen
-    if (user?.profile_image) {
-      return user.profile_image;
-    }
+    if (user?.association?.image_url) return user.association.image_url;
+    if (user?.profile_image) return user.profile_image;
     return null;
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav className="navbar navbar-expand-lg navbar-dark fixed-top navbar-main">
       <div className="container">
-        <Link className="navbar-brand fw-bold" to="/">
-          <i className="bi bi-heart-fill text-danger me-2"></i>
-          SAE Associations
-        </Link>
-
         <button
-          className="navbar-toggler"
+          className="navbar-toggler navbar-toggler-custom"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
+          onClick={toggleMenu}
+          aria-controls="navbarNav"
+          aria-expanded={isMenuOpen}
+          aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link
-                className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}
-                to="/"
-              >
-                Inicio
+        <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''} justify-content-center`} id="navbarNav">
+          <ul className="navbar-nav align-items-center gap-lg-5">
+            <li className="nav-item py-2 py-lg-0 me-lg-4">
+              <Link className="nav-link p-0 d-flex justify-content-center" to="/" onClick={closeMenu}>
+                <div className="navbar-logo">
+                  <img src={saeLogo} alt="SAE Logo" />
+                </div>
               </Link>
             </li>
-            <li className="nav-item">
+
+            <li className="nav-item py-3 py-lg-0">
               <Link
-                className={`nav-link ${location.pathname === '/event/list' ? 'active' : ''}`}
+                className={`nav-link-custom ${location.pathname === '/event/list' ? 'active' : ''}`}
                 to="/event/list"
+                onClick={closeMenu}
               >
+                <i className="bi bi-calendar-event me-2"></i>
                 Eventos
               </Link>
             </li>
-            <li className="nav-item">
+
+            <li className="nav-item py-3 py-lg-0">
               <Link
-                className={`nav-link ${location.pathname === '/associations' ? 'active' : ''}`}
+                className={`nav-link-custom ${location.pathname === '/associations' ? 'active' : ''}`}
                 to="/associations"
+                onClick={closeMenu}
               >
+                <i className="bi bi-building me-2"></i>
                 Asociaciones
               </Link>
             </li>
 
-
-            <li className="nav-item ms-2">
-              {!isAuthenticated ? (
-                // No autenticado - mostrar botón de login
-                <Link className="btn btn-outline-light" to="/login">
+            {!isAuthenticated ? (
+              <li className="nav-item py-3 py-lg-0">
+                <Link
+                  className="nav-link-custom"
+                  to="/login"
+                  onClick={closeMenu}
+                >
+                  <i className="bi bi-box-arrow-in-right me-2"></i>
                   Iniciar Sesión
                 </Link>
-              ) : (
-                // Autenticado - mostrar dropdown de usuario
-                <div className="dropdown">
-                  <button
-                    className="btn btn-outline-light dropdown-toggle d-flex align-items-center"
-                    type="button"
-                    id="userDropdown"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    {getUserAvatar() ? (
-                      <img
-                        src={getUserAvatar()}
-                        alt="Avatar"
-                        className="rounded-circle me-2"
-                        width="24"
-                        height="24"
-                      />
-                    ) : (
-                      <div className="bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center" style={{ width: '24px', height: '24px' }}>
-                        <i className="bi bi-person-fill text-white" style={{ fontSize: '14px' }}></i>
-                      </div>
-                    )}
-                    <span className="d-none d-md-inline text-truncate" style={{ maxWidth: '120px' }}>
-                      {getUserDisplayName()}
-                    </span>
-                  </button>
-                  <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li>
-                      <h6 className="dropdown-header d-md-none">
-                        {getUserDisplayName()}
-                      </h6>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/account/settings">
-                        <i className="bi bi-gear me-2"></i>
-                        Ajustes de cuenta
-                      </Link>
-                    </li>
-                    <li><hr className="dropdown-divider" /></li>
-                    <li>
-                      <button className="dropdown-item text-danger" onClick={handleLogout}>
-                        <i className="bi bi-box-arrow-right me-2"></i>
-                        Cerrar sesión
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </li>
+              </li>
+            ) : (
+              <li className="nav-item dropdown profile-dropdown">
+                <button
+                  className="dropdown-toggle d-flex align-items-center gap-2"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  {getUserAvatar() ? (
+                    <img
+                      src={getUserAvatar()}
+                      alt="Profile"
+                      className="profile-avatar"
+                    />
+                  ) : (
+                    <i className="bi bi-person-circle fs-4 text-white"></i>
+                  )}
+                  <span className="d-none d-lg-inline text-white">{getUserDisplayName()}</span>
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end mt-2">
+                  <li>
+                    <Link className="dropdown-item" to="/account/settings" onClick={closeMenu}>
+                      <i className="bi bi-gear me-2"></i>
+                      Configuración
+                    </Link>
+                  </li>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li>
+                    <button className="dropdown-item danger" onClick={handleLogout}>
+                      <i className="bi bi-box-arrow-right me-2"></i>
+                      Cerrar Sesión
+                    </button>
+                  </li>
+                </ul>
+              </li>
+            )}
           </ul>
         </div>
       </div>

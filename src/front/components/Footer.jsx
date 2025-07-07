@@ -1,24 +1,44 @@
-import React from 'react';
+import React from "react";
+import { Link } from "react-router-dom";
+import '../styles/footer.css';
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
-    <footer className="bg-dark text-white py-4 mt-auto">
+    <footer className="footer-main">
       <div className="container">
-        <div className="row">
-          <div className="col-md-6">
-            <h5>SAE Associations</h5>
-            <p className="mb-0">Conectando voluntarios con asociaciones para crear impacto social.</p>
+        <div className="row align-items-center">
+          <div className="col-md-4 text-center text-md-start mb-3 mb-md-0">
+            <h5 className="footer-title">SAE Asociaciones</h5>
+            <p className="footer-subtitle">
+              Uniendo corazones y causas
+            </p>
           </div>
-          <div className="col-md-6 text-md-end mt-3 mt-md-0">
-            <div className="d-flex flex-column">
-              <span>&copy; {currentYear} SAE Associations. Todos los derechos reservados.</span>
-              <div className="mt-2">
-                <a href="#" className="text-white me-3">Términos</a>
-                <a href="#" className="text-white me-3">Privacidad</a>
-                <a href="#" className="text-white">Contacto</a>
-              </div>
+
+          <div className="col-md-4 text-center mb-3 mb-md-0">
+            <div className="d-flex justify-content-center gap-3 social-links">
+              <a href="#" aria-label="Facebook">
+                <i className="bi bi-facebook fs-5"></i>
+              </a>
+              <a href="#" aria-label="Twitter">
+                <i className="bi bi-twitter fs-5"></i>
+              </a>
+              <a href="#" aria-label="Instagram">
+                <i className="bi bi-instagram fs-5"></i>
+              </a>
+            </div>
+          </div>
+
+          <div className="col-md-4 text-center text-md-end">
+            <div className="d-flex justify-content-center justify-content-md-end gap-3">
+              <Link to="/privacy" className="footer-nav-link">
+                Privacidad
+              </Link>
+              <Link to="/terms" className="footer-nav-link">
+                Términos
+              </Link>
+              <Link to="/contact" className="footer-nav-link">
+                Contacto
+              </Link>
             </div>
           </div>
         </div>

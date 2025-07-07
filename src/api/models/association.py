@@ -6,14 +6,19 @@ class Association(db.Model):
     __tablename__ = 'associations'
     
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(50), nullable=False)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)  # Increased from 50 to 200
     cif: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
     description: Mapped[str] = mapped_column(String(2000), nullable=False)
     image_url: Mapped[str] = mapped_column(String(20000), nullable=True)
     website_url: Mapped[str] = mapped_column(String(200), nullable=True)
+    # New social media fields
+    facebook_url: Mapped[str] = mapped_column(String(200), nullable=True)
+    instagram_url: Mapped[str] = mapped_column(String(200), nullable=True)
+    twitter_url: Mapped[str] = mapped_column(String(200), nullable=True)
+    # Keep existing social_media_url for backward compatibility
     social_media_url: Mapped[str] = mapped_column(String(200), nullable=True)
-    contact_phone: Mapped[str] = mapped_column(String(15), nullable=True)
-    contact_email: Mapped[str] = mapped_column(String(50), nullable=False)
+    contact_phone: Mapped[str] = mapped_column(String(20), nullable=True)  # Increased from 15 to 20
+    contact_email: Mapped[str] = mapped_column(String(120), nullable=False)  # Increased from 50 to 120
     
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
     
@@ -22,7 +27,8 @@ class Association(db.Model):
 
     def __init__(self, name, cif, description, contact_email, user_id, 
                  image_url=None, website_url=None, social_media_url=None, 
-                 contact_phone=None):
+                 contact_phone=None, facebook_url=None, instagram_url=None, 
+                 twitter_url=None):
         self.name = name
         self.cif = cif
         self.description = description
@@ -32,6 +38,9 @@ class Association(db.Model):
         self.website_url = website_url
         self.social_media_url = social_media_url
         self.contact_phone = contact_phone
+        self.facebook_url = facebook_url
+        self.instagram_url = instagram_url
+        self.twitter_url = twitter_url
 
     def serialize(self):
         return {
@@ -42,6 +51,9 @@ class Association(db.Model):
             "image_url": self.image_url,
             "website_url": self.website_url,
             "social_media_url": self.social_media_url,
+            "facebook_url": self.facebook_url,
+            "instagram_url": self.instagram_url,
+            "twitter_url": self.twitter_url,
             "contact_phone": self.contact_phone,
             "contact_email": self.contact_email,
             "user_id": self.user_id
