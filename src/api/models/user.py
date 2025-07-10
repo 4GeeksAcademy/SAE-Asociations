@@ -1,5 +1,7 @@
-from sqlalchemy import String, Boolean
+from sqlalchemy import String, Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 
 class User(db.Model):
@@ -13,12 +15,14 @@ class User(db.Model):
     phone: Mapped[str] = mapped_column(String(20), nullable=True)
     profile_image: Mapped[str] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
-    
     # Relationship with Association (one-to-one)
     association = relationship("Association", back_populates="user", uselist=False)
-    
     # Relationship with EventVolunteer (many-to-many through EventVolunteer)
     event_volunteers = relationship("EventVolunteer", back_populates="volunteer")
+    # Recovery
+    reset_token: Mapped[str] = mapped_column(String(256), unique=True, nullable=True, default=None)
+    reset_token_expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=None)
+
 
     def __init__(self, email, password, name=None, lastname=None, phone=None, profile_image=None):
         self.email = email
@@ -50,4 +54,10 @@ class User(db.Model):
             "phone": self.phone,
             "profile_image": self.profile_image,
             "is_active": self.is_active
-        } 
+        }
+    
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)

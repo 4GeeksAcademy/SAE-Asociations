@@ -1,6 +1,8 @@
-from sqlalchemy import String, ForeignKey
+from sqlalchemy import String, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from . import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 class Association(db.Model):
     __tablename__ = 'associations'
@@ -19,11 +21,11 @@ class Association(db.Model):
     social_media_url: Mapped[str] = mapped_column(String(200), nullable=True)
     contact_phone: Mapped[str] = mapped_column(String(20), nullable=True)  # Increased from 15 to 20
     contact_email: Mapped[str] = mapped_column(String(120), nullable=False)  # Increased from 50 to 120
-    
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
-    
     user = relationship("User", back_populates="association")
     events = relationship("Event", back_populates="association", cascade="all, delete-orphan")
+    reset_token: Mapped[str] = mapped_column(String(256), unique=True, nullable=True, default=None)
+    reset_token_expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=None)
 
     def __init__(self, name, cif, description, contact_email, user_id, 
                  image_url=None, website_url=None, social_media_url=None, 
@@ -57,4 +59,10 @@ class Association(db.Model):
             "contact_phone": self.contact_phone,
             "contact_email": self.contact_email,
             "user_id": self.user_id
-        } 
+        }
+    
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)

@@ -6,15 +6,15 @@ import ScrollToTop from '../components/ScrollToTop';
 
 const Layout = () => {
   return (
-    <div className="d-flex flex-column min-vh-100">
-      <Navbar />
-      <main className="flex-grow-1 d-flex flex-column" style={{ paddingTop: '76px' }}>
-        <Outlet />
-      </main>
-      <Footer />
-      <ScrollToTop />
-    </div>
-  );
-};
+      <div className="d-flex flex-column min-vh-100">
+            <Navbar />
+                  <main className="flex-grow-1 d-flex flex-column" style={{ paddingTop: '76px' }}>
+                          <Outlet />
+                                </main>
+                                      <Footer />
+                                            <ScrollToTop />
+                                                </div>
+                                                  );
+                                                  };
 
-export default Layout;
+                                                  export default Layout;

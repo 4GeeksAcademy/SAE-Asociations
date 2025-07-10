@@ -186,6 +186,12 @@ const Login = () => {
                                     )}
                                 </div>
 
+                                <div className="mb-3 text-end">
+                                    <Link to="/forgot-password" className="text-primary text-decoration-none">
+                                        ¿Olvidaste tu contraseña?
+                                    </Link>
+                                </div>
+
                                 <button
                                     type="submit"
                                     className="btn btn-primary w-100 py-2 fw-semibold"

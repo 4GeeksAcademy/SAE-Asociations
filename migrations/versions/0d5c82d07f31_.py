@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 87de51846dd3
+Revision ID: 0d5c82d07f31
 Revises: 
-Create Date: 2025-07-06 19:32:03.183159
+Create Date: 2025-07-09 16:52:36.363156
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '87de51846dd3'
+revision = '0d5c82d07f31'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,20 +25,24 @@ def upgrade():
     sa.Column('name', sa.String(length=100), nullable=True),
     sa.Column('lastname', sa.String(length=100), nullable=True),
     sa.Column('phone', sa.String(length=20), nullable=True),
+    sa.Column('profile_image', sa.String(length=500), nullable=True),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email')
     )
     op.create_table('associations',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=50), nullable=False),
+    sa.Column('name', sa.String(length=200), nullable=False),
     sa.Column('cif', sa.String(length=30), nullable=False),
     sa.Column('description', sa.String(length=2000), nullable=False),
     sa.Column('image_url', sa.String(length=20000), nullable=True),
     sa.Column('website_url', sa.String(length=200), nullable=True),
+    sa.Column('facebook_url', sa.String(length=200), nullable=True),
+    sa.Column('instagram_url', sa.String(length=200), nullable=True),
+    sa.Column('twitter_url', sa.String(length=200), nullable=True),
     sa.Column('social_media_url', sa.String(length=200), nullable=True),
-    sa.Column('contact_phone', sa.String(length=15), nullable=True),
-    sa.Column('contact_email', sa.String(length=50), nullable=False),
+    sa.Column('contact_phone', sa.String(length=20), nullable=True),
+    sa.Column('contact_email', sa.String(length=120), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
