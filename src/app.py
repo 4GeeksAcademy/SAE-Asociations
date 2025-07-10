@@ -1,6 +1,11 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+from api.commands import setup_commands
+from api.admin import setup_admin
+from api.routes import api
+from api.models import db
+from api.utils import APIException, generate_sitemap
 import os
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
@@ -13,11 +18,6 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-from api.utils import APIException, generate_sitemap
-from api.models import db
-from api.routes import api
-from api.admin import setup_admin
-from api.commands import setup_commands
 
 # from models import Person
 
@@ -41,8 +41,10 @@ else:
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # JWT configuration with Flask-JWT-Extended
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-for-development-only')
-app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', app.config['SECRET_KEY'])
+app.config['SECRET_KEY'] = os.getenv(
+    'SECRET_KEY', 'dev-secret-key-for-development-only')
+app.config['JWT_SECRET_KEY'] = os.getenv(
+    'JWT_SECRET_KEY', app.config['SECRET_KEY'])
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
 
@@ -56,6 +58,7 @@ db.init_app(app)
 setup_admin(app)
 # add the admin
 setup_commands(app)
+
 
 # Add all endpoints form the API with a "api" prefix
 app.register_blueprint(api, url_prefix='/api')
@@ -77,6 +80,8 @@ def sitemap():
     return send_from_directory(static_file_dir, 'index.html')
 
 # any other endpoint will try to serve it like a static file
+
+
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
     if not os.path.isfile(os.path.join(static_file_dir, path)):

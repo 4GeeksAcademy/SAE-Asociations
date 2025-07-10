@@ -6,6 +6,7 @@ from .volunteers_routes import volunteers_bp
 from .association_routes import association_bp
 from .donation_routes import donation_bp
 from .user_routes import user_bp
+from .password_reset_routes import password_reset_bp
 
 api = Blueprint('api', __name__)
 
@@ -19,3 +20,4 @@ api.register_blueprint(volunteers_bp, url_prefix='/volunteers')
 api.register_blueprint(association_bp, url_prefix='/associations')
 api.register_blueprint(donation_bp, url_prefix='/donations')
 api.register_blueprint(user_bp, url_prefix='/user')
+api.register_blueprint(password_reset_bp, url_prefix='')

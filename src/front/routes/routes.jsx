@@ -15,6 +15,9 @@ import Donations from '../pages/Donations';
 import DonationSuccess from '../pages/DonationSuccess';
 import DonationCancel from '../pages/DonationCancel';
 import { AccountSettings } from '../pages/AccountSettings';
+import { ForgotPassword } from '../components/ForgotPassword';
+import { ResetPassword } from '../components/ResetPassword';
+
 
 const AppRouter = () => {
   return (
@@ -26,6 +29,10 @@ const AppRouter = () => {
         <Route path="login" element={<Login />} />
         <Route path="register/user" element={<RegisterUser />} />
         <Route path="register/association" element={<RegisterAssociation />} />
+
+        {/* Password recovery */}
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password/:token" element={<ResetPassword />} />
 
         {/* Account Routes */}
         <Route path="account/settings" element={<AccountSettings />} />

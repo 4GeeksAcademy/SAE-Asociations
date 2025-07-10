@@ -7,9 +7,7 @@ SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
 SENDGRID_SENDER_EMAIL = os.getenv('SENDGRID_SENDER_EMAIL')
 
 def send_email(to_email, subject, body_html):
-    
-    #Envía un correo electrónico usando el servicio SendGrid.
-    
+        
     if not (SENDGRID_API_KEY and SENDGRID_SENDER_EMAIL):
         print("ADVERTENCIA: Configuración de SendGrid incompleta en email_service.py. No se enviará el correo.")
         return False

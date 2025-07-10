@@ -3,10 +3,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
 import os
 import secrets
-from api.models import db, User, Association 
-from api.services.email_service import send_email 
+from api.models import db, User, Association
+from api.services.email_service import send_email
 
 password_reset_bp = Blueprint('password_reset_bp', __name__)
+
 
 @password_reset_bp.route('/forgot-password', methods=['POST'])
 def forgot_password_request():
@@ -15,7 +16,7 @@ def forgot_password_request():
         return jsonify({"error": "Debe proporcionar un email"}), 400
 
     user = User.query.filter_by(email=email).first()
-    association = Association.query.filter_by(email=email).first()
+    association = Association.query.filter_by(contact_email=email).first()
 
     target_user = user if user else association
 
@@ -28,7 +29,16 @@ def forgot_password_request():
         db.session.commit()
 
         frontend_base_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
-        reset_link = f"{frontend_base_url}/reset-password/{reset_token}"
+        reset_link = f"{frontend_base_url}reset-password/{reset_token}"
+
+        # Determinar qué email usar para enviar el correo
+        if isinstance(target_user, User):
+            recipient_email = target_user.email
+        elif isinstance(target_user, Association):
+            recipient_email = target_user.contact_email
+        else:
+            print("ADVERTENCIA: Tipo de usuario desconocido para envío de correo.")
+            return jsonify({"message": "Si tu email está registrado, recibirás un enlace para restablecer tu contraseña."}), 200
 
         email_body = f"""
         <html>
@@ -43,14 +53,16 @@ def forgot_password_request():
             </body>
         </html>
         """
-        email_sent = send_email(to_email=target_user.email,
+        email_sent = send_email(to_email=recipient_email,
                                 subject="Restablecimiento de Contraseña para SAE-Asociations",
                                 body_html=email_body)
 
         if not email_sent:
-            print(f"ADVERTENCIA: No se pudo enviar el correo de recuperación a {target_user.email}. El token se generó y guardó.")
+            print(
+                f"ADVERTENCIA: No se pudo enviar el correo de recuperación a {target_user.email}. El token se generó y guardó.")
 
     return jsonify({"message": "Si tu email está registrado, recibirás un enlace para restablecer tu contraseña."}), 200
+
 
 @password_reset_bp.route('/reset-password/<token>', methods=['POST'])
 def reset_password_confirm(token):
@@ -63,7 +75,7 @@ def reset_password_confirm(token):
     if new_password != confirm_new_password:
         return jsonify({"error": "Las contraseñas no coinciden."}), 400
 
-    if len(new_password) < 6: # Ejemplo de validación
+    if len(new_password) < 6:  
         return jsonify({"error": "La contraseña debe tener al menos 6 caracteres."}), 400
 
     user = User.query.filter_by(reset_token=token).first()
