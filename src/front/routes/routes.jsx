@@ -16,6 +16,8 @@ import DonationSuccess from '../pages/DonationSuccess';
 import DonationCancel from '../pages/DonationCancel';
 import { AccountSettings } from '../pages/AccountSettings';
 import AuthValidator from '../components/AuthValidator';
+import { ForgotPassword } from '../components/ForgotPassword';
+import { ResetPassword } from '../components/ResetPassword';
 
 const ProtectedLayout = () => (
   <AuthValidator>
@@ -48,6 +50,15 @@ const routerConfig = {
         {
           path: "register/association",
           element: <RegisterAssociation />
+        },
+        // Password Recovery Routes
+        {
+          path: "forgot-password",
+          element: <ForgotPassword />
+        },
+        {
+          path: "reset-password/:token",
+          element: <ResetPassword />
         },
         {
           path: "account/settings",
