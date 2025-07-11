@@ -233,7 +233,7 @@ const ProfileImageUploader = ({
             </button>
 
             {/* Estilos CSS integrados */}
-            <style jsx>{`
+            <style>{`
                 .profile-avatar:hover .profile-overlay {
                     opacity: 1 !important;
                 }
@@ -248,13 +248,7 @@ const ProfileImageUploader = ({
                 }
                 
                 .profile-image-uploader {
-                    max-width: 200px;
-                }
-                
-                @media (max-width: 576px) {
-                    .profile-image-uploader {
-                        transform: scale(0.9);
-                    }
+                    user-select: none;
                 }
             `}</style>
         </div>

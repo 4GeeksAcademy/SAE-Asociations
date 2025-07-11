@@ -20,16 +20,13 @@ class Association(db.Model):
     # Keep existing social_media_url for backward compatibility
     social_media_url: Mapped[str] = mapped_column(String(200), nullable=True)
     contact_phone: Mapped[str] = mapped_column(String(20), nullable=True)  # Increased from 15 to 20
-    contact_email: Mapped[str] = mapped_column(String(120), nullable=False)  # Increased from 50 to 120
+    contact_email: Mapped[str] = mapped_column(String(120), nullable=False, unique=False)  # Explicitly set unique=False
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False)
     user = relationship("User", back_populates="association")
     events = relationship("Event", back_populates="association", cascade="all, delete-orphan")
-<<<<<<< HEAD
     ratings = relationship("Rating", back_populates="association")
     
     # Recovery fields
-=======
->>>>>>> origin/develop
     reset_token: Mapped[str] = mapped_column(String(256), unique=True, nullable=True, default=None)
     reset_token_expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=None)
 
@@ -71,8 +68,4 @@ class Association(db.Model):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
-<<<<<<< HEAD
-        return check_password_hash(self.password, password) 
-=======
         return check_password_hash(self.password, password)
->>>>>>> origin/develop

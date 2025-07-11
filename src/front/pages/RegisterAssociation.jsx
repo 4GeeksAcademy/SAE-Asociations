@@ -302,10 +302,9 @@ const RegisterAssociation = () => {
                                         <span className="d-none d-sm-inline">Datos del </span>Representante
                                     </h4>
                                     <div className="row">
-                                        <div className="col-md-6 mb-3">
-                                            <label htmlFor="name" className="form-label fw-semibold">
-                                                <i className="bi bi-person me-1"></i>Nombre
-                                            </label>
+                                        {/* Campo de nombre */}
+                                        <div className="mb-3">
+                                            <label htmlFor="name" className="form-label">Nombre</label>
                                             <input
                                                 type="text"
                                                 name="name"
@@ -314,57 +313,46 @@ const RegisterAssociation = () => {
                                                 placeholder="Tu nombre"
                                                 value={formData.name}
                                                 onChange={handleChange}
-                                                disabled={store.isLoading}
+                                                autoComplete="given-name"
                                             />
-                                            {errors.name && (
-                                                <div className="text-danger small mt-1">{errors.name}</div>
-                                            )}
+                                            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
                                         </div>
 
-                                        <div className="col-md-6 mb-3">
-                                            <label htmlFor="lastname" className="form-label fw-semibold">
-                                                <i className="bi bi-person me-1"></i>Apellido
-                                            </label>
+                                        {/* Campo de apellido */}
+                                        <div className="mb-3">
+                                            <label htmlFor="lastname" className="form-label">Apellidos</label>
                                             <input
                                                 type="text"
                                                 name="lastname"
                                                 id="lastname"
                                                 className={`form-control ${errors.lastname ? 'is-invalid' : ''}`}
-                                                placeholder="Tu apellido"
+                                                placeholder="Tus apellidos"
                                                 value={formData.lastname}
                                                 onChange={handleChange}
-                                                disabled={store.isLoading}
+                                                autoComplete="family-name"
                                             />
-                                            {errors.lastname && (
-                                                <div className="text-danger small mt-1">{errors.lastname}</div>
-                                            )}
+                                            {errors.lastname && <div className="invalid-feedback">{errors.lastname}</div>}
                                         </div>
-                                    </div>
 
-                                    <div className="row">
-                                        <div className="col-md-6 mb-3">
-                                            <label htmlFor="email" className="form-label fw-semibold">
-                                                <i className="bi bi-envelope me-1"></i>Email personal
-                                            </label>
+                                        {/* Campo de email */}
+                                        <div className="mb-3">
+                                            <label htmlFor="email" className="form-label">Email</label>
                                             <input
                                                 type="email"
                                                 name="email"
                                                 id="email"
                                                 className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-                                                placeholder="tu@email.com"
+                                                placeholder="tu.email@ejemplo.com"
                                                 value={formData.email}
                                                 onChange={handleChange}
-                                                disabled={store.isLoading}
+                                                autoComplete="email"
                                             />
-                                            {errors.email && (
-                                                <div className="text-danger small mt-1">{errors.email}</div>
-                                            )}
+                                            {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                                         </div>
 
-                                        <div className="col-md-6 mb-3">
-                                            <label htmlFor="phone" className="form-label fw-semibold">
-                                                <i className="bi bi-telephone me-1"></i>Teléfono personal
-                                            </label>
+                                        {/* Campo de teléfono */}
+                                        <div className="mb-3">
+                                            <label htmlFor="phone" className="form-label">Teléfono</label>
                                             <input
                                                 type="tel"
                                                 name="phone"
@@ -373,16 +361,13 @@ const RegisterAssociation = () => {
                                                 placeholder="Ejemplo: 612345678"
                                                 value={formData.phone}
                                                 onChange={handleChange}
-                                                disabled={store.isLoading}
+                                                autoComplete="tel"
                                             />
-                                            {errors.phone && (
-                                                <div className="text-danger small mt-1">{errors.phone}</div>
-                                            )}
+                                            {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
                                         </div>
-                                    </div>
 
-                                    <div className="row">
-                                        <div className="col-md-6 mb-3">
+                                        {/* Campo de contraseña */}
+                                        <div className="mb-3">
                                             <label htmlFor="password" className="form-label fw-semibold">
                                                 <i className="bi bi-lock me-1"></i>Contraseña
                                             </label>
@@ -395,13 +380,15 @@ const RegisterAssociation = () => {
                                                 value={formData.password}
                                                 onChange={handleChange}
                                                 disabled={store.isLoading}
+                                                autoComplete="new-password"
                                             />
                                             {errors.password && (
                                                 <div className="text-danger small mt-1">{errors.password}</div>
                                             )}
                                         </div>
 
-                                        <div className="col-md-6 mb-3">
+                                        {/* Campo de confirmar contraseña */}
+                                        <div className="mb-3">
                                             <label htmlFor="confirmPassword" className="form-label fw-semibold">
                                                 <i className="bi bi-lock-fill me-1"></i>Confirmar
                                             </label>
@@ -414,6 +401,7 @@ const RegisterAssociation = () => {
                                                 value={formData.confirmPassword}
                                                 onChange={handleChange}
                                                 disabled={store.isLoading}
+                                                autoComplete="new-password"
                                             />
                                             {errors.confirmPassword && (
                                                 <div className="text-danger small mt-1">{errors.confirmPassword}</div>
@@ -488,10 +476,9 @@ const RegisterAssociation = () => {
                                     </div>
 
                                     <div className="row">
-                                        <div className="col-md-6 mb-3">
-                                            <label htmlFor="contact_email" className="form-label fw-semibold">
-                                                <i className="bi bi-envelope me-1"></i>Email de contacto
-                                            </label>
+                                        {/* Campo de email de contacto de la asociación */}
+                                        <div className="mb-3">
+                                            <label htmlFor="contact_email" className="form-label">Email de Contacto</label>
                                             <input
                                                 type="email"
                                                 name="contact_email"
@@ -500,30 +487,25 @@ const RegisterAssociation = () => {
                                                 placeholder="contacto@asociacion.com"
                                                 value={formData.contact_email}
                                                 onChange={handleChange}
-                                                disabled={store.isLoading}
+                                                autoComplete="email"
                                             />
-                                            {errors.contact_email && (
-                                                <div className="text-danger small mt-1">{errors.contact_email}</div>
-                                            )}
+                                            {errors.contact_email && <div className="invalid-feedback">{errors.contact_email}</div>}
                                         </div>
 
-                                        <div className="col-md-6 mb-4">
-                                            <label htmlFor="contact_phone" className="form-label fw-semibold">
-                                                <i className="bi bi-telephone me-1"></i>Teléfono de contacto
-                                            </label>
+                                        {/* Campo de teléfono de contacto de la asociación */}
+                                        <div className="mb-4">
+                                            <label htmlFor="contact_phone" className="form-label">Teléfono de Contacto</label>
                                             <input
                                                 type="tel"
                                                 name="contact_phone"
                                                 id="contact_phone"
                                                 className={`form-control ${errors.contact_phone ? 'is-invalid' : ''}`}
-                                                placeholder="Ejemplo: 987654321"
+                                                placeholder="Ejemplo: 612345678"
                                                 value={formData.contact_phone}
                                                 onChange={handleChange}
-                                                disabled={store.isLoading}
+                                                autoComplete="tel"
                                             />
-                                            {errors.contact_phone && (
-                                                <div className="text-danger small mt-1">{errors.contact_phone}</div>
-                                            )}
+                                            {errors.contact_phone && <div className="invalid-feedback">{errors.contact_phone}</div>}
                                         </div>
                                     </div>
 
