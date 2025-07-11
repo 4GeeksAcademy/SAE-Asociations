@@ -8,7 +8,7 @@ export const ResetPassword = () => {
     const [confirmNewPassword, setConfirmNewPassword] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
-    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001"; 
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL; 
 
     const handleSubmit = async (e) => {
         e.preventDefault();

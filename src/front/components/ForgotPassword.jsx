@@ -4,7 +4,7 @@ export const ForgotPassword = () => {
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
-    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001"; // Fallback por si acaso
+    const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
     const handleSubmit = async (e) => {
         e.preventDefault();

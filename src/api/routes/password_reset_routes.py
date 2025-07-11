@@ -28,8 +28,8 @@ def forgot_password_request():
         target_user.reset_token_expires_at = expires_at
         db.session.commit()
 
-        frontend_base_url = os.getenv('FRONTEND_URL', 'http://localhost:3000')
-        reset_link = f"{frontend_base_url}reset-password/{reset_token}"
+        frontend_base_url = os.getenv('FRONTEND_URL')
+        reset_link = f"{frontend_base_url}/reset-password/{reset_token}"
 
         # Determinar qué email usar para enviar el correo
         if isinstance(target_user, User):
