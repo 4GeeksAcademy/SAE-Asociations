@@ -6,7 +6,11 @@ from .association_routes import association_bp
 from .events_routes import events_bp
 from .volunteers_routes import volunteers_bp
 from .donation_routes import donation_bp
+<<<<<<< HEAD
 from .rating_routes import rating_bp
+=======
+from .user_routes import user_bp
+>>>>>>> origin/develop
 from .password_reset_routes import password_reset_bp
 
 api = Blueprint('api', __name__)
@@ -21,6 +25,7 @@ api.register_blueprint(association_bp, url_prefix='/associations')
 api.register_blueprint(events_bp, url_prefix='/events')
 api.register_blueprint(volunteers_bp, url_prefix='/volunteers')
 api.register_blueprint(donation_bp, url_prefix='/donations')
+<<<<<<< HEAD
 api.register_blueprint(rating_bp, url_prefix='/ratings')
 api.register_blueprint(password_reset_bp, url_prefix='')
 
@@ -32,3 +37,7 @@ def register_routes(app):
     app.register_blueprint(volunteers_bp, url_prefix='/api/volunteers')
     app.register_blueprint(donation_bp, url_prefix='/api/donations')
     app.register_blueprint(rating_bp, url_prefix='/api/ratings')
+=======
+api.register_blueprint(user_bp, url_prefix='/user')
+api.register_blueprint(password_reset_bp, url_prefix='')
+>>>>>>> origin/develop

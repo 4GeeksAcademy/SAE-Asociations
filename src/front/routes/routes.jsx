@@ -15,9 +15,15 @@ import Donations from '../pages/Donations';
 import DonationSuccess from '../pages/DonationSuccess';
 import DonationCancel from '../pages/DonationCancel';
 import { AccountSettings } from '../pages/AccountSettings';
+<<<<<<< HEAD
 import AuthValidator from '../components/AuthValidator';
 import { ForgotPassword } from '../components/ForgotPassword';
 import { ResetPassword } from '../components/ResetPassword';
+=======
+import { ForgotPassword } from '../components/ForgotPassword';
+import { ResetPassword } from '../components/ResetPassword';
+
+>>>>>>> origin/develop
 
 const ProtectedLayout = () => (
   <AuthValidator>
@@ -25,6 +31,7 @@ const ProtectedLayout = () => (
   </AuthValidator>
 );
 
+<<<<<<< HEAD
 const routerConfig = {
   future: {
     v7_startTransition: true,
@@ -111,6 +118,41 @@ const routerConfig = {
       ]
     }
   ]
+=======
+        {/* Auth Routes */}
+        <Route path="login" element={<Login />} />
+        <Route path="register/user" element={<RegisterUser />} />
+        <Route path="register/association" element={<RegisterAssociation />} />
+
+        {/* Password recovery */}
+        <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="reset-password/:token" element={<ResetPassword />} />
+
+        {/* Account Routes */}
+        <Route path="account/settings" element={<AccountSettings />} />
+
+        {/* Event Routes */}
+        <Route path="event/detail/:id" element={<EventDetail />} />
+        <Route path="event/list" element={<EventList />} />
+        <Route path="event/list/:association_id" element={<EventList />} />
+        <Route path="event/creation" element={<EventCreation />} />
+
+        {/* Association Routes */}
+        <Route path="associations" element={<AssociationList />} />
+        <Route path="association/:id" element={<AssociationDetail />} />
+
+        {/* Donation Routes */}
+        <Route path="donations" element={<Donations />} />
+        <Route path="donate/association/:id" element={<DonateForm />} />
+        <Route path="donation-success" element={<DonationSuccess />} />
+        <Route path="donation-cancel" element={<DonationCancel />} />
+
+        {/* Ruta para manejar URLs no definidas */}
+        <Route path="*" element={<Home />} />
+      </Route>
+    </Routes>
+  );
+>>>>>>> origin/develop
 };
 
 export const router = createBrowserRouter(routerConfig.routes, routerConfig);

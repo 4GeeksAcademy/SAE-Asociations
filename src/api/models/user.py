@@ -15,12 +15,11 @@ class User(db.Model):
     phone: Mapped[str] = mapped_column(String(20), nullable=True)
     profile_image: Mapped[str] = mapped_column(String(500), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False, default=True)
-    
     # Relationship with Association (one-to-one)
     association = relationship("Association", back_populates="user", uselist=False)
-    
     # Relationship with EventVolunteer (many-to-many through EventVolunteer)
     event_volunteers = relationship("EventVolunteer", back_populates="volunteer")
+<<<<<<< HEAD
     
     # Relationship with Rating (one-to-many)
     ratings = relationship("Rating", back_populates="user")
@@ -28,6 +27,12 @@ class User(db.Model):
     # Recovery fields
     reset_token: Mapped[str] = mapped_column(String(256), unique=True, nullable=True, default=None)
     reset_token_expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=None)
+=======
+    # Recovery
+    reset_token: Mapped[str] = mapped_column(String(256), unique=True, nullable=True, default=None)
+    reset_token_expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=True, default=None)
+
+>>>>>>> origin/develop
 
     def __init__(self, email, password, name=None, lastname=None, phone=None, profile_image=None):
         self.email = email
@@ -65,4 +70,8 @@ class User(db.Model):
         self.password = generate_password_hash(password)
 
     def check_password(self, password):
+<<<<<<< HEAD
         return check_password_hash(self.password, password) 
+=======
+        return check_password_hash(self.password, password)
+>>>>>>> origin/develop
