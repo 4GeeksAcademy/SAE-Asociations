@@ -39,8 +39,6 @@ const authService = {
 
       return data;
     } catch (error) {
-      console.error("Error en registerUser:", error);
-
       // Si es un error de red, lanzar mensaje específico
       if (error.name === "TypeError" && error.message.includes("fetch")) {
         throw new Error(
@@ -54,7 +52,7 @@ const authService = {
 
   async registerAssociation(associationData) {
     try {
-      const response = await fetch (
+      const response = await fetch(
         `${API_BASE_URL}/api/auth/register/association`,
         {
           method: "POST",
@@ -93,8 +91,6 @@ const authService = {
 
       return data;
     } catch (error) {
-      console.error("Error en registerAssociation:", error);
-
       // Si es un error de red, lanzar mensaje específico
       if (error.name === "TypeError" && error.message.includes("fetch")) {
         throw new Error(
@@ -145,14 +141,13 @@ const authService = {
       // Guardar datos en localStorage
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
+        localStorage.removeItem("refresh_token"); // Limpiar token anterior si existe
         localStorage.setItem("refresh_token", data.refresh_token);
         localStorage.setItem("user", JSON.stringify(data.user));
       }
 
       return data;
     } catch (error) {
-      console.error("Error en login:", error);
-
       // Si es un error de red, lanzar mensaje específico
       if (error.name === "TypeError" && error.message.includes("fetch")) {
         throw new Error(
@@ -164,10 +159,26 @@ const authService = {
     }
   },
 
-  logout() {
+  clearAuth() {
     localStorage.removeItem("token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
+    // Limpiar cualquier otro dato de autenticación que pueda haber
+    localStorage.removeItem("lastAuthCheck");
+
+    // Disparar un evento para notificar a otros componentes
+    window.dispatchEvent(new Event("auth-cleared"));
+
+    // Forzar actualización del store global
+    window.dispatchEvent(
+      new CustomEvent("auth-state-changed", {
+        detail: { isAuthenticated: false },
+      })
+    );
+  },
+
+  logout() {
+    this.clearAuth();
     // Retornar datos para el dispatch si se necesita
     return {
       message: { text: "Sesión cerrada", type: "info" },
@@ -194,6 +205,59 @@ const authService = {
 
   isAuthenticated() {
     return !!this.getToken();
+  },
+
+  // Validar si el token es válido haciendo una petición al servidor
+  async validateToken() {
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const API_BASE_URL =
+        import.meta.env.VITE_BACKEND_URL || window.location.origin;
+      const response = await fetch(`${API_BASE_URL}/api/auth/validate`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        // Token inválido, limpiar localStorage
+        this.logout();
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error validating token:", error);
+      // En caso de error de red, mantener el token pero devolver false
+      return false;
+    }
+  },
+
+  // Método para verificar si el token está expirado (alternativa más rápida)
+  isTokenExpired() {
+    const token = this.getToken();
+    if (!token) return true;
+
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const expirationTime = payload.exp * 1000; // Convertir a milisegundos
+      const currentTime = Date.now();
+
+      if (currentTime >= expirationTime) {
+        this.clearAuth(); // Usar el nuevo método
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error("Error checking token expiration:", error);
+      this.clearAuth(); // Limpiar en caso de error
+      return true;
+    }
   },
 
   async updateProfile(profileData) {
@@ -249,8 +313,6 @@ const authService = {
   updateUser(user) {
     localStorage.setItem("user", JSON.stringify(user));
   },
-
 };
-
 
 export default authService;

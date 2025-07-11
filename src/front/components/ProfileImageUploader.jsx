@@ -126,7 +126,7 @@ const ProfileImageUploader = ({
                 }
 
                 if (result && result.event === "success") {
-                    console.log('Imagen de perfil subida exitosamente:', result.info);
+                    // Imagen de perfil subida exitosamente
                     onUploadSuccess && onUploadSuccess(result.info.secure_url, result.info);
                 }
             }

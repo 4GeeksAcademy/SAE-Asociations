@@ -24,6 +24,7 @@ class Association(db.Model):
     
     user = relationship("User", back_populates="association")
     events = relationship("Event", back_populates="association", cascade="all, delete-orphan")
+    ratings = relationship("Rating", back_populates="association")
 
     def __init__(self, name, cif, description, contact_email, user_id, 
                  image_url=None, website_url=None, social_media_url=None, 

@@ -94,7 +94,6 @@ class DonationService:
         
         # Actualizar donación con información de Stripe y hacer commit final
         donation.stripe_session_id = checkout_session.id
-        donation.stripe_payment_intent_id = checkout_session.payment_intent
         db.session.commit()  # Commit final con toda la información
         
         return checkout_session.url
@@ -147,18 +146,13 @@ class DonationService:
                     
             # Procesar pagos fallidos
             elif event['type'] == 'payment_intent.payment_failed':
-                payment_intent = event['data']['object']
-                donation = Donation.query.filter_by(
-                    stripe_payment_intent_id=payment_intent['id']
-                ).first()
-                
-                if donation:
-                    donation.status = DonationStatus.FAILED
-                    db.session.commit()
-                    return {
-                        'status': 'success',
-                        'message': 'Donación marcada como fallida'
-                    }
+                # Para pagos fallidos, necesitaríamos otra forma de identificar la donación
+                # Por ahora, simplemente logeamos el evento
+                print(f"Payment failed for payment_intent: {event['data']['object']['id']}")
+                return {
+                    'status': 'success',
+                    'message': 'Pago fallido procesado'
+                }
             
             return {'status': 'ignored', 'event_type': event['type']}
             

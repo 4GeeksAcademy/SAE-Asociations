@@ -1,10 +1,35 @@
 // Estado inicial de la aplicación
 export const initialStore = () => {
+  // Verificar si el token está expirado antes de setear el estado
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+
+  // Si hay token, verificar si está expirado
+  let isAuthenticated = false;
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const currentTime = Date.now() / 1000;
+
+      if (payload.exp && payload.exp > currentTime) {
+        isAuthenticated = true;
+      } else {
+        // Token expirado, limpiar localStorage
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+    } catch (error) {
+      // Token malformado, limpiar localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
+  }
+
   return {
     // Estados de autenticación
-    user: JSON.parse(localStorage.getItem("user")) || null,
-    token: localStorage.getItem("token") || null,
-    isAuthenticated: !!localStorage.getItem("token"),
+    user: isAuthenticated ? user : null,
+    token: isAuthenticated ? token : null,
+    isAuthenticated,
 
     // Estados globales de UI
     isLoading: false,

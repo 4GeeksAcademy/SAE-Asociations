@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import authService from '../services/authService.js';
+import NotificationModal from '../components/NotificationModal';
+import useNotification from '../hooks/useNotification';
 
 export const AccountSettings = () => {
   const user = authService.getCurrentUser();
+  const { notification, hideNotification, showSuccess, showError } = useNotification();
 
   const [editingProfile, setEditingProfile] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -44,29 +47,29 @@ export const AccountSettings = () => {
     e.preventDefault();
     try {
       await authService.updateProfile(profileData);
-      alert('Perfil actualizado correctamente');
+      showSuccess('¡Perfil actualizado!', 'Los cambios se han guardado correctamente');
       setEditingProfile(false);
       // Opcional: refrescar token / localStorage
     } catch (err) {
-      alert(err.response?.data?.msg || 'Error al actualizar perfil');
+      showError('Error al actualizar', err.response?.data?.msg || 'Error al actualizar perfil');
     }
   };
 
   const submitPassword = async e => {
     e.preventDefault();
     if (passwordData.new_password !== passwordData.confirm_password) {
-      return alert('La nueva contraseña y su confirmación no coinciden');
+      return showError('Contraseñas no coinciden', 'La nueva contraseña y su confirmación no coinciden');
     }
     try {
       await authService.changePassword({
         current_password: passwordData.current_password,
         new_password: passwordData.new_password
       });
-      alert('Contraseña cambiada correctamente');
+      showSuccess('¡Contraseña cambiada!', 'Tu contraseña ha sido actualizada correctamente');
       setChangingPassword(false);
       setPasswordData({ current_password: '', new_password: '', confirm_password: '' });
     } catch (err) {
-      alert(err.response?.data?.error || 'Error al cambiar contraseña');
+      showError('Error al cambiar contraseña', err.response?.data?.error || 'Error al cambiar contraseña');
     }
   };
 
@@ -214,6 +217,18 @@ export const AccountSettings = () => {
           </div>
         </div>
       </div>
+
+      <NotificationModal
+        show={notification.show}
+        onClose={hideNotification}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        confirmText={notification.confirmText}
+        cancelText={notification.cancelText}
+        onConfirm={notification.onConfirm}
+        showCancel={notification.showCancel}
+      />
     </div>
   );
 };

@@ -19,6 +19,9 @@ class User(db.Model):
     
     # Relationship with EventVolunteer (many-to-many through EventVolunteer)
     event_volunteers = relationship("EventVolunteer", back_populates="volunteer")
+    
+    # Relationship with Rating (one-to-many)
+    ratings = relationship("Rating", back_populates="user")
 
     def __init__(self, email, password, name=None, lastname=None, phone=None, profile_image=None):
         self.email = email

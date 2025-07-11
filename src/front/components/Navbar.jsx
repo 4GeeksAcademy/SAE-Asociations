@@ -10,9 +10,19 @@ const Navbar = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const checkAuthStatus = () => {
+    const checkAuthStatus = async () => {
+      // Verificar si el token está expirado primero (validación local rápida)
+      const isExpired = authService.isTokenExpired();
+
+      if (isExpired) {
+        setIsAuthenticated(false);
+        setUser(null);
+        return;
+      }
+
       const authenticated = authService.isAuthenticated();
       const currentUser = authService.getCurrentUser();
       setIsAuthenticated(authenticated);
@@ -32,11 +42,26 @@ const Navbar = () => {
   };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const closeMenu = () => setIsMenuOpen(false);
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+    setIsDropdownOpen(false);
+  };
 
   useEffect(() => {
     closeMenu();
   }, [location.pathname]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isDropdownOpen && !event.target.closest('.profile-dropdown')) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isDropdownOpen]);
 
   const getUserDisplayName = () => {
     if (!user) return '';
@@ -49,6 +74,7 @@ const Navbar = () => {
   const getUserAvatar = () => {
     if (user?.association?.image_url) return user.association.image_url;
     if (user?.profile_image) return user.profile_image;
+    if (user?.association) return 'https://placehold.co/400x400/6c757d/ffffff?text=Asociación';
     return null;
   };
 
@@ -113,8 +139,11 @@ const Navbar = () => {
               <li className="nav-item dropdown profile-dropdown">
                 <button
                   className="dropdown-toggle d-flex align-items-center gap-2"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsDropdownOpen(!isDropdownOpen);
+                  }}
+                  aria-expanded={isDropdownOpen}
                 >
                   {getUserAvatar() ? (
                     <img
@@ -127,7 +156,7 @@ const Navbar = () => {
                   )}
                   <span className="d-none d-lg-inline text-white">{getUserDisplayName()}</span>
                 </button>
-                <ul className="dropdown-menu dropdown-menu-end mt-2">
+                <ul className={`dropdown-menu dropdown-menu-end mt-2 ${isDropdownOpen ? 'show' : ''}`}>
                   <li>
                     <Link className="dropdown-item" to="/account/settings" onClick={closeMenu}>
                       <i className="bi bi-gear me-2"></i>

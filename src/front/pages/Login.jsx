@@ -161,6 +161,7 @@ const Login = () => {
                                         value={formData.email}
                                         onChange={handleChange}
                                         disabled={store.isLoading}
+                                        autoComplete="username"
                                     />
                                     {errors.email && (
                                         <div className="text-danger small mt-1">{errors.email}</div>
@@ -180,6 +181,7 @@ const Login = () => {
                                         value={formData.password}
                                         onChange={handleChange}
                                         disabled={store.isLoading}
+                                        autoComplete="current-password"
                                     />
                                     {errors.password && (
                                         <div className="text-danger small mt-1">{errors.password}</div>

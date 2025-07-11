@@ -1,29 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+import authService from '../services/authService.js';
+import NotificationModal from '../components/NotificationModal';
+import useNotification from '../hooks/useNotification';
+
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || window.location.origin;
 
 export const EventDetail = () => {
     const { store } = useGlobalReducer();
     const { id } = useParams();
+    const navigate = useNavigate();
     const [event, setEvent] = useState(null);
     const [userIsRegistered, setUserIsRegistered] = useState(false)
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const { notification, hideNotification, showSuccess, showError, showWarning } = useNotification();
 
 
     // Función para obtener los detalles del evento del backend
     const fetchEventDetails = async () => {
         try {
+            setLoading(true);
             const res = await fetch(`${API_BASE_URL}/api/events/${id}`);
             if (!res.ok) {
                 const errorData = await res.json();
                 console.error("Error al cargar evento:", errorData);
-                alert(`Error: ${errorData.error || "No se pudo cargar el evento."}`);
+                showError('Error al cargar evento', errorData.error || 'No se pudo cargar el evento.');
                 setEvent(null); // Limpiar el evento en caso de error
                 return;
             }
             const eventData = await res.json();
             setEvent(eventData);
-            
+
             // Verificar si el usuario actual está registrado después de cargar el evento
             // Solo si hay un usuario logueado y el evento tiene la lista de voluntarios
             if (store.user && eventData.volunteers) {
@@ -36,74 +45,83 @@ export const EventDetail = () => {
             }
         } catch (error) {
             console.error("Error al obtener detalles del evento:", error);
-            alert("Hubo un problema al cargar los detalles del evento.");
+            showError('Error de conexión', 'Hubo un problema al cargar los detalles del evento.');
             setEvent(null); // Limpiar el evento en caso de error de red
+        } finally {
+            setLoading(false);
         }
     };
 
     // Función para que un voluntario se apunte a un evento
     const handleJoinEvent = async () => {
-        // Validaciones básicas antes de enviar la petición
-        if (!store.isAuthenticated || store.user?.role !== 'volunteer') {
-            alert("Debes iniciar sesión como voluntario para apuntarte.");
+        const currentUser = authService.getCurrentUser();
+
+        if (!currentUser || currentUser.association) {
+            showWarning('Acceso denegado', 'Debes iniciar sesión como voluntario para apuntarte.');
             return;
         }
 
-        // Verificar si el evento ya está lleno (doble verificación, también se valida en backend)
-        if (event.max_volunteers !== null && event.current_Volunteers_count >= event.max_volunteers) {
-            alert("Este evento ya está lleno.");
+        // Verificar si el evento está lleno
+        const maxVolunteers = event.max_volunteers;
+        const currentVolunteers = event.volunteers?.length || 0;
+
+        if (maxVolunteers && currentVolunteers >= maxVolunteers) {
+            showWarning('Evento lleno', 'Este evento ya está lleno.');
             return;
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/volunteers/${event.id}/join`, {
+            const token = authService.getToken();
+            const response = await fetch(`${API_BASE_URL}/api/volunteers/${id}/join`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${store.token}` // Envía el token de autenticación
+                    "Authorization": `Bearer ${token}` // Envía el token de autenticación
                 }
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                alert(data.message);
+                showSuccess('¡Te has apuntado!', data.message);
                 fetchEventDetails(); // Vuelve a cargar los detalles del evento para actualizar el contador y la lista
             } else {
-                alert(`Error al apuntarse: ${data.message || 'Error desconocido'}`);
+                showError('Error al apuntarse', data.message || 'Error desconocido');
             }
         } catch (error) {
             console.error("Error al unirse al evento:", error);
-            alert("Hubo un error al intentar apuntarse al evento.");
+            showError('Error de conexión', 'Hubo un error al intentar apuntarse al evento.');
         }
     };
 
     // Función para que un voluntario se desapunte de un evento
     const handleLeaveEvent = async () => {
-        // Validaciones básicas antes de enviar la petición
-        if (!store.isAuthenticated || store.user?.role !== 'volunteer') {
-            alert("Debes iniciar sesión como voluntario para desapuntarte.");
+        const currentUser = authService.getCurrentUser();
+
+        if (!currentUser || currentUser.association) {
+            showWarning('Acceso denegado', 'Debes iniciar sesión como voluntario para desapuntarte.');
             return;
         }
 
         try {
-            const response = await fetch(`${API_BASE_URL}/api/volunteers/${event.id}/leave`, {
+            const token = authService.getToken();
+            const response = await fetch(`${API_BASE_URL}/api/volunteers/${id}/leave`, {
                 method: "DELETE",
                 headers: {
-                    "Authorization": `Bearer ${store.token}` // Envía el token de autenticación
+                    "Authorization": `Bearer ${token}` // Envía el token de autenticación
                 }
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                alert(data.message);
+                showSuccess('Te has desapuntado', data.message);
                 fetchEventDetails(); // Vuelve a cargar los detalles del evento
             } else {
-                alert(`Error al desapuntarse: ${data.message || 'Error desconocido'}`);
+                showError('Error al desapuntarse', data.message || 'Error desconocido');
             }
         } catch (error) {
             console.error("Error al desapuntarse del evento:", error);
-            alert("Hubo un error al intentar desapuntarse del evento.");
+            showError('Error de conexión', 'Hubo un error al intentar desapuntarse del evento.');
         }
     };
 
@@ -115,11 +133,11 @@ export const EventDetail = () => {
 
 
     // Si el evento aún no se ha cargado, muestra un mensaje de carga
-    if (!event) return <p>Cargando evento...</p>;
+    if (loading) return <p>Cargando evento...</p>;
 
     // Variables de ayuda para el renderizado condicional
     const currentVolunteers = parseInt(event.Volunteers_count) || 0; // <-- ¡CAMBIADO A event.Volunteers_count!
-    const maxVolunteers = parseInt(event.max_volunteers) || null; 
+    const maxVolunteers = parseInt(event.max_volunteers) || null;
     const isEventFull = maxVolunteers !== null && currentVolunteers >= maxVolunteers;
     const availableSlots = maxVolunteers !== null ? maxVolunteers - currentVolunteers : null;
 
@@ -226,6 +244,18 @@ export const EventDetail = () => {
                     </div>
                 </div>
             </div>
+
+            <NotificationModal
+                show={notification.show}
+                onClose={hideNotification}
+                type={notification.type}
+                title={notification.title}
+                message={notification.message}
+                confirmText={notification.confirmText}
+                cancelText={notification.cancelText}
+                onConfirm={notification.onConfirm}
+                showCancel={notification.showCancel}
+            />
         </div>
     );
 };

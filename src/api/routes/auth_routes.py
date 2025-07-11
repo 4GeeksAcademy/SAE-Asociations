@@ -134,3 +134,35 @@ def update_profile_image():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Error interno del servidor"}), 500
+
+
+@auth_bp.route('/validate', methods=['GET'])
+@jwt_required()
+def validate_token():
+    """Endpoint para validar si el token JWT es válido"""
+    try:
+        current_user_id = get_jwt_identity()
+        claims = get_jwt()
+        
+        # Verificar que el usuario aún existe en la base de datos
+        user = User.query.get(current_user_id)
+        if not user:
+            return jsonify({
+                'valid': False,
+                'message': 'Usuario no encontrado'
+            }), 404
+        
+        return jsonify({
+            'valid': True,
+            'user_id': current_user_id,
+            'email': claims.get('email', user.email),
+            'role': claims.get('role', 'volunteer'),
+            'message': 'Token válido'
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'valid': False,
+            'message': 'Token inválido',
+            'error': str(e)
+        }), 401

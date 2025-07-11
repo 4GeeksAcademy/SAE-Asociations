@@ -25,14 +25,8 @@ def join_event(event_id):
     if not event:
         return jsonify({"message": "Evento no encontrado"}), 404
 
-    print(f"DEBUG_JOIN: Evento ID: {event.id}")
-    print(f"DEBUG_JOIN: max_volunteers: {event.max_volunteers}")
-    print(f"DEBUG_JOIN: current_volunteers count: {len(event.event_volunteers)}")
-
-     # Verificar si el evento ya está lleno
+    # Verificar si el evento ya está lleno
     if event.max_volunteers is not None and len(event.event_volunteers) >= event.max_volunteers:
-        print(
-            f"DEBUG: Condición activada: EVENTO LLENO. Max: {event.max_volunteers}, Actual: {len(event.event_volunteers)}")
         return jsonify({"message": "Este evento ha alcanzado su número máximo de voluntarios"}), 400
 
     existing = EventVolunteer.query.filter_by(
@@ -40,8 +34,6 @@ def join_event(event_id):
     ).first()
 
     if existing:
-        print(
-            f"DEBUG: Condición activada: VOLUNTARIO YA APUNTADO. Evento ID: {event_id}, Voluntario ID: {volunteer_id}")
         return jsonify({"message": "Ya estás apuntado a este evento"}), 400
 
     ev = EventVolunteer(

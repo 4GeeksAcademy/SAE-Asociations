@@ -58,7 +58,7 @@ const RegisterAssociation = () => {
 
     // Manejar subida exitosa de imagen de la asociación
     const handleAssociationImageUploadSuccess = (imageUrl, uploadInfo) => {
-        console.log('Logo de la asociación subido exitosamente:', imageUrl);
+        // Logo subido exitosamente
         setFormData(prev => ({
             ...prev,
             image_url: imageUrl
@@ -219,8 +219,6 @@ const RegisterAssociation = () => {
                 navigate('/login');
             }, 2000);
         } catch (error) {
-            console.error('Error en registro:', error);
-
             let errorMessage = 'No pudimos procesar el registro de tu asociación en este momento. Por favor, inténtalo de nuevo en unos minutos.';
 
             // Manejar diferentes tipos de errores

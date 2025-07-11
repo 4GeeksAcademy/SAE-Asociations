@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { EventCard } from "../components/EventCard.jsx";
 import { useLocation } from "react-router-dom";
-import { Button } from "bootstrap";
 import authService from "../services/authService";
+import NotificationModal from '../components/NotificationModal';
+import useNotification from '../hooks/useNotification';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -16,6 +17,7 @@ export const EventList = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const { association_id } = useParams();
+    const { notification, hideNotification, showSuccess, showError, showConfirm } = useNotification();
 
     const getEvents = async (associationId = null) => {
         try {
@@ -50,31 +52,33 @@ export const EventList = () => {
     };
 
     const handleDeactivateEvent = async (eventId) => {
-        if (!window.confirm('¿Estás seguro de que quieres desactivar este evento? Los voluntarios ya no podrán verlo ni apuntarse.')) {
-            return;
-        }
+        showConfirm(
+            '¿Desactivar evento?',
+            '¿Estás seguro de que quieres desactivar este evento? Los voluntarios ya no podrán verlo ni apuntarse.',
+            async () => {
+                try {
+                    const token = authService.getToken();
+                    const response = await fetch(`${API_BASE_URL}/api/events/${eventId}/deactivate`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
 
-        try {
-            const token = authService.getToken();
-            const res = await fetch(`${API_BASE_URL}/api/events/${eventId}/deactivate`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
+                    if (response.ok) {
+                        getEvents(association_id);
+                        showSuccess('Evento desactivado', 'El evento ha sido desactivado correctamente');
+                    } else {
+                        const errorData = await response.json();
+                        showError('Error al desactivar', errorData.error || 'No se pudo desactivar el evento');
+                    }
+                } catch (error) {
+                    console.error("Error deactivating event:", error);
+                    showError('Error de conexión', 'Error de conexión al desactivar el evento');
                 }
-            });
-
-            if (res.ok) {
-                getEvents(association_id);
-                alert('Evento desactivado correctamente');
-            } else {
-                const error = await res.json();
-                alert(`Error: ${error.error || 'No se pudo desactivar el evento'}`);
             }
-        } catch (error) {
-            console.error("Error deactivating event:", error);
-            alert('Error de conexión al desactivar el evento');
-        }
+        );
     };
 
     useEffect(() => {
@@ -192,6 +196,17 @@ export const EventList = () => {
                     ))
                 )}
             </div>
+            <NotificationModal
+                show={notification.show}
+                onClose={hideNotification}
+                type={notification.type}
+                title={notification.title}
+                message={notification.message}
+                confirmText={notification.confirmText}
+                cancelText={notification.cancelText}
+                onConfirm={notification.onConfirm}
+                showCancel={notification.showCancel}
+            />
         </div>
     );
 };

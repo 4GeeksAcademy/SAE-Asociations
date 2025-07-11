@@ -27,7 +27,7 @@ const ImageUploader = ({
             script.src = 'https://widget.cloudinary.com/v2.0/global/all.js';
             script.async = true;
             script.onload = () => {
-                console.log('Cloudinary widget loaded');
+                // Cloudinary widget loaded
                 setCloudinaryReady(true);
                 setIsLoading(false);
             };
@@ -134,7 +134,7 @@ const ImageUploader = ({
                         onUploadError(error);
                     }
                 } else if (result && result.event === "success") {
-                    console.log('Upload successful:', result.info);
+                    // Upload successful
                     if (onUploadSuccess) {
                         onUploadSuccess(result.info.secure_url, result.info);
                     }

@@ -46,7 +46,7 @@ const RegisterUser = () => {
 
     // Manejar subida exitosa de imagen
     const handleImageUploadSuccess = (imageUrl, uploadInfo) => {
-        console.log('Imagen de perfil subida exitosamente:', imageUrl);
+        // Imagen de perfil subida exitosamente
         setFormData(prev => ({
             ...prev,
             profile_image: imageUrl
@@ -133,8 +133,6 @@ const RegisterUser = () => {
                 navigate('/login');
             }, 2000);
         } catch (error) {
-            console.error('Error en registro:', error);
-
             let errorMessage = 'No pudimos procesar tu registro en este momento. Por favor, inténtalo de nuevo en unos minutos.';
 
             // Manejar diferentes tipos de errores

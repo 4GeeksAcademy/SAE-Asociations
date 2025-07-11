@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import RatingDisplay from "../components/RatingDisplay";
+import RatingList from "../components/RatingList";
+import RatingForm from "../components/RatingForm";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || window.location.origin;
 
@@ -13,6 +16,12 @@ export const AssociationDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // Estados para rating
+    const [showRatingForm, setShowRatingForm] = useState(false);
+    const [unratedEvents, setUnratedEvents] = useState([]);
+    const [existingRating, setExistingRating] = useState(null);
+    const [refreshRatings, setRefreshRatings] = useState(0);
+    const [successMessage, setSuccessMessage] = useState('');
     useEffect(() => {
         const fetchAssociation = async () => {
             try {
@@ -40,7 +49,6 @@ export const AssociationDetail = () => {
                 setStatistics(data);
             } catch (error) {
                 console.error("Error fetching statistics:", error);
-                // No mostramos error para estadísticas, solo no las mostramos
             }
         };
 
@@ -51,7 +59,6 @@ export const AssociationDetail = () => {
                 setDonations(data.donations || []);
             } catch (error) {
                 console.error("Error fetching donations:", error);
-                // No mostramos error para donaciones, solo no las mostramos
             }
         };
 
@@ -59,6 +66,59 @@ export const AssociationDetail = () => {
         fetchStatistics();
         fetchDonations();
     }, [id]);
+
+    const handleRatingSubmitted = (rating, isNewRating) => {
+        setRefreshRatings(prev => prev + 1);
+        setExistingRating(null);
+        setUnratedEvents([]);
+
+        // Mostrar mensaje de éxito personalizado
+        const message = !isNewRating
+            ? '¡Valoración actualizada exitosamente!'
+            : '¡Valoración enviada exitosamente! Gracias por tu feedback.';
+
+        setSuccessMessage(message);
+
+        // Ocultar mensaje después de 3 segundos
+        setTimeout(() => {
+            setSuccessMessage('');
+        }, 3000);
+    };
+
+    const handleModalClose = (isNewRating) => {
+        // Primero cerramos el modal
+        setShowRatingForm(false);
+
+        // Si es una valoración nueva, programamos el scroll
+        if (isNewRating) {
+            // Esperamos a que el modal se haya cerrado completamente y el DOM se haya actualizado
+            setTimeout(() => {
+                const ratingsSection = document.getElementById('ratings-section');
+                if (ratingsSection) {
+                    const firstRatingCard = ratingsSection.querySelector('.card');
+                    if (firstRatingCard) {
+                        firstRatingCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+            }, 500);
+        }
+    };
+
+    const handleSuccessModalClose = () => {
+        setSuccessMessage('');
+    };
+
+    const handleRateClick = (unratedEvents) => {
+        setUnratedEvents(unratedEvents);
+        setExistingRating(null);
+        setShowRatingForm(true);
+    };
+
+    const handleEditRating = (rating) => {
+        setExistingRating(rating);
+        setUnratedEvents([]);
+        setShowRatingForm(true);
+    };
 
     if (loading) {
         return (
@@ -121,12 +181,18 @@ export const AssociationDetail = () => {
                 </div>
                 <div className="col-lg-4">
                     <img
-                        src={association.image_url || 'https://via.placeholder.com/400x300?text=Asociación'}
+                        src={association.image_url || 'https://placehold.co/400x300/6c757d/ffffff?text=Asociación'}
                         alt={association.name}
                         className="img-fluid rounded shadow"
                     />
                 </div>
             </div>
+
+            {/* Rating Display - Justo después del header */}
+            <RatingDisplay
+                associationId={parseInt(id)}
+                onRateClick={handleRateClick}
+            />
 
             {/* Información de contacto */}
             <div className="row mb-5">
@@ -280,198 +346,242 @@ export const AssociationDetail = () => {
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Estadísticas de donaciones */}
-                {statistics && (
-                    <div className="row mb-5">
-                        <div className="col-12">
-                            <h3 className="mb-4">Estadísticas de donaciones</h3>
-                            <div className="row">
-                                <div className="col-md-4">
-                                    <div className="card border-success h-100">
-                                        <div className="card-body text-center">
-                                            <i className="bi bi-currency-euro text-success mb-3" style={{ fontSize: '2.5rem' }}></i>
-                                            <h4 className="card-title text-success">
-                                                €{statistics.total_amount.toFixed(2)}
-                                            </h4>
-                                            <p className="card-text text-muted">Total recaudado</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-4">
-                                    <div className="card border-primary h-100">
-                                        <div className="card-body text-center">
-                                            <i className="bi bi-people text-primary mb-3" style={{ fontSize: '2.5rem' }}></i>
-                                            <h4 className="card-title text-primary">
-                                                {statistics.total_count}
-                                            </h4>
-                                            <p className="card-text text-muted">Donaciones recibidas</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="col-md-4">
-                                    <div className="card border-info h-100">
-                                        <div className="card-body text-center">
-                                            <i className="bi bi-clock-history text-info mb-3" style={{ fontSize: '2.5rem' }}></i>
-                                            {statistics.last_donation ? (
-                                                <>
-                                                    <h4 className="card-title text-info">
-                                                        €{statistics.last_donation.amount.toFixed(2)}
-                                                    </h4>
-                                                    <p className="card-text text-muted small">
-                                                        {statistics.last_donation.donor_name}
-                                                    </p>
-                                                    <p className="card-text text-muted small">
-                                                        {new Date(statistics.last_donation.date).toLocaleDateString('es-ES', {
-                                                            year: 'numeric',
-                                                            month: 'short',
-                                                            day: 'numeric'
-                                                        })}
-                                                    </p>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <h4 className="card-title text-info">
-                                                        -
-                                                    </h4>
-                                                    <p className="card-text text-muted">Sin donaciones</p>
-                                                </>
-                                            )}
-                                            <p className="card-text text-muted font-weight-bold">Última donación</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {statistics.total_count === 0 && (
-                                <div className="text-center mt-4">
-                                    <p className="text-muted">
-                                        <i className="bi bi-info-circle me-2"></i>
-                                        Esta asociación aún no ha recibido donaciones. ¡Sé el primero en apoyarlos!
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Lista de Donaciones */}
+            {/* Estadísticas de donaciones */}
+            {statistics && (
                 <div className="row mb-5">
                     <div className="col-12">
-                        <div className="d-flex justify-content-between align-items-center mb-4">
-                            <h3 className="mb-0">
-                                <i className="bi bi-heart-fill text-danger me-2"></i>
-                                Donaciones recibidas
-                            </h3>
-                            {donations.length > 0 && (
-                                <span className="badge bg-secondary">
-                                    {donations.length} {donations.length === 1 ? 'donación' : 'donaciones'}
-                                </span>
-                            )}
-                        </div>
-
-                        {donations.length === 0 ? (
-                            <div className="text-center py-5">
-                                <i className="bi bi-heart text-muted" style={{ fontSize: '3rem' }}></i>
-                                <p className="text-muted mt-3">Esta asociación aún no ha recibido donaciones.</p>
-                                <p className="text-muted">¡Sé el primero en apoyarlos!</p>
-                            </div>
-                        ) : (
-                            <>
-                                <div className="row g-3">
-                                    {(showAllDonations ? donations : donations.slice(0, 6)).map((donation) => (
-                                        <div key={donation.id} className="col-12 col-md-6 col-lg-4">
-                                            <div className="card h-100 border-0 shadow-sm">
-                                                <div className="card-body p-3">
-                                                    <div className="d-flex justify-content-between align-items-start mb-2">
-                                                        <h5 className="card-title text-success mb-0">
-                                                            €{donation.amount}
-                                                        </h5>
-                                                        <span className={`badge ${donation.status === 'completed'
-                                                            ? 'bg-success'
-                                                            : donation.status === 'pending'
-                                                                ? 'bg-warning text-dark'
-                                                                : 'bg-danger'
-                                                            }`}>
-                                                            {donation.status === 'completed' ? 'Completada' :
-                                                                donation.status === 'pending' ? 'Pendiente' :
-                                                                    'Fallida'}
-                                                        </span>
-                                                    </div>
-
-                                                    <p className="text-muted small mb-2">
-                                                        <i className="bi bi-person me-1"></i>
-                                                        {donation.donor?.first_name && donation.donor?.last_name
-                                                            ? `${donation.donor.first_name} ${donation.donor.last_name}`
-                                                            : donation.donor?.name || 'Donante anónimo'
-                                                        }
-                                                    </p>
-
-                                                    {donation.event && (
-                                                        <p className="text-muted small mb-2">
-                                                            <i className="bi bi-calendar-event me-1"></i>
-                                                            {donation.event.title}
-                                                        </p>
-                                                    )}
-
-                                                    {donation.description && (
-                                                        <p className="card-text small text-muted mb-2">
-                                                            <i className="bi bi-chat-quote me-1"></i>
-                                                            "{donation.description}"
-                                                        </p>
-                                                    )}
-
-                                                    <div className="d-flex justify-content-between align-items-center">
-                                                        <small className="text-muted">
-                                                            <i className="bi bi-calendar3 me-1"></i>
-                                                            {new Date(donation.created_at).toLocaleDateString('es-ES', {
-                                                                year: 'numeric',
-                                                                month: 'short',
-                                                                day: 'numeric',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit'
-                                                            })}
-                                                        </small>
-
-                                                        {donation.stripe_session_id && (
-                                                            <small className="text-muted">
-                                                                <i className="bi bi-credit-card me-1"></i>
-                                                                Stripe
-                                                            </small>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {donations.length > 6 && (
-                                    <div className="text-center mt-4">
-                                        <button
-                                            className="btn btn-outline-primary"
-                                            onClick={() => setShowAllDonations(!showAllDonations)}
-                                        >
-                                            {showAllDonations ? (
-                                                <>
-                                                    <i className="bi bi-chevron-up me-2"></i>
-                                                    Mostrar menos
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <i className="bi bi-chevron-down me-2"></i>
-                                                    Ver todas las donaciones ({donations.length - 6} más)
-                                                </>
-                                            )}
-                                        </button>
+                        <h3 className="mb-4">Estadísticas de donaciones</h3>
+                        <div className="row">
+                            <div className="col-md-4">
+                                <div className="card border-success h-100">
+                                    <div className="card-body text-center">
+                                        <i className="bi bi-currency-euro text-success mb-3" style={{ fontSize: '2.5rem' }}></i>
+                                        <h4 className="card-title text-success">
+                                            €{statistics.total_amount.toFixed(2)}
+                                        </h4>
+                                        <p className="card-text text-muted">Total recaudado</p>
                                     </div>
-                                )}
-                            </>
+                                </div>
+                            </div>
+                            <div className="col-md-4">
+                                <div className="card border-primary h-100">
+                                    <div className="card-body text-center">
+                                        <i className="bi bi-people text-primary mb-3" style={{ fontSize: '2.5rem' }}></i>
+                                        <h4 className="card-title text-primary">
+                                            {statistics.total_count}
+                                        </h4>
+                                        <p className="card-text text-muted">Donaciones recibidas</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-md-4">
+                                <div className="card border-info h-100">
+                                    <div className="card-body text-center">
+                                        <i className="bi bi-clock-history text-info mb-3" style={{ fontSize: '2.5rem' }}></i>
+                                        {statistics.last_donation ? (
+                                            <>
+                                                <h4 className="card-title text-info">
+                                                    €{statistics.last_donation.amount.toFixed(2)}
+                                                </h4>
+                                                <p className="card-text text-muted small">
+                                                    {statistics.last_donation.donor_name}
+                                                </p>
+                                                <p className="card-text text-muted small">
+                                                    {new Date(statistics.last_donation.date).toLocaleDateString('es-ES', {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric'
+                                                    })}
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <h4 className="card-title text-info">
+                                                    -
+                                                </h4>
+                                                <p className="card-text text-muted">Sin donaciones</p>
+                                            </>
+                                        )}
+                                        <p className="card-text text-muted font-weight-bold">Última donación</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {statistics.total_count === 0 && (
+                            <div className="text-center mt-4">
+                                <p className="text-muted">
+                                    <i className="bi bi-info-circle me-2"></i>
+                                    Esta asociación aún no ha recibido donaciones. ¡Sé el primero en apoyarlos!
+                                </p>
+                            </div>
                         )}
                     </div>
                 </div>
+            )}
+
+            {/* Lista de Donaciones */}
+            <div className="row mb-5">
+                <div className="col-12">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <h3 className="mb-0">
+                            <i className="bi bi-heart-fill text-danger me-2"></i>
+                            Donaciones recibidas
+                        </h3>
+                        {donations.length > 0 && (
+                            <span className="badge bg-secondary">
+                                {donations.length} {donations.length === 1 ? 'donación' : 'donaciones'}
+                            </span>
+                        )}
+                    </div>
+
+                    {donations.length === 0 ? (
+                        <div className="text-center py-5">
+                            <i className="bi bi-heart text-muted" style={{ fontSize: '3rem' }}></i>
+                            <p className="text-muted mt-3">Esta asociación aún no ha recibido donaciones.</p>
+                            <p className="text-muted">¡Sé el primero en apoyarlos!</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="row g-3">
+                                {(showAllDonations ? donations : donations.slice(0, 6)).map((donation) => (
+                                    <div key={donation.id} className="col-12 col-md-6 col-lg-4">
+                                        <div className="card h-100 border-0 shadow-sm">
+                                            <div className="card-body p-3">
+                                                <div className="d-flex justify-content-between align-items-start mb-2">
+                                                    <h5 className="card-title text-success mb-0">
+                                                        €{donation.amount}
+                                                    </h5>
+                                                    <span className={`badge ${donation.status === 'completed'
+                                                        ? 'bg-success'
+                                                        : donation.status === 'pending'
+                                                            ? 'bg-warning text-dark'
+                                                            : 'bg-danger'
+                                                        }`}>
+                                                        {donation.status === 'completed' ? 'Completada' :
+                                                            donation.status === 'pending' ? 'Pendiente' :
+                                                                'Fallida'}
+                                                    </span>
+                                                </div>
+
+                                                <p className="text-muted small mb-2">
+                                                    <i className="bi bi-person me-1"></i>
+                                                    {donation.donor?.first_name && donation.donor?.last_name
+                                                        ? `${donation.donor.first_name} ${donation.donor.last_name}`
+                                                        : donation.donor?.name || 'Donante anónimo'
+                                                    }
+                                                </p>
+
+                                                {donation.event && (
+                                                    <p className="text-muted small mb-2">
+                                                        <i className="bi bi-calendar-event me-1"></i>
+                                                        {donation.event.title}
+                                                    </p>
+                                                )}
+
+                                                {donation.description && (
+                                                    <p className="card-text small text-muted mb-2">
+                                                        <i className="bi bi-chat-quote me-1"></i>
+                                                        "{donation.description}"
+                                                    </p>
+                                                )}
+
+                                                <div className="d-flex justify-content-between align-items-center">
+                                                    <small className="text-muted">
+                                                        <i className="bi bi-calendar3 me-1"></i>
+                                                        {new Date(donation.created_at).toLocaleDateString('es-ES', {
+                                                            year: 'numeric',
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })}
+                                                    </small>
+
+                                                    {donation.stripe_session_id && (
+                                                        <small className="text-muted">
+                                                            <i className="bi bi-credit-card me-1"></i>
+                                                            Stripe
+                                                        </small>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {donations.length > 6 && (
+                                <div className="text-center mt-4">
+                                    <button
+                                        className="btn btn-outline-primary"
+                                        onClick={() => setShowAllDonations(!showAllDonations)}
+                                    >
+                                        {showAllDonations ? (
+                                            <>
+                                                <i className="bi bi-chevron-up me-2"></i>
+                                                Mostrar menos
+                                            </>
+                                        ) : (
+                                            <>
+                                                <i className="bi bi-chevron-down me-2"></i>
+                                                Ver todas las donaciones ({donations.length - 6} más)
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
 
 
+                </div>
             </div>
-        </div >
+
+            {/* Lista de Valoraciones */}
+            <div className="row mb-5" id="ratings-section">
+                <div className="col-12">
+                    <RatingList
+                        associationId={parseInt(id)}
+                        refreshTrigger={refreshRatings}
+                        onEditRating={handleEditRating}
+                    />
+                </div>
+            </div>
+
+            {/* Modal de Éxito */}
+            {successMessage && (
+                <div className="modal fade show" style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex="-1">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-body text-center p-4">
+                                <div className="mb-3">
+                                    <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '3rem' }}></i>
+                                </div>
+                                <h5 className="mb-3">{successMessage}</h5>
+                                <button
+                                    type="button"
+                                    className="btn btn-success"
+                                    onClick={handleSuccessModalClose}
+                                >
+                                    Aceptar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Valoración */}
+            <RatingForm
+                show={showRatingForm}
+                onClose={handleModalClose}
+                associationId={parseInt(id)}
+                unratedEvents={unratedEvents}
+                existingRating={existingRating}
+                onRatingSubmitted={handleRatingSubmitted}
+            />
+        </div>
     );
 }; 

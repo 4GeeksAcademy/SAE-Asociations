@@ -12,7 +12,7 @@ export const EventCard = ({ event, user, onDeactivate }) => {
     return (
         <div className="card h-100">
             <img
-                src={event.image_url || 'https://via.placeholder.com/400x200?text=Evento'}
+                src={event.image_url || 'https://placehold.co/400x200/6c757d/ffffff?text=Evento'}
                 className="card-img-top"
                 alt={event.title}
                 style={{ height: '200px', objectFit: 'cover' }}
