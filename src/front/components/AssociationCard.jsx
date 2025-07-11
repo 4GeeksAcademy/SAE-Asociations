@@ -5,7 +5,7 @@ export const AssociationCard = ({ association }) => {
     return (
         <div className="card h-100 shadow-sm">
             <img
-                src={association.image_url || 'https://via.placeholder.com/400x200?text=Asociación'}
+                src={association.image_url || 'https://placehold.co/400x200/6c757d/ffffff?text=Asociación'}
                 className="card-img-top"
                 alt={association.name}
                 style={{ height: '200px', objectFit: 'cover' }}

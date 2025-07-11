@@ -28,17 +28,11 @@ def forgot_password_request():
         target_user.reset_token_expires_at = expires_at
         db.session.commit()
 
-        frontend_base_url = os.getenv('FRONTEND_URL')
+        frontend_base_url = os.getenv('VITE_FRONTEND_URL')
         reset_link = f"{frontend_base_url}/reset-password/{reset_token}"
 
         # Determinar qué email usar para enviar el correo
-        if isinstance(target_user, User):
-            recipient_email = target_user.email
-        elif isinstance(target_user, Association):
-            recipient_email = target_user.contact_email
-        else:
-            print("ADVERTENCIA: Tipo de usuario desconocido para envío de correo.")
-            return jsonify({"message": "Si tu email está registrado, recibirás un enlace para restablecer tu contraseña."}), 200
+        recipient_email = target_user.email if isinstance(target_user, User) else target_user.contact_email
 
         email_body = f"""
         <html>
@@ -58,8 +52,7 @@ def forgot_password_request():
                                 body_html=email_body)
 
         if not email_sent:
-            print(
-                f"ADVERTENCIA: No se pudo enviar el correo de recuperación a {target_user.email}. El token se generó y guardó.")
+            print(f"ADVERTENCIA: No se pudo enviar el correo de recuperación a {recipient_email}. El token se generó y guardó.")
 
     return jsonify({"message": "Si tu email está registrado, recibirás un enlace para restablecer tu contraseña."}), 200
 

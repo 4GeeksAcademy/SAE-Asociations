@@ -25,6 +25,31 @@ const DonationSuccess = () => {
     const fetchDonationDetails = async (id) => {
         try {
             const token = authService.getToken();
+
+            // Primero intentar completar la donación automáticamente
+            if (token) {
+                try {
+                    const completeResponse = await fetch(`${API_BASE_URL}/api/donations/complete/${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (completeResponse.ok) {
+                        const completeData = await completeResponse.json();
+                        // Donación completada exitosamente
+                    } else {
+                        const errorData = await completeResponse.json();
+                        console.warn('No se pudo completar la donación automáticamente:', errorData);
+                    }
+                } catch (completeError) {
+                    console.error('Error al completar donación automáticamente:', completeError);
+                }
+            }
+
+            // Luego obtener los detalles de la donación
             const response = await fetch(`${API_BASE_URL}/api/donations?donation_id=${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`

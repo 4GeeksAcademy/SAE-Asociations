@@ -27,6 +27,7 @@ class Event(db.Model):
         back_populates="event",
         cascade="all, delete-orphan"
     )
+    ratings = relationship("Rating", back_populates="event")
 
     @property
     def volunteers(self):

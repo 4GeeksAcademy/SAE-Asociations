@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from ..services.donation_service import DonationService
+from ..models.donation import Donation, DonationStatus
+from ..models import db
 
 donation_bp = Blueprint('donation', __name__)
 
@@ -111,18 +113,31 @@ def get_donations():
     """
     Obtener donaciones con filtros opcionales
     Query params:
+    - donation_id: donación específica por ID
     - user_id: donaciones de un usuario específico
     - association_id: donaciones recibidas por una asociación  
     - event_id: donaciones hechas a través de un evento
     - status: filtrar por estado (pending, completed, failed)
-    
-    Ejemplo: GET /api/donations?association_id=1&status=completed
     """
     try:
+        donation_id = request.args.get('donation_id', type=int)
         user_id = request.args.get('user_id', type=int)
         association_id = request.args.get('association_id', type=int)
         event_id = request.args.get('event_id', type=int)
         status = request.args.get('status')
+        
+        # Si se especifica donation_id, devolver solo esa donación
+        if donation_id:
+            donation = Donation.query.get(donation_id)
+            if not donation:
+                return jsonify({'error': 'Donación no encontrada'}), 404
+            
+            return jsonify({
+                'donations': [donation.serialize()],
+                'count': 1
+            }), 200
+        
+        # Filtros normales
         if user_id:
             donations = DonationService.get_donations_by_user(user_id)
         elif association_id:
@@ -137,13 +152,7 @@ def get_donations():
         
         return jsonify({
             'donations': [d.serialize() for d in donations],
-            'count': len(donations),
-            'filters_applied': {
-                'user_id': user_id,
-                'association_id': association_id,
-                'event_id': event_id,
-                'status': status
-            }
+            'count': len(donations)
         }), 200
         
     except Exception as e:
@@ -170,3 +179,36 @@ def get_donation_statistics():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
+
+@donation_bp.route('/complete/<int:donation_id>', methods=['POST'])
+@jwt_required()
+def complete_donation_manual(donation_id):
+    """
+    Completar donación manualmente (backup para casos donde el webhook falle)
+    """
+    try:
+        current_user_id = get_jwt_identity()
+        
+        donation = Donation.query.get(donation_id)
+        if not donation:
+            return jsonify({'error': 'Donación no encontrada'}), 404
+        
+        # Verificar permisos (convertir current_user_id a int para comparar)
+        if donation.donor_id != int(current_user_id):
+            return jsonify({'error': 'No tienes permisos para completar esta donación'}), 403
+        
+        # Verificar estado
+        if donation.status != DonationStatus.PENDING:
+            return jsonify({'message': f'La donación ya está {donation.status.value}'}), 200
+        
+        # Completar donación
+        donation.complete_donation()
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Donación completada exitosamente',
+            'donation': donation.serialize()
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': f'Error al completar donación: {str(e)}'}), 500 

@@ -106,8 +106,6 @@ def create_event():
 
     except Exception as e:
         # Captura cualquier otro error inesperado durante la creación o el commit
-        # El `print` es útil para la depuración en los logs del servidor
-        print(f"DEBUG: Error inesperado al crear evento: {e}")
         return jsonify({"error": "Error interno del servidor al crear el evento."}), 500
 
 
@@ -161,7 +159,6 @@ def update_event(event_id):
     except ValueError:
         return jsonify({"error": "El formato de la fecha es inválido."}), 422
     except Exception as e:
-        print(f"Error al actualizar evento: {e}") 
         return jsonify({"error": "Error interno del servidor al actualizar el evento."}), 500
 
 
@@ -195,5 +192,4 @@ def deactivate_event(event_id):
         }), 200
 
     except Exception as e:
-        print(f"Error al desactivar evento: {e}") 
         return jsonify({"error": "Error interno del servidor al desactivar el evento."}), 500
