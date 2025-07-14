@@ -81,7 +81,7 @@ const ImageUploader = ({
                 },
                 multiple: multiple,
                 maxFileSize: maxFileSize,
-                clientAllowedFormats: [acceptedFormats],
+                clientAllowedFormats: acceptedFormats === "image/*" ? ['jpg', 'jpeg', 'png', 'gif', 'webp'] : [acceptedFormats],
                 sources: ['local', 'url', 'camera'],
                 showAdvancedOptions: false,
                 cropping: false,
