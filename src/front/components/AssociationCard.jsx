@@ -1,30 +1,81 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export const AssociationCard = ({ association }) => {
+export const AssociationCard = ({ association, statistics }) => {
+    // Función para verificar si hay una imagen válida
+    const hasValidImage = (imageUrl) => {
+        return imageUrl && imageUrl.trim() !== '';
+    };
+
+    // Función para generar la imagen de fallback
+    const getFallbackImage = () => {
+        const initial = association.name?.charAt(0) || 'A';
+        return `https://placehold.co/150x150/4dabf7/ffffff?text=${initial}`;
+    };
+
     return (
-        <div className="card h-100 shadow-sm">
-            <img
-                src={association.image_url || 'https://placehold.co/400x200/6c757d/ffffff?text=Asociación'}
-                className="card-img-top"
-                alt={association.name}
-                style={{ height: '200px', objectFit: 'cover' }}
-            />
-            <div className="card-body d-flex flex-column">
-                <h5 className="card-title">{association.name}</h5>
-                <p className="card-text flex-grow-1">
-                    {association.description?.length > 100
-                        ? `${association.description.substring(0, 100)}...`
-                        : association.description
-                    }
-                </p>
-                <div className="mt-auto">
-                    <small className="text-muted d-block mb-2">
-                        <i className="bi bi-envelope me-1"></i>
-                        {association.contact_email}
-                    </small>
-                    <Link to={`/association/${association.id}`} className="btn btn-primary w-100">
-                        Ver detalle
+        <div className="association-card">
+            <div className="association-header">
+                <div className="association-avatar">
+                    <img
+                        src={hasValidImage(association.image_url) ? association.image_url : getFallbackImage()}
+                        className="avatar-image"
+                        alt={association.name}
+                        loading="lazy"
+                        onError={(e) => {
+                            // Si la imagen falla, mostrar el fallback
+                            e.target.src = getFallbackImage();
+                        }}
+                    />
+                </div>
+                <div className="association-info">
+                    <h5 className="association-name" title={association.name}>
+                        {association.name}
+                    </h5>
+                    <div className="association-contact">
+                        <i className="bi bi-envelope text-association me-1"></i>
+                        <span className="text-muted small" title={association.contact_email}>
+                            {association.contact_email}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="association-body">
+                <div className="association-content">
+                    <p className="association-description">
+                        {association.description?.length > 120
+                            ? `${association.description.substring(0, 120)}...`
+                            : association.description || 'Sin descripción disponible'
+                        }
+                    </p>
+
+                    <div className="association-stats-inline">
+                        <div className="stat-inline">
+                            <i className="bi bi-calendar-event text-association"></i>
+                            <span className="stat-value-inline">{statistics.active_events_count || 0}</span>
+                        </div>
+                        <div className="stat-inline">
+                            <i className="bi bi-people text-volunteer"></i>
+                            <span className="stat-value-inline">{statistics.total_volunteers || 0}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="association-actions">
+                    <Link
+                        to={`/association/${association.id}`}
+                        className="btn btn-outline-association"
+                    >
+                        <i className="bi bi-eye me-2"></i>
+                        Ver perfil
+                    </Link>
+                    <Link
+                        to={`/event/list?association_id=${association.id}`}
+                        className="btn btn-volunteer"
+                    >
+                        <i className="bi bi-calendar-check me-2"></i>
+                        Ver eventos
                     </Link>
                 </div>
             </div>

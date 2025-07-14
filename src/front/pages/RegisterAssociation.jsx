@@ -249,8 +249,11 @@ const RegisterAssociation = () => {
         <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-4">
             <div className="row w-100 justify-content-center">
                 <div className="col-12 col-sm-11 col-md-10 col-lg-9 col-xl-8">
-                    <div className="card shadow-lg border-0 rounded-4">
-                        <div className="card-header bg-info text-white text-center py-4 rounded-top-4">
+                    <div className="card border-0 rounded-4 auth-card">
+                        <div className="card-header text-white text-center py-4 rounded-top-4"
+                            style={{
+                                background: `linear-gradient(135deg, var(--sae-association), var(--sae-association-dark))`
+                            }}>
                             <h2 className="mb-0 fw-bold">
                                 <i className="bi bi-building me-2"></i>
                                 Registro de Asociación
@@ -261,7 +264,7 @@ const RegisterAssociation = () => {
                             {/* Mostrar loading global */}
                             {store.isLoading && (
                                 <div className="text-center mb-3">
-                                    <div className="spinner-border text-info" role="status">
+                                    <div className="spinner-border text-primary" role="status">
                                         <span className="visually-hidden">Cargando...</span>
                                     </div>
                                 </div>
@@ -302,9 +305,10 @@ const RegisterAssociation = () => {
                                         <span className="d-none d-sm-inline">Datos del </span>Representante
                                     </h4>
                                     <div className="row">
-                                        {/* Campo de nombre */}
-                                        <div className="mb-3">
-                                            <label htmlFor="name" className="form-label">Nombre</label>
+                                        <div className="col-md-6 mb-3">
+                                            <label htmlFor="name" className="form-label fw-semibold">
+                                                <i className="bi bi-person me-1"></i>Nombre
+                                            </label>
                                             <input
                                                 type="text"
                                                 name="name"
@@ -313,14 +317,18 @@ const RegisterAssociation = () => {
                                                 placeholder="Tu nombre"
                                                 value={formData.name}
                                                 onChange={handleChange}
+                                                disabled={store.isLoading}
                                                 autoComplete="given-name"
                                             />
-                                            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                                            {errors.name && (
+                                                <div className="text-danger small mt-1">{errors.name}</div>
+                                            )}
                                         </div>
 
-                                        {/* Campo de apellido */}
-                                        <div className="mb-3">
-                                            <label htmlFor="lastname" className="form-label">Apellidos</label>
+                                        <div className="col-md-6 mb-3">
+                                            <label htmlFor="lastname" className="form-label fw-semibold">
+                                                <i className="bi bi-person me-1"></i>Apellidos
+                                            </label>
                                             <input
                                                 type="text"
                                                 name="lastname"
@@ -329,14 +337,20 @@ const RegisterAssociation = () => {
                                                 placeholder="Tus apellidos"
                                                 value={formData.lastname}
                                                 onChange={handleChange}
+                                                disabled={store.isLoading}
                                                 autoComplete="family-name"
                                             />
-                                            {errors.lastname && <div className="invalid-feedback">{errors.lastname}</div>}
+                                            {errors.lastname && (
+                                                <div className="text-danger small mt-1">{errors.lastname}</div>
+                                            )}
                                         </div>
+                                    </div>
 
-                                        {/* Campo de email */}
-                                        <div className="mb-3">
-                                            <label htmlFor="email" className="form-label">Email</label>
+                                    <div className="row">
+                                        <div className="col-md-6 mb-3">
+                                            <label htmlFor="email" className="form-label fw-semibold">
+                                                <i className="bi bi-envelope me-1"></i>Email
+                                            </label>
                                             <input
                                                 type="email"
                                                 name="email"
@@ -345,14 +359,18 @@ const RegisterAssociation = () => {
                                                 placeholder="tu.email@ejemplo.com"
                                                 value={formData.email}
                                                 onChange={handleChange}
+                                                disabled={store.isLoading}
                                                 autoComplete="email"
                                             />
-                                            {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                                            {errors.email && (
+                                                <div className="text-danger small mt-1">{errors.email}</div>
+                                            )}
                                         </div>
 
-                                        {/* Campo de teléfono */}
-                                        <div className="mb-3">
-                                            <label htmlFor="phone" className="form-label">Teléfono</label>
+                                        <div className="col-md-6 mb-3">
+                                            <label htmlFor="phone" className="form-label fw-semibold">
+                                                <i className="bi bi-telephone me-1"></i>Teléfono
+                                            </label>
                                             <input
                                                 type="tel"
                                                 name="phone"
@@ -361,13 +379,17 @@ const RegisterAssociation = () => {
                                                 placeholder="Ejemplo: 612345678"
                                                 value={formData.phone}
                                                 onChange={handleChange}
+                                                disabled={store.isLoading}
                                                 autoComplete="tel"
                                             />
-                                            {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
+                                            {errors.phone && (
+                                                <div className="text-danger small mt-1">{errors.phone}</div>
+                                            )}
                                         </div>
+                                    </div>
 
-                                        {/* Campo de contraseña */}
-                                        <div className="mb-3">
+                                    <div className="row">
+                                        <div className="col-md-6 mb-3">
                                             <label htmlFor="password" className="form-label fw-semibold">
                                                 <i className="bi bi-lock me-1"></i>Contraseña
                                             </label>
@@ -387,8 +409,7 @@ const RegisterAssociation = () => {
                                             )}
                                         </div>
 
-                                        {/* Campo de confirmar contraseña */}
-                                        <div className="mb-3">
+                                        <div className="col-md-6 mb-4">
                                             <label htmlFor="confirmPassword" className="form-label fw-semibold">
                                                 <i className="bi bi-lock-fill me-1"></i>Confirmar
                                             </label>
@@ -412,7 +433,7 @@ const RegisterAssociation = () => {
 
                                 {/* Datos de la Asociación */}
                                 <div className="mb-4">
-                                    <h4 className="text-info mb-3 h5 h4-md">
+                                    <h4 className="text-primary mb-3 h5 h4-md">
                                         <i className="bi bi-building me-2"></i>
                                         <span className="d-none d-sm-inline">Datos de la </span>Asociación
                                     </h4>
@@ -476,9 +497,10 @@ const RegisterAssociation = () => {
                                     </div>
 
                                     <div className="row">
-                                        {/* Campo de email de contacto de la asociación */}
-                                        <div className="mb-3">
-                                            <label htmlFor="contact_email" className="form-label">Email de Contacto</label>
+                                        <div className="col-md-6 mb-3">
+                                            <label htmlFor="contact_email" className="form-label fw-semibold">
+                                                <i className="bi bi-envelope me-1"></i>Email de Contacto
+                                            </label>
                                             <input
                                                 type="email"
                                                 name="contact_email"
@@ -487,14 +509,18 @@ const RegisterAssociation = () => {
                                                 placeholder="contacto@asociacion.com"
                                                 value={formData.contact_email}
                                                 onChange={handleChange}
+                                                disabled={store.isLoading}
                                                 autoComplete="email"
                                             />
-                                            {errors.contact_email && <div className="invalid-feedback">{errors.contact_email}</div>}
+                                            {errors.contact_email && (
+                                                <div className="text-danger small mt-1">{errors.contact_email}</div>
+                                            )}
                                         </div>
 
-                                        {/* Campo de teléfono de contacto de la asociación */}
-                                        <div className="mb-4">
-                                            <label htmlFor="contact_phone" className="form-label">Teléfono de Contacto</label>
+                                        <div className="col-md-6 mb-4">
+                                            <label htmlFor="contact_phone" className="form-label fw-semibold">
+                                                <i className="bi bi-telephone me-1"></i>Teléfono de Contacto
+                                            </label>
                                             <input
                                                 type="tel"
                                                 name="contact_phone"
@@ -503,9 +529,12 @@ const RegisterAssociation = () => {
                                                 placeholder="Ejemplo: 612345678"
                                                 value={formData.contact_phone}
                                                 onChange={handleChange}
+                                                disabled={store.isLoading}
                                                 autoComplete="tel"
                                             />
-                                            {errors.contact_phone && <div className="invalid-feedback">{errors.contact_phone}</div>}
+                                            {errors.contact_phone && (
+                                                <div className="text-danger small mt-1">{errors.contact_phone}</div>
+                                            )}
                                         </div>
                                     </div>
 
@@ -599,7 +628,7 @@ const RegisterAssociation = () => {
 
                                 <button
                                     type="submit"
-                                    className="btn btn-info w-100 py-2 fw-semibold"
+                                    className="btn btn-association w-100 py-2 fw-semibold"
                                     disabled={store.isLoading}
                                 >
                                     {store.isLoading ? (

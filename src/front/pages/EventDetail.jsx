@@ -4,6 +4,7 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import authService from '../services/authService.js';
 import NotificationModal from '../components/NotificationModal';
 import useNotification from '../hooks/useNotification';
+import '../styles/event-list.css'; // Reutilizar los estilos
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || window.location.origin;
 
@@ -15,8 +16,17 @@ export const EventDetail = () => {
     const [userIsRegistered, setUserIsRegistered] = useState(false)
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { notification, hideNotification, showSuccess, showError, showWarning } = useNotification();
+    const { notification, hideNotification, showSuccess, showError, showWarning, showConfirm } = useNotification();
 
+    // Función para verificar si hay una imagen válida
+    const hasValidImage = (imageUrl) => {
+        return imageUrl && imageUrl.trim() !== '';
+    };
+
+    // Función para generar la imagen de fallback
+    const getFallbackImage = () => {
+        return 'https://placehold.co/800x400/4dabf7/ffffff?text=Evento';
+    };
 
     // Función para obtener los detalles del evento del backend
     const fetchEventDetails = async () => {
@@ -27,26 +37,25 @@ export const EventDetail = () => {
                 const errorData = await res.json();
                 console.error("Error al cargar evento:", errorData);
                 showError('Error al cargar evento', errorData.error || 'No se pudo cargar el evento.');
-                setEvent(null); // Limpiar el evento en caso de error
+                setEvent(null);
                 return;
             }
             const eventData = await res.json();
             setEvent(eventData);
 
-            // Verificar si el usuario actual está registrado después de cargar el evento
-            // Solo si hay un usuario logueado y el evento tiene la lista de voluntarios
+            // Verificar si el usuario actual está registrado
             if (store.user && eventData.volunteers) {
                 const isUserRegistered = eventData.volunteers.some(
                     (volunteer) => volunteer.id === store.user.id
                 );
                 setUserIsRegistered(isUserRegistered);
             } else {
-                setUserIsRegistered(false); // Si no hay usuario o no hay voluntarios en el evento
+                setUserIsRegistered(false);
             }
         } catch (error) {
             console.error("Error al obtener detalles del evento:", error);
             showError('Error de conexión', 'Hubo un problema al cargar los detalles del evento.');
-            setEvent(null); // Limpiar el evento en caso de error de red
+            setEvent(null);
         } finally {
             setLoading(false);
         }
@@ -75,7 +84,7 @@ export const EventDetail = () => {
             const response = await fetch(`${API_BASE_URL}/api/volunteers/${id}/join`, {
                 method: "POST",
                 headers: {
-                    "Authorization": `Bearer ${token}` // Envía el token de autenticación
+                    "Authorization": `Bearer ${token}`
                 }
             });
 
@@ -83,7 +92,7 @@ export const EventDetail = () => {
 
             if (response.ok) {
                 showSuccess('¡Te has apuntado!', data.message);
-                fetchEventDetails(); // Vuelve a cargar los detalles del evento para actualizar el contador y la lista
+                fetchEventDetails();
             } else {
                 showError('Error al apuntarse', data.message || 'Error desconocido');
             }
@@ -107,7 +116,7 @@ export const EventDetail = () => {
             const response = await fetch(`${API_BASE_URL}/api/volunteers/${id}/leave`, {
                 method: "DELETE",
                 headers: {
-                    "Authorization": `Bearer ${token}` // Envía el token de autenticación
+                    "Authorization": `Bearer ${token}`
                 }
             });
 
@@ -115,7 +124,7 @@ export const EventDetail = () => {
 
             if (response.ok) {
                 showSuccess('Te has desapuntado', data.message);
-                fetchEventDetails(); // Vuelve a cargar los detalles del evento
+                fetchEventDetails();
             } else {
                 showError('Error al desapuntarse', data.message || 'Error desconocido');
             }
@@ -125,126 +134,312 @@ export const EventDetail = () => {
         }
     };
 
-    // useEffect para cargar los datos del evento cuando el componente se monta
-    // o cuando cambia el ID del evento o la información del usuario logueado
+    // Función para desactivar evento (solo para asociaciones)
+    const handleDeactivateEvent = async () => {
+        const currentUser = authService.getCurrentUser();
+
+        if (!currentUser || currentUser.role !== 'association') {
+            showWarning('Acceso denegado', 'Solo las asociaciones pueden desactivar eventos.');
+            return;
+        }
+
+        if (currentUser.association?.id !== event.association_id) {
+            showWarning('Acceso denegado', 'Solo la asociación que creó el evento puede desactivarlo.');
+            return;
+        }
+
+        showConfirm(
+            '¿Desactivar evento?',
+            '¿Estás seguro de que quieres desactivar este evento? Los voluntarios ya no podrán verlo ni apuntarse.',
+            async () => {
+                try {
+                    const token = authService.getToken();
+                    const response = await fetch(`${API_BASE_URL}/api/events/${id}/deactivate`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        showSuccess('Evento desactivado', 'El evento ha sido desactivado correctamente');
+                        fetchEventDetails(); // Recargar para mostrar el estado actualizado
+                    } else {
+                        const errorData = await response.json();
+                        showError('Error al desactivar', errorData.error || 'No se pudo desactivar el evento');
+                    }
+                } catch (error) {
+                    console.error("Error deactivating event:", error);
+                    showError('Error de conexión', 'Error de conexión al desactivar el evento');
+                }
+            }
+        );
+    };
+
     useEffect(() => {
         fetchEventDetails();
-    }, [id, store.user?.id]); // Dependencia del ID del usuario para re-chequear el registro si el user cambia (login/logout)
+    }, [id, store.user?.id]);
 
+    if (loading) {
+        return (
+            <div className="event-list-container d-flex align-items-center justify-content-center">
+                <div className="text-center">
+                    <div className="spinner-border loading-spinner" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                    </div>
+                    <p className="mt-3 text-muted">Cargando evento...</p>
+                </div>
+            </div>
+        );
+    }
 
-    // Si el evento aún no se ha cargado, muestra un mensaje de carga
-    if (loading) return <p>Cargando evento...</p>;
+    if (error || !event) {
+        return (
+            <div className="event-list-container">
+                <div className="container">
+                    <div className="alert alert-danger" role="alert">
+                        {error || 'No se pudo cargar el evento'}
+                    </div>
+                    <button
+                        className="btn btn-outline-primary"
+                        onClick={() => navigate("/event/list")}
+                    >
+                        <i className="bi bi-arrow-left me-2"></i>
+                        Volver a eventos
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     // Variables de ayuda para el renderizado condicional
-    const currentVolunteers = parseInt(event.Volunteers_count) || 0; // <-- ¡CAMBIADO A event.Volunteers_count!
+    const currentVolunteers = parseInt(event.Volunteers_count) || 0;
     const maxVolunteers = parseInt(event.max_volunteers) || null;
     const isEventFull = maxVolunteers !== null && currentVolunteers >= maxVolunteers;
     const availableSlots = maxVolunteers !== null ? maxVolunteers - currentVolunteers : null;
 
-
     return (
-        <div className="container mt-4">
-            <div className="row">
-                {/* Columna izquierda para detalles principales del evento */}
-                <div className="col-md-8">
-                    <h2>{event.title}</h2>
-                    {/* Renderiza la imagen del evento si existe, si no, puedes poner una placeholder */}
-                    {event.image_url && (
-                        <img
-                            src={event.image_url}
-                            className="img-fluid mb-3 rounded shadow-sm"
-                            alt={event.title}
-                            style={{ maxHeight: '400px', objectFit: 'cover', width: '100%' }}
-                        />
-                    )}
-
-                    <p>
-                        <strong>Fecha y Hora:</strong> {new Date(event.date).toLocaleString('es-ES', { dateStyle: 'full', timeStyle: 'short' })}
-                    </p>
-                    <p>
-                        <strong>Organizado por:</strong> {event.association_name || 'Asociación desconocida'}
-                    </p>
-                    <hr />
-                    <h5>Descripción del Evento:</h5>
-                    <p className="text-justify">{event.description || 'No hay descripción disponible para este evento.'}</p>
+        <div className="event-list-container event-detail-layout">
+            <div className="container">
+                {/* Header */}
+                <div className="event-list-header d-flex justify-content-between align-items-center mb-4">
+                    <h2 className="event-list-title">
+                        Detalles del Evento
+                    </h2>
+                    <div className="event-list-actions">
+                        <button
+                            className="btn btn-outline-primary"
+                            onClick={() => navigate("/event/list")}
+                        >
+                            <i className="bi bi-arrow-left me-2"></i>
+                            Volver a eventos
+                        </button>
+                    </div>
                 </div>
 
-                {/* Columna derecha para detalles de voluntariado y acciones */}
-                <div className="col-md-4">
-                    <div className="card shadow-sm">
-                        <div className="card-body">
-                            <h5 className="card-title text-primary mb-3">Detalles de Voluntariado</h5>
-                            {/* Información de capacidad actual */}
-                            <p className="card-text">
-                                Voluntarios apuntados: <strong>{currentVolunteers}</strong>
-                                {maxVolunteers !== null ? ` de ${maxVolunteers}` : ''}
-                            </p>
+                <div className="row g-4">
+                    {/* Columna izquierda - Detalles principales */}
+                    <div className="col-lg-8">
+                        <div className="event-detail-card">
+                            <div className="event-detail-header">
+                                <img
+                                    src={hasValidImage(event.image_url) ? event.image_url : getFallbackImage()}
+                                    className="event-detail-image"
+                                    alt={event.title}
+                                    loading="lazy"
+                                    onError={(e) => {
+                                        e.target.src = getFallbackImage();
+                                    }}
+                                />
+                                {!event.is_active && (
+                                    <div className="event-status-badge">
+                                        <i className="bi bi-exclamation-triangle me-1"></i>
+                                        Inactivo
+                                    </div>
+                                )}
+                            </div>
+                            <div className="event-detail-body">
+                                <div className="event-detail-info">
+                                    <h3 className="event-detail-title">{event.title}</h3>
+                                    <p className="event-detail-description">
+                                        {event.description || 'No hay descripción disponible para este evento.'}
+                                    </p>
+                                </div>
 
-                            {/* Mostrar plazas disponibles o si el evento está lleno */}
-                            {event.max_volunteers !== null && (
-                                <p className={`card-text fw-bold ${isEventFull ? 'text-danger' : 'text-success'}`}>
-                                    {isEventFull
-                                        ? "¡Este evento ha alcanzado su límite máximo de voluntarios!"
-                                        : `Plazas disponibles: ${availableSlots}`
-                                    }
-                                </p>
-                            )}
-                            {/* Mensaje si el evento no tiene límite de voluntarios */}
-                            {event.max_volunteers === null && (
-                                <p className="card-text text-muted">
-                                    Este evento no tiene un límite máximo de voluntarios.
-                                </p>
-                            )}
+                                <div className="event-detail-meta">
+                                    <div className="meta-item">
+                                        <i className="bi bi-calendar-event text-association"></i>
+                                        <div className="meta-content">
+                                            <span className="meta-label">Fecha y Hora</span>
+                                            <span className="meta-value">
+                                                {new Date(event.date).toLocaleString('es-ES', {
+                                                    dateStyle: 'full',
+                                                    timeStyle: 'short'
+                                                })}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="meta-item">
+                                        <i className="bi bi-building text-association"></i>
+                                        <div className="meta-content">
+                                            <span className="meta-label">Organizado por</span>
+                                            <span className="meta-value">
+                                                {event.association_name || 'Asociación desconocida'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                            {/* Sección del botón para apuntarse/desapuntarse (condicional según rol y estado) */}
-                            {store.isAuthenticated && store.user?.role === 'volunteer' && (
-                                <div className="mt-4">
-                                    {userIsRegistered ? (
-                                        <button className="btn btn-danger w-100" onClick={handleLeaveEvent}>
-                                            Desapuntarse
-                                        </button>
-                                    ) : (
-                                        <button
-                                            className="btn btn-success w-100"
-                                            onClick={handleJoinEvent}
-                                            disabled={isEventFull} // El botón se deshabilita si el evento está lleno
-                                        >
-                                            {isEventFull ? "Evento Lleno" : "Apuntarse al Evento"}
-                                        </button>
+                    {/* Columna derecha - Detalles de voluntariado */}
+                    <div className="col-lg-4">
+                        <div className="event-detail-sidebar">
+                            <div className="sidebar-section">
+                                <h5 className="sidebar-title">
+                                    <i className="bi bi-people text-volunteer me-2"></i>
+                                    Detalles de Voluntariado
+                                </h5>
+
+                                {/* Información de capacidad */}
+                                <div className="capacity-info">
+                                    <div className="capacity-header">
+                                        <span className="capacity-label">Voluntarios apuntados</span>
+                                        <span className="capacity-value">
+                                            {currentVolunteers}
+                                            {maxVolunteers !== null ? ` / ${maxVolunteers}` : ''}
+                                        </span>
+                                    </div>
+
+                                    {/* Barra de progreso */}
+                                    {maxVolunteers !== null && (
+                                        <div className="progress-container">
+                                            <div className="progress-bar-bg">
+                                                <div
+                                                    className="progress-bar-fill"
+                                                    style={{
+                                                        width: `${(currentVolunteers / maxVolunteers) * 100}%`
+                                                    }}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Estado del evento */}
+                                    {event.max_volunteers !== null && (
+                                        <div className={`status-indicator ${isEventFull ? 'status-full' : 'status-available'}`}>
+                                            <i className={`bi ${isEventFull ? 'bi-exclamation-triangle' : 'bi-check-circle'}`}></i>
+                                            <span>
+                                                {isEventFull
+                                                    ? "¡Evento lleno!"
+                                                    : `${availableSlots} plazas disponibles`
+                                                }
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {event.max_volunteers === null && (
+                                        <div className="status-indicator status-unlimited">
+                                            <i className="bi bi-infinity"></i>
+                                            <span>Sin límite de voluntarios</span>
+                                        </div>
                                     )}
                                 </div>
-                            )}
-                            {/* Mensajes para otros roles o no logueados */}
-                            {!store.isAuthenticated && (
-                                <p className="text-muted mt-4 text-center">Inicia sesión como voluntario para apuntarte.</p>
-                            )}
-                            {store.isAuthenticated && store.user?.role === 'association' && (
-                                <p className="text-muted mt-4 text-center">Las asociaciones no pueden apuntarse a eventos.</p>
-                            )}
 
-                            {/* Lista de Voluntarios Apuntados */}
-                            <h6 className="mt-4 border-top pt-3">Voluntarios Apuntados:</h6>
-                            {event.volunteers && event.volunteers.length > 0 ? (
-                                <ul className="list-group list-group-flush">
-                                    {event.volunteers.map(volunteer => (
-                                        <li key={volunteer.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                            <span>
-                                                {volunteer.name || volunteer.email?.split('@')[0]} {volunteer.lastname || ''}
-                                            </span>
-                                            <span className="badge bg-secondary rounded-pill">
-                                                {new Date(volunteer.joined_at).toLocaleDateString('es-ES')}
-                                            </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p className="text-muted">Nadie se ha apuntado aún.</p>
-                            )}
+                                {/* Botones de acción */}
+                                {store.isAuthenticated && store.user?.role === 'volunteer' && (
+                                    <div className="action-buttons">
+                                        {userIsRegistered ? (
+                                            <button
+                                                className="btn btn-outline-danger w-100"
+                                                onClick={handleLeaveEvent}
+                                            >
+                                                <i className="bi bi-person-dash me-2"></i>
+                                                Desapuntarse
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="btn btn-volunteer w-100"
+                                                onClick={handleJoinEvent}
+                                                disabled={isEventFull}
+                                            >
+                                                <i className="bi bi-person-plus me-2"></i>
+                                                {isEventFull ? "Evento Lleno" : "Apuntarse al Evento"}
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Botón para desactivar evento (solo para asociaciones) */}
+                                {store.isAuthenticated &&
+                                    store.user?.role === 'association' &&
+                                    store.user?.association?.id === event.association_id &&
+                                    event.is_active && (
+                                        <div className="action-buttons">
+                                            <button
+                                                className="btn btn-danger w-100"
+                                                onClick={handleDeactivateEvent}
+                                            >
+                                                <i className="bi bi-x-circle me-2"></i>
+                                                Desactivar Evento
+                                            </button>
+                                        </div>
+                                    )}
+
+                                {/* Mensajes informativos */}
+                                {!store.isAuthenticated && (
+                                    <div className="info-message">
+                                        <i className="bi bi-info-circle me-2"></i>
+                                        Inicia sesión como voluntario para apuntarte.
+                                    </div>
+                                )}
+
+                                {store.isAuthenticated && store.user?.role === 'association' && (
+                                    <div className="info-message">
+                                        <i className="bi bi-info-circle me-2"></i>
+                                        Las asociaciones no pueden apuntarse a eventos.
+                                    </div>
+                                )}
+
+                                {/* Lista de voluntarios */}
+                                <div className="volunteers-section">
+                                    <h6 className="volunteers-title">
+                                        <i className="bi bi-people-fill text-volunteer me-2"></i>
+                                        Voluntarios Apuntados
+                                    </h6>
+
+                                    {event.volunteers && event.volunteers.length > 0 ? (
+                                        <div className="volunteers-list">
+                                            {event.volunteers.map((volunteer) => (
+                                                <div key={volunteer.id} className="volunteer-item">
+                                                    <div className="volunteer-avatar">
+                                                        <i className="bi bi-person-circle"></i>
+                                                    </div>
+                                                    <div className="volunteer-info">
+                                                        <span className="volunteer-name">
+                                                            {volunteer.name} {volunteer.lastname}
+                                                        </span>
+                                                        <small className="volunteer-date">
+                                                            Se apuntó el {new Date(volunteer.joined_at).toLocaleDateString('es-ES')}
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="no-volunteers">
+                                            <i className="bi bi-people text-muted"></i>
+                                            <p className="text-muted">Aún no hay voluntarios apuntados</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <NotificationModal
                 show={notification.show}
                 onClose={hideNotification}

@@ -25,7 +25,7 @@ def join_event(event_id):
     if not event:
         return jsonify({"message": "Evento no encontrado"}), 404
 
-    # Verificar si el evento ya está lleno
+     # Verificar si el evento ya está lleno
     if event.max_volunteers is not None and len(event.event_volunteers) >= event.max_volunteers:
         return jsonify({"message": "Este evento ha alcanzado su número máximo de voluntarios"}), 400
 

@@ -161,8 +161,11 @@ const RegisterUser = () => {
         <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-4">
             <div className="row w-100 justify-content-center">
                 <div className="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-6">
-                    <div className="card shadow-lg border-0 rounded-4">
-                        <div className="card-header bg-success text-white text-center py-4 rounded-top-4">
+                    <div className="card border-0 rounded-4 auth-card">
+                        <div className="card-header text-white text-center py-4 rounded-top-4"
+                            style={{
+                                background: `linear-gradient(135deg, var(--volunteer-color), var(--volunteer-dark))`
+                            }}>
                             <h2 className="mb-0 fw-bold">
                                 <i className="bi bi-person-plus me-2"></i>
                                 Registro de Voluntario
@@ -324,7 +327,7 @@ const RegisterUser = () => {
 
                                 <button
                                     type="submit"
-                                    className="btn btn-success w-100 py-2 fw-semibold"
+                                    className="btn btn-volunteer w-100 py-2 fw-semibold"
                                     disabled={store.isLoading}
                                 >
                                     {store.isLoading ? (

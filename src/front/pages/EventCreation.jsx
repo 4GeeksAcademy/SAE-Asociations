@@ -48,18 +48,50 @@ export const EventCreation = () => {
     }
 
     return (
-        <div className="container mt-4">
-            <div className="d-flex align-items-center mb-4">
-                <h2 className="mb-0">
-                    <i className="bi bi-calendar-plus me-2 text-success"></i>
-                    Crear nuevo evento
-                </h2>
+        <div className="event-creation-bg py-5 min-vh-100 d-flex align-items-center justify-content-center">
+            <div className="event-creation-card shadow-lg p-4 p-md-5 rounded-4 w-100" style={{ maxWidth: 600, background: 'white' }}>
+                <div className="d-flex align-items-center mb-4 gap-3">
+                    <div className="event-creation-icon d-flex align-items-center justify-content-center rounded-circle bg-association" style={{ width: 56, height: 56 }}>
+                        <i className="bi bi-calendar-plus text-white" style={{ fontSize: 32 }}></i>
+                    </div>
+                    <div>
+                        <h2 className="mb-0 fw-bold text-association">Crear nuevo evento</h2>
+                        <div className="small text-muted">Publica un evento para tu asociación</div>
+                    </div>
+                </div>
+                <div className="event-creation-banner d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style={{ background: 'linear-gradient(90deg, #4dabf7 0%, #1976d2 100%)', color: 'white' }}>
+                    <div className="d-flex align-items-center justify-content-center rounded-circle bg-white" style={{ width: 44, height: 44 }}>
+                        <i className="bi bi-building text-association" style={{ fontSize: 24 }}></i>
+                    </div>
+                    <div>
+                        <div className="fw-semibold">Creando como:</div>
+                        <div className="fw-bold">{user?.association?.name}</div>
+                    </div>
+                </div>
+                <EventForm />
             </div>
-            <div className="alert alert-info">
-                <i className="bi bi-info-circle me-2"></i>
-                <strong>Creando como:</strong> {user?.association?.name}
-            </div>
-            <EventForm />
+            <style>{`
+                .event-creation-bg {
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                }
+                .bg-association {
+                    background: linear-gradient(135deg, #4dabf7 0%, #1976d2 100%) !important;
+                }
+                .text-association {
+                    color: #1976d2 !important;
+                }
+                @media (max-width: 767px) {
+                    .event-creation-card {
+                        padding: 1.5rem !important;
+                        border-radius: 1.25rem !important;
+                    }
+                    .event-creation-banner {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 0.5rem;
+                    }
+                }
+            `}</style>
         </div>
     );
 };

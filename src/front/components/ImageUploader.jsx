@@ -239,7 +239,7 @@ const ImageUploader = ({
             )}
 
             {/* Estilos CSS integrados */}
-            <style jsx>{`
+            <style>{`
                 .image-uploader-modern {
                     max-width: 100%;
                 }
