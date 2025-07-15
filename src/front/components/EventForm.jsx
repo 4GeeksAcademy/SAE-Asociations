@@ -188,15 +188,16 @@ export const EventForm = () => {
                 </div>
 
                 <div className="col-12">
-                    <label htmlFor="event_type" className="form-label">Tipo de Evento (opcional)</label>
+                    <label htmlFor="event_type" className="form-label">Tipo de Evento <span className="text-danger">*</span></label>
                     <select
                         className="form-control"
                         id="event_type"
                         name="event_type"
                         value={formData.event_type}
                         onChange={handleChange}
+                        required
                     >
-                        <option value="">Selecciona un tipo</option>
+                        <option value="">Selecciona un tipo</option> 
                         <option value="Medio Ambiente">Medio Ambiente</option>
                         <option value="Educación">Educación</option>
                         <option value="Salud">Salud</option>

@@ -14,7 +14,7 @@ class Event(db.Model):
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     city: Mapped[str] = mapped_column(String(100), nullable=False)
     address: Mapped[str] = mapped_column(String(255), nullable=True)
-    event_type: Mapped[str] = mapped_column(String(100), nullable=True)
+    event_type: Mapped[str] = mapped_column(String(100), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     is_active: Mapped[bool] = mapped_column(

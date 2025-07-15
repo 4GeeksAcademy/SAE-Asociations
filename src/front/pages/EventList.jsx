@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import authService from "../services/authService";
 import NotificationModal from '../components/NotificationModal';
 import useNotification from '../hooks/useNotification';
+import { FilterModal } from "../components/FilterModal";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 

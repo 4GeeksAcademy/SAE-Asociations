@@ -59,11 +59,12 @@ def validate_event_data(data):
             errors['address'] = 'La dirección debe tener un máximo de 255 caracteres.'
 
     # Validar 'event_type'
-    if 'event_type' in data and data['event_type'] is not None and data['event_type'] != "":
-        if not isinstance(data['event_type'], str):
-            errors['event_type'] = 'El tipo de evento debe ser una cadena de texto.'
-        elif len(data['event_type']) > 100:
-            errors['event_type'] = 'El tipo de evento debe tener un máximo de 100 caracteres.'
+    if not data.get('event_type'):
+        errors['event_type'] = 'El tipo de evento es obligatorio.'
+    elif not isinstance(data['event_type'], str):
+        errors['event_type'] = 'El tipo de evento debe ser una cadena de texto.'
+    elif len(data['event_type']) > 100:
+        errors['event_type'] = 'El tipo de evento debe tener un máximo de 100 caracteres.'
 
     # Validar 'max_volunteers'
     if 'max_volunteers' in data: 
