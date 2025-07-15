@@ -19,8 +19,13 @@ def validate_event_data(data):
     elif len(data['title']) > 200:
         errors['title'] = 'El título debe tener un máximo de 200 caracteres.'
 
+    # Validar 'description'
+    if not data.get('description'):
+        errors['description'] = 'La descripción del evento es obligatoria.'
+    elif not isinstance(data['description'], str):
+        errors['description'] = 'La descripción debe ser una cadena de texto.'
+
     # Validar 'image_url' (opcional, formato URL o null/vacío)
-    # Si image_url está presente y no está vacío, validamos que sea una URL válida
     if data.get('image_url'): # Solo validamos si hay algo en image_url
         if not isinstance(data['image_url'], str):
             errors['image_url'] = 'La URL de la imagen debe ser una cadena de texto.'
@@ -38,6 +43,29 @@ def validate_event_data(data):
         except ValueError:
             errors['date'] = 'El formato de fecha y hora no es válido. Debe ser YYYY-MM-DDTHH:MM.'
 
+    # Validar 'city'
+    if not data.get('city'):
+        errors['city'] = 'La ciudad del evento es obligatoria.'
+    elif not isinstance(data['city'], str):
+        errors['city'] = 'La ciudad debe ser una cadena de texto.'
+    elif len(data['city']) > 100:
+        errors['city'] = 'La ciudad debe tener un máximo de 100 caracteres.'
+
+    # Validar 'address'
+    if 'address' in data and data['address'] is not None and data['address'] != "":
+        if not isinstance(data['address'], str):
+            errors['address'] = 'La dirección debe ser una cadena de texto.'
+        elif len(data['address']) > 255:
+            errors['address'] = 'La dirección debe tener un máximo de 255 caracteres.'
+
+    # Validar 'event_type'
+    if 'event_type' in data and data['event_type'] is not None and data['event_type'] != "":
+        if not isinstance(data['event_type'], str):
+            errors['event_type'] = 'El tipo de evento debe ser una cadena de texto.'
+        elif len(data['event_type']) > 100:
+            errors['event_type'] = 'El tipo de evento debe tener un máximo de 100 caracteres.'
+
+    # Validar 'max_volunteers'
     if 'max_volunteers' in data: 
         max_v = data['max_volunteers']
         if max_v is not None and max_v != "": # Permitimos que sea None o string vacío del frontend

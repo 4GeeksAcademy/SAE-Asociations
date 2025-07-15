@@ -92,6 +92,9 @@ def create_event():
             description=data.get("description"),
             image_url=data.get("image_url"),
             date=datetime.fromisoformat(data["date"]),
+            city=data["city"],
+            address=data.get("address"),
+            event_type=data.get("event_type"),
             association_id=association_data['id'],
             max_volunteers=max_volunteers_value
         )
@@ -130,10 +133,18 @@ def update_event(event_id):
     if data is None:
         return jsonify({"error": "Formato de petición JSON inválido."}), 400
 
+    # Revalidar los datos que llegan en la actualización
+    validation_error_response = check_event_data(data)
+    if validation_error_response:
+        return validation_error_response
+
     try:
         event.title = data.get("title", event.title)
         event.description = data.get("description", event.description)
         event.image_url = data.get("image_url", event.image_url)
+        event.city = data.get("city", event.city)
+        event.address = data.get("address", event.address)
+        event.event_type = data.get("event_type", event.event_type) 
 
         if data.get("date"):
             event.date = datetime.fromisoformat(data["date"])
