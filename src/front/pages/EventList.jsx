@@ -154,9 +154,20 @@ export const EventList = () => {
 
     }, [location.search, association_id, appliedFilters]);
 
-    const handleClearFilter = () => {
-        navigate('/event/list');
+    // Limpiar filtros
+    const handleClearMainFilters = () => {
+        setAppliedFilters({
+            city: '',
+            event_type: '',
+            sort_by_date: 'newest' // Vuelve al valor por defecto
+        });
     };
+
+    // Determinar si alguno de los filtros principales está activo
+    const areMainFiltersActive = appliedFilters.city !== '' ||
+        appliedFilters.event_type !== '' ||
+        appliedFilters.sort_by_date !== 'newest';
+
 
     if (loading) {
         return (
@@ -180,25 +191,24 @@ export const EventList = () => {
     }
     return (
         <div className="container mt-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
                 <h1>
                     {filteredByAssociation
                         ? `Eventos de la asociación`
                         : "Eventos disponibles"}
                 </h1>
 
-                <div className="d-flex gap-2 align-items-center">
-                    {filteredByAssociation && (
+                <div className="d-flex gap-2 align-items-center flex-wrap justify-content-end mt-2 mt-md-0">
+                    {areMainFiltersActive && (
                         <button
-                            className="btn btn-outline-secondary"
-                            onClick={handleClearFilter}
+                            className="btn btn-outline-secondary flex-grow-1 flex-md-grow-0"
+                            onClick={handleClearMainFilters}
                         >
                             Ver todos los eventos
                         </button>
                     )}
-
                     <button
-                        className="btn btn-outline-secondary d-flex align-items-center"
+                        className="btn btn-outline-secondary d-flex align-items-center flex-grow-1 flex-md-grow-0"
                         onClick={handleOpenFilterModal}
                         title="Filtrar Eventos"
                     >
@@ -210,7 +220,7 @@ export const EventList = () => {
                     {/* Botón de crear evento - solo para asociaciones */}
                     {user?.role === 'association' ? (
                         <button
-                            className="btn btn-success"
+                            className="btn btn-success flex-grow-1 flex-md-grow-0"
                             onClick={() => navigate("/event/creation")}
                         >
                             <i className="bi bi-plus-circle me-2"></i>
@@ -218,7 +228,7 @@ export const EventList = () => {
                         </button>
                     ) : user?.role === 'volunteer' ? (
                         <button
-                            className="btn btn-outline-info"
+                            className="btn btn-outline-info flex-grow-1 flex-md-grow-0"
                             onClick={() => navigate("/register/association")}
                             title="Regístrate como asociación para poder crear eventos"
                         >
@@ -227,7 +237,7 @@ export const EventList = () => {
                         </button>
                     ) : (
                         <button
-                            className="btn btn-outline-primary"
+                            className="btn btn-outline-primary flex-grow-1 flex-md-grow-0"
                             onClick={() => navigate("/login")}
                         >
                             <i className="bi bi-box-arrow-in-right me-2"></i>

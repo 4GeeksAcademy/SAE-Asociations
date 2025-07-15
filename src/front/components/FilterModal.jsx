@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 
 export const FilterModal = ({ show, onClose, onApplyFilters, initialFilters }) => {
-    // Estado interno para los filtros, inicializado desde la prop initialFilters
-    const [currentFilters, setCurrentFilters] = useState(initialFilters);
+    
+    const [currentFilters, setCurrentFilters] = useState(
+        JSON.parse(JSON.stringify(initialFilters))
+    );
 
-    // Actualiza el estado interno cuando la prop initialFilters cambia (ej. cuando el modal se abre con filtros previos)
     useEffect(() => {
-        setCurrentFilters(initialFilters);
+        setCurrentFilters(JSON.parse(JSON.stringify(initialFilters)));
     }, [initialFilters]);
 
     const handleChange = (e) => {
@@ -18,7 +19,7 @@ export const FilterModal = ({ show, onClose, onApplyFilters, initialFilters }) =
     };
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Recargar la página
         onApplyFilters(currentFilters); // Pasa los filtros al componente padre
         onClose(); // Cierra el modal
     };
@@ -28,18 +29,17 @@ export const FilterModal = ({ show, onClose, onApplyFilters, initialFilters }) =
     }
 
     return (
-        // El div principal del modal. Usamos un estilo en línea para mostrarlo/ocultarlo.
-        // El onClick en el div principal permite cerrar el modal al hacer clic fuera del contenido.
-        <div 
-            className="modal" 
-            tabIndex="-1" 
-            style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }} 
-            aria-labelledby="filterModalLabel" 
+        <div
+            className="modal fade show" // Clases de Bootstrap para un modal visible
+            tabIndex="-1"
+            role="dialog" // Rol de accesibilidad
+            style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
+            aria-labelledby="filterModalLabel"
             aria-hidden={!show}
-            onClick={onClose} 
+            onClick={onClose} // Permite cerrar el modal al hacer clic fuera del contenido
         >
             {/* Contenido del modal. El onClick de aquí previene que el modal se cierre al hacer clic DENTRO del contenido. */}
-            <div className="modal-dialog modal-dialog-centered" onClick={e => e.stopPropagation()}> 
+            <div className="modal-dialog modal-dialog-centered" role="document" onClick={e => e.stopPropagation()}>
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title" id="filterModalLabel">Filtrar Eventos</h5>
@@ -61,22 +61,8 @@ export const FilterModal = ({ show, onClose, onApplyFilters, initialFilters }) =
                                 />
                             </div>
 
-                            {/* Filtro por Ordenación de Fecha */}
-                            <div className="mb-3">
-                                <label htmlFor="dateSortFilter" className="form-label">Fecha:</label>
-                                <select
-                                    className="form-select"
-                                    id="dateSortFilter"
-                                    name="sort_by_date" 
-                                    value={currentFilters.sort_by_date}
-                                    onChange={handleChange}
-                                >
-                                    <option value="newest">Más recientes</option>
-                                    <option value="oldest">Más antiguos</option>
-                                </select>
-                            </div>
-
                             {/* Filtro por Tipo de Evento */}
+                            {/* Lo moví aquí para que coincida con el orden de tu EventList.jsx para claridad */}
                             <div className="mb-3">
                                 <label htmlFor="eventTypeFilter" className="form-label">Tipo de Evento:</label>
                                 <select
@@ -95,6 +81,21 @@ export const FilterModal = ({ show, onClose, onApplyFilters, initialFilters }) =
                                     <option value="Deporte">Deporte</option>
                                     <option value="Cultura">Cultura</option>
                                     <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+
+                            {/* Filtro por Ordenación de Fecha */}
+                            <div className="mb-3">
+                                <label htmlFor="dateSortFilter" className="form-label">Fecha:</label>
+                                <select
+                                    className="form-select"
+                                    id="dateSortFilter"
+                                    name="sort_by_date"
+                                    value={currentFilters.sort_by_date}
+                                    onChange={handleChange}
+                                >
+                                    <option value="newest">Más recientes</option>
+                                    <option value="oldest">Más antiguos</option>
                                 </select>
                             </div>
                         </div>
