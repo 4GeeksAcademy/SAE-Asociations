@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import authService from "../services/authService";
 import NotificationModal from '../components/NotificationModal';
 import useNotification from '../hooks/useNotification';
+import '../styles/event-list.css';
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -40,7 +41,9 @@ export const EventList = () => {
             }
 
             const data = await res.json();
-            setEvents(data);
+            // Ordenar eventos por fecha (más nuevos primero)
+            const sortedEvents = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setEvents(sortedEvents);
             setError('');
         } catch (error) {
             console.error("Error fetching events:", error);
@@ -110,91 +113,104 @@ export const EventList = () => {
 
     if (loading) {
         return (
-            <div className="container mt-4 text-center">
-                <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Cargando...</span>
+            <div className="event-list-container d-flex align-items-center justify-content-center">
+                <div className="text-center">
+                    <div className="spinner-border loading-spinner" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                    </div>
+                    <p className="mt-3 text-muted">Cargando eventos...</p>
                 </div>
-                <p className="mt-3">Cargando eventos...</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="container mt-4">
-                <div className="alert alert-danger" role="alert">
-                    {error}
-                </div>
-            </div>
-        )
-    }
-    return (
-        <div className="container mt-4">
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>
-                    {filteredByAssociation
-                        ? `Eventos de la asociación`
-                        : "Eventos disponibles"}
-                </h2>
-
-                <div>
-                    {filteredByAssociation && (
-                        <button
-                            className="btn btn-outline-secondary me-2"
-                            onClick={handleClearFilter}
-                        >
-                            Ver todos los eventos
-                        </button>
-                    )}
-
-                    {/* Botón de crear evento - solo para asociaciones */}
-                    {user?.role === 'association' ? (
-                        <button
-                            className="btn btn-success"
-                            onClick={() => navigate("/event/creation")}
-                        >
-                            <i className="bi bi-plus-circle me-2"></i>
-                            Crear evento
-                        </button>
-                    ) : user?.role === 'volunteer' ? (
-                        <button
-                            className="btn btn-outline-info"
-                            onClick={() => navigate("/register/association")}
-                            title="Regístrate como asociación para poder crear eventos"
-                        >
-                            <i className="bi bi-building me-2"></i>
-                            Registrar asociación
-                        </button>
-                    ) : (
-                        <button
-                            className="btn btn-outline-primary"
-                            onClick={() => navigate("/login")}
-                        >
-                            <i className="bi bi-box-arrow-in-right me-2"></i>
-                            Iniciar sesión
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            <div className="row">
-                {events.length === 0 ? (
-                    <div className="col-12">
-                        <div className="alert alert-info">
-                            No se encontraron eventos
-                        </div>
+            <div className="event-list-container">
+                <div className="container">
+                    <div className="alert alert-danger" role="alert">
+                        {error}
                     </div>
-                ) : (
-                    events.map(event => (
-                        <div className="col-md-4" key={event.id}>
-                            <EventCard
-                                event={event}
-                                user={user}
-                                onDeactivate={handleDeactivateEvent}
-                            />
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="event-list-container">
+            <div className="container">
+                <div className="event-list-header d-flex justify-content-between align-items-center">
+                    <h2 className="event-list-title">
+                        {filteredByAssociation
+                            ? "Eventos de la asociación"
+                            : "Eventos disponibles"}
+                    </h2>
+
+                    <div className="event-list-actions">
+                        {filteredByAssociation && (
+                            <button
+                                className="btn btn btn-outline-primary me-2"
+                                onClick={handleClearFilter}
+                            >
+                                <i className="bi bi-grid-3x3-gap me-2"></i>
+                                Ver todos los eventos
+                            </button>
+                        )}
+
+                        {user?.role === 'association' ? (
+                            <button
+                                className="btn btn-association"
+                                onClick={() => navigate("/event/creation")}
+                            >
+                                <i className="bi bi-plus-circle me-2"></i>
+                                Crear evento
+                            </button>
+                        ) : user?.role === 'volunteer' ? (
+                            <button
+                                className="btn btn-outline-association"
+                                onClick={() => navigate("/register/association")}
+                                title="Regístrate como asociación para poder crear eventos"
+                            >
+                                <i className="bi bi-building me-2"></i>
+                                Registrar asociación
+                            </button>
+                        ) : (
+                            <button
+                                className="btn btn-outline-primary"
+                                onClick={() => navigate("/login")}
+                            >
+                                <i className="bi bi-box-arrow-in-right me-2"></i>
+                                Iniciar sesión
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                <div className="row g-4">
+                    {events.length === 0 ? (
+                        <div className="col-12">
+                            <div className="no-events-message">
+                                <i className="bi bi-calendar-x display-4 d-block mb-3 text-muted"></i>
+                                <h4 className="text-muted">No se encontraron eventos</h4>
+                                <p className="text-muted mb-0">
+                                    {filteredByAssociation
+                                        ? "Esta asociación aún no ha publicado eventos"
+                                        : "No hay eventos disponibles en este momento"}
+                                </p>
+                            </div>
                         </div>
-                    ))
-                )}
+                    ) : (
+                        events.map(event => (
+                            <div className="col-md-6 col-lg-4" key={event.id}>
+                                <EventCard
+                                    event={event}
+                                    user={user}
+                                    onDeactivate={handleDeactivateEvent}
+                                />
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
             <NotificationModal
                 show={notification.show}

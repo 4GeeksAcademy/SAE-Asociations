@@ -121,13 +121,13 @@ const Login = () => {
         <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-4">
             <div className="row w-100 justify-content-center">
                 <div className="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
-                    <div className="card shadow-lg border-0 rounded-4">
-                        <div className="card-header bg-primary text-white text-center py-4 rounded-top-4">
+                    <div className="card border-0 rounded-4 login-card">
+                        <div className="card-header text-white text-center py-4 rounded-top-4">
                             <h2 className="mb-0 fw-bold">
                                 <i className="bi bi-person-circle me-2"></i>
                                 Iniciar Sesión
                             </h2>
-                            <p className="mb-0 mt-2 opacity-90">Accede a tu cuenta</p>
+                            <p className="mb-0 mt-2 text-white">Accede a tu cuenta</p>
                         </div>
                         <div className="card-body p-3 p-md-5">
                             {/* Mostrar loading global */}
@@ -216,11 +216,11 @@ const Login = () => {
                             <div className="text-center mt-4">
                                 <p className="text-muted mb-2">¿No tienes cuenta?</p>
                                 <div className="d-flex flex-column flex-sm-row gap-2 justify-content-center">
-                                    <Link to="/register/user" className="btn btn-outline-success btn-sm">
+                                    <Link to="/register/user" className="btn btn-outline-volunteer btn-sm">
                                         <i className="bi bi-person-plus me-1"></i>
                                         Voluntario
                                     </Link>
-                                    <Link to="/register/association" className="btn btn-outline-info btn-sm">
+                                    <Link to="/register/association" className="btn btn-outline-association btn-sm">
                                         <i className="bi bi-building me-1"></i>
                                         Asociación
                                     </Link>

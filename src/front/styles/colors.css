@@ -1,0 +1,111 @@
+:root {
+  /* Primary Colors */
+  --sae-primary: #4dabf7; /* Azul principal para acciones generales */
+  --sae-primary-dark: #3498db; /* Azul oscuro para hover */
+
+  /* Role Colors */
+  --sae-volunteer: #20c997; /* Verde para voluntarios */
+  --sae-volunteer-dark: #1ba37f;
+  --sae-association: #4dabf7; /* Azul brillante para asociaciones */
+  --sae-association-dark: #3498db;
+
+  /* Accent Colors */
+  --sae-accent: #ffd43b; /* Amarillo para destacados */
+  --sae-accent-dark: #fab005;
+
+  /* Neutral Colors */
+  --sae-text: #2c3e50; /* Color principal para texto */
+  --sae-text-light: #6c757d; /* Texto secundario */
+  --sae-border: #dee2e6; /* Bordes */
+  --sae-background: #f8f9fa; /* Fondo general */
+
+  /* Semantic Colors */
+  --sae-success: #20c997; /* Éxito */
+  --sae-warning: #ffd43b; /* Advertencia */
+  --sae-danger: #fa5252; /* Error */
+  --sae-info: #74c0fc; /* Información */
+}
+
+/* Clases de utilidad para colores */
+.bg-volunteer {
+  background-color: var(--sae-volunteer) !important;
+}
+
+.bg-association {
+  background-color: var(--sae-association) !important;
+}
+
+.text-volunteer {
+  color: var(--sae-volunteer) !important;
+}
+
+.text-association {
+  color: var(--sae-association) !important;
+}
+
+/* Botones personalizados */
+.btn-volunteer {
+  background-color: var(--sae-volunteer);
+  border-color: var(--sae-volunteer);
+  color: white;
+}
+
+.btn-volunteer:hover {
+  background-color: var(--sae-volunteer-dark);
+  border-color: var(--sae-volunteer-dark);
+  color: white;
+}
+
+.btn-association {
+  background-color: var(--sae-association);
+  border-color: var(--sae-association);
+  color: white;
+}
+
+.btn-association:hover {
+  background-color: var(--sae-association-dark);
+  border-color: var(--sae-association-dark);
+  color: white;
+}
+
+/* Outline buttons */
+.btn-outline-volunteer {
+  color: var(--sae-volunteer);
+  border-color: var(--sae-volunteer);
+}
+
+.btn-outline-volunteer:hover {
+  background-color: var(--sae-volunteer);
+  border-color: var(--sae-volunteer);
+  color: white;
+}
+
+.btn-outline-association {
+  color: var(--sae-association);
+  border-color: var(--sae-association);
+}
+
+.btn-outline-association:hover {
+  background-color: var(--sae-association);
+  border-color: var(--sae-association);
+  color: white;
+}
+
+/* Override Bootstrap primary color */
+.btn-primary {
+  background-color: var(--sae-primary);
+  border-color: var(--sae-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--sae-primary-dark);
+  border-color: var(--sae-primary-dark);
+}
+
+.bg-primary {
+  background-color: var(--sae-primary) !important;
+}
+
+.text-primary {
+  color: var(--sae-primary) !important;
+}
