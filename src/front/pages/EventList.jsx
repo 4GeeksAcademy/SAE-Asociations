@@ -20,13 +20,52 @@ export const EventList = () => {
     const { association_id } = useParams();
     const { notification, hideNotification, showSuccess, showError, showConfirm } = useNotification();
 
-    const getEvents = async (associationId = null) => {
+    /*Estado para los filtros*/
+    const [appliedFilters, setAppliedFilters] = useState({
+        city: '',
+        event_type: '', // Debe coincidir con el nombre del campo en tu backend (schema/modelo)
+        sort_by_date: 'newest' // Valor por defecto para la ordenación
+    });
+
+    /*Visibilidad del modal*/
+    const [showFilterModal, setShowFilterModal] = useState(false);
+
+    /*Abrir y cerrar modal*/
+    const handleOpenFilterModal = () => setShowFilterModal(true);
+    const handleCloseFilterModal = () => setShowFilterModal(false);
+
+    const handleApplyFilters = (filtersFromModal) => {
+        setAppliedFilters(filtersFromModal); // Actualiza los filtros aplicados
+        handleCloseFilterModal(); // Cierra el modal después de aplicar
+    };
+
+    const getEvents = async (currentAssociationId = null, currentFilters = appliedFilters) => {
         try {
             setLoading(true);
-            let url = `${API_BASE_URL}/api/events/`;
+            setError(''); // Limpia errores anteriores
 
-            if (associationId) {
-                url += `?association_id=${associationId}`;
+            let url = `${API_BASE_URL}/api/events`;
+            const queryParams = new URLSearchParams();
+
+            // Lógica existente para filtrar por association_id de la URL
+            if (currentAssociationId) {
+                queryParams.append('association_id', currentAssociationId);
+            }
+
+            // Añadir filtros desde el estado `appliedFilters`
+            if (currentFilters.city) {
+                queryParams.append('city', currentFilters.city);
+            }
+            if (currentFilters.event_type) {
+                queryParams.append('event_type', currentFilters.event_type);
+            }
+            if (currentFilters.sort_by_date) {
+                queryParams.append('sort_by_date', currentFilters.sort_by_date);
+            }
+
+            // Construir la URL final con los query parameters
+            if (queryParams.toString()) {
+                url += `?${queryParams.toString()}`;
             }
 
             const token = authService.getToken();
@@ -36,18 +75,24 @@ export const EventList = () => {
             }
 
             const res = await fetch(url, { headers });
-            if (!res.ok) {
-                throw new Error('Error al cargar eventos');
-            }
 
-            const data = await res.json();
-            setEvents(data);
-            setError('');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.events && data.events.length === 0) {
+                    setEvents([]);
+                } else {
+                    setEvents(data);
+                }
+                setError('');
+            } else {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Error al cargar eventos');
+            }
         } catch (error) {
             console.error("Error fetching events:", error);
             setError(error.message);
-        }
-        finally {
+            setEvents([]);
+        } finally {
             setLoading(false);
         }
     };
@@ -85,25 +130,29 @@ export const EventList = () => {
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
         setUser(currentUser);
+    }, []); // Array de dependencias vacío para que se ejecute solo al montar
 
-        // Si hay un association_id en la URL, usarlo
+    // useEffect principal para cargar eventos cuando cambian las dependencias relevantes
+    useEffect(() => {
+        let currentAssocId = null;
         if (association_id) {
+            currentAssocId = association_id;
             setFilteredByAssociation(association_id);
-            getEvents(association_id);
         } else {
-            // Si no hay association_id, revisar si hay uno en los query params (para mantener compatibilidad)
             const queryParams = new URLSearchParams(location.search);
             const queryAssociationId = queryParams.get('association_id');
 
             if (queryAssociationId) {
+                currentAssocId = queryAssociationId;
                 setFilteredByAssociation(queryAssociationId);
-                getEvents(queryAssociationId);
             } else {
                 setFilteredByAssociation(null);
-                getEvents();
             }
         }
-    }, [location.search, association_id]);
+
+        getEvents(currentAssocId, appliedFilters);
+
+    }, [location.search, association_id, appliedFilters]);
 
     const handleClearFilter = () => {
         navigate('/event/list');
@@ -132,21 +181,31 @@ export const EventList = () => {
     return (
         <div className="container mt-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2>
+                <h1>
                     {filteredByAssociation
                         ? `Eventos de la asociación`
                         : "Eventos disponibles"}
-                </h2>
+                </h1>
 
-                <div>
+                <div className="d-flex gap-2 align-items-center">
                     {filteredByAssociation && (
                         <button
-                            className="btn btn-outline-secondary me-2"
+                            className="btn btn-outline-secondary"
                             onClick={handleClearFilter}
                         >
                             Ver todos los eventos
                         </button>
                     )}
+
+                    <button
+                        className="btn btn-outline-secondary d-flex align-items-center"
+                        onClick={handleOpenFilterModal}
+                        title="Filtrar Eventos"
+                    >
+                        <i className="bi bi-funnel me-1"></i>
+                        <span className="d-none d-sm-inline">Filtros</span>
+                        <i className="bi bi-chevron-down ms-1"></i>
+                    </button>
 
                     {/* Botón de crear evento - solo para asociaciones */}
                     {user?.role === 'association' ? (
@@ -178,25 +237,32 @@ export const EventList = () => {
                 </div>
             </div>
 
-            <div className="row">
-                {events.length === 0 ? (
-                    <div className="col-12">
-                        <div className="alert alert-info">
-                            No se encontraron eventos
-                        </div>
+            <FilterModal
+                show={showFilterModal}
+                onClose={handleCloseFilterModal}
+                onApplyFilters={handleApplyFilters}
+                initialFilters={appliedFilters}
+            />
+
+            {events.length === 0 && !loading && !error ? (
+                <div className="col-12">
+                    <div className="alert alert-info text-center">
+                        No se encontraron eventos disponibles con los criterios seleccionados.
                     </div>
-                ) : (
-                    events.map(event => (
-                        <div className="col-md-4" key={event.id}>
+                </div>
+            ) : (
+                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {events.map(event => (
+                        <div className="col" key={event.id}>
                             <EventCard
                                 event={event}
                                 user={user}
                                 onDeactivate={handleDeactivateEvent}
                             />
                         </div>
-                    ))
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
             <NotificationModal
                 show={notification.show}
                 onClose={hideNotification}

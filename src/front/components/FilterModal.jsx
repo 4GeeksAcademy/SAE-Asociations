@@ -57,7 +57,7 @@ export const FilterModal = ({ show, onClose, onApplyFilters, initialFilters }) =
                                     name="city" // <-- Coincide con el nombre del parámetro en el backend
                                     value={currentFilters.city}
                                     onChange={handleChange}
-                                    placeholder="Ej: Lleida"
+                                    placeholder="Ej: Jaén"
                                 />
                             </div>
 
@@ -67,7 +67,7 @@ export const FilterModal = ({ show, onClose, onApplyFilters, initialFilters }) =
                                 <select
                                     className="form-select"
                                     id="dateSortFilter"
-                                    name="sort_by_date" // <-- Coincide con el nombre del parámetro en el backend
+                                    name="sort_by_date" 
                                     value={currentFilters.sort_by_date}
                                     onChange={handleChange}
                                 >
