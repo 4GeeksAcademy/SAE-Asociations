@@ -127,7 +127,7 @@ const Login = () => {
                                 <i className="bi bi-person-circle me-2"></i>
                                 Iniciar Sesión
                             </h2>
-                            <p className="mb-0 mt-2 opacity-90">Accede a tu cuenta</p>
+                            <p className="mb-0 mt-2 text-white">Accede a tu cuenta</p>
                         </div>
                         <div className="card-body p-3 p-md-5">
                             {/* Mostrar loading global */}

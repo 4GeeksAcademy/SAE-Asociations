@@ -41,7 +41,9 @@ export const EventList = () => {
             }
 
             const data = await res.json();
-            setEvents(data);
+            // Ordenar eventos por fecha (más nuevos primero)
+            const sortedEvents = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setEvents(sortedEvents);
             setError('');
         } catch (error) {
             console.error("Error fetching events:", error);

@@ -32,20 +32,14 @@ export const AssociationCard = ({ association, statistics }) => {
                     <h5 className="association-name" title={association.name}>
                         {association.name}
                     </h5>
-                    <div className="association-contact">
-                        <i className="bi bi-envelope text-association me-1"></i>
-                        <span className="text-muted small" title={association.contact_email}>
-                            {association.contact_email}
-                        </span>
-                    </div>
                 </div>
             </div>
 
             <div className="association-body">
                 <div className="association-content">
                     <p className="association-description">
-                        {association.description?.length > 120
-                            ? `${association.description.substring(0, 120)}...`
+                        {association.description?.length > 200
+                            ? `${association.description.substring(0, 200)}...`
                             : association.description || 'Sin descripción disponible'
                         }
                     </p>

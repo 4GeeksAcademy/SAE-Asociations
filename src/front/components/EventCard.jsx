@@ -37,14 +37,7 @@ export const EventCard = ({ event, user, onDeactivate }) => {
                         e.target.src = getEventFallbackImage();
                     }}
                 />
-                <Link
-                    to={`/event/detail/${event.id}`}
-                    className="btn-icon btn-view-green btn-view-float"
-                    title="Ver detalle"
-                    style={{ position: 'absolute', top: 10, left: 10 }}
-                >
-                    <i className="bi bi-search"></i>
-                </Link>
+
                 {canDeactivate && (
                     <button
                         className="btn-icon btn-power-float"
@@ -65,9 +58,16 @@ export const EventCard = ({ event, user, onDeactivate }) => {
 
             <div className="event-body">
                 <div className="event-info">
-                    <h5 className="event-title mb-0" title={event.title} style={{ display: 'inline-block' }}>
-                        {event.title}
-                    </h5>
+                    <Link
+                        to={`/event/detail/${event.id}`}
+                        className="event-title-link"
+                        title={event.title}
+                    >
+                        <h5 className="event-title mb-0">
+                            <i className="bi bi-search event-title-icon" style={{ marginRight: '0.5rem' }}></i>
+                            {event.title}
+                        </h5>
+                    </Link>
                     <div className="event-info-compact">
                         <div className="info-item">
                             <i className="bi bi-calendar-event"></i>

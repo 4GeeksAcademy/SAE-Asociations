@@ -170,7 +170,7 @@ const RegisterUser = () => {
                                 <i className="bi bi-person-plus me-2"></i>
                                 Registro de Voluntario
                             </h2>
-                            <p className="mb-0 mt-2 opacity-90">Únete a nuestra comunidad</p>
+                            <p className="mb-0 mt-2 text-white">Únete a nuestra comunidad</p>
                         </div>
                         <div className="card-body p-3 p-md-5">
                             {/* Mostrar loading global */}

@@ -258,7 +258,7 @@ const RegisterAssociation = () => {
                                 <i className="bi bi-building me-2"></i>
                                 Registro de Asociación
                             </h2>
-                            <p className="mb-0 mt-2 opacity-90">Registra tu organización</p>
+                            <p className="mb-0 mt-2 text-white">Registra tu organización</p>
                         </div>
                         <div className="card-body p-3 p-md-5">
                             {/* Mostrar loading global */}

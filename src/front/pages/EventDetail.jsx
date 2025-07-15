@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import authService from '../services/authService.js';
 import NotificationModal from '../components/NotificationModal';
@@ -285,7 +285,13 @@ export const EventDetail = () => {
                                         <div className="meta-content">
                                             <span className="meta-label">Organizado por</span>
                                             <span className="meta-value">
-                                                {event.association_name || 'Asociación desconocida'}
+                                                <Link
+                                                    to={`/association/${event.association_id}`}
+                                                    className="text-decoration-none text-association"
+                                                    style={{ fontWeight: '600' }}
+                                                >
+                                                    {event.association_name || 'Asociación desconocida'}
+                                                </Link>
                                             </span>
                                         </div>
                                     </div>

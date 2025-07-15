@@ -135,7 +135,7 @@ export const AssociationList = () => {
                         </div>
                     ) : (
                         associations.map(association => (
-                            <div className="col-md-6 col-lg-4" key={association.id}>
+                            <div className="col-12" key={association.id}>
                                 <AssociationCard
                                     association={association}
                                     statistics={statistics[association.id] || { active_events_count: 0, total_volunteers: 0 }}

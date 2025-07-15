@@ -208,28 +208,7 @@ export const AssociationDetail = () => {
     return (
         <div className="event-list-container">
             <div className="container">
-                {/* Header con breadcrumb */}
-                <div className="event-list-header d-flex justify-content-between align-items-center">
-                    <div>
-                        <nav aria-label="breadcrumb" className="mb-3">
-                            <ol className="breadcrumb">
-                                <li className="breadcrumb-item">
-                                    <button
-                                        className="btn btn-link p-0 text-decoration-none"
-                                        onClick={() => navigate('/associations')}
-                                    >
-                                        <i className="bi bi-arrow-left me-1"></i>
-                                        Asociaciones
-                                    </button>
-                                </li>
-                                <li className="breadcrumb-item active" aria-current="page">
-                                    {association.name}
-                                </li>
-                            </ol>
-                        </nav>
-                        <h2 className="event-list-title mb-0">{association.name}</h2>
-                    </div>
-                </div>
+
 
                 {/* Información principal de la asociación */}
                 <div className="row mb-5">
@@ -249,10 +228,52 @@ export const AssociationDetail = () => {
                                 </div>
                                 <div className="association-detail-info">
                                     <h3 className="association-detail-name">{association.name}</h3>
-                                    <p className="association-detail-description">{association.description}</p>
+                                    <div className="description-container">
+                                        <p className="association-detail-description text-white">
+                                            {association.description?.length > 200
+                                                ? `${association.description.substring(0, 200)}...`
+                                                : association.description
+                                            }
+                                        </p>
+                                        {association.description?.length > 200 && (
+                                            <button
+                                                className="btn btn-link btn-sm p-0 description-toggle-btn"
+                                                style={{
+                                                    fontSize: '0.9rem',
+                                                    textDecoration: 'none',
+                                                    color: 'white',
+                                                    fontWeight: '600',
+                                                    background: 'transparent',
+                                                    padding: '0.25rem 0.5rem',
+                                                    borderRadius: '0.25rem',
+                                                    border: 'none',
+                                                    transition: 'all 0.3s ease'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.target.style.opacity = '0.8';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.target.style.opacity = '1';
+                                                }}
+                                                onClick={() => {
+                                                    const descElement = document.querySelector('.association-detail-description');
+                                                    const btnElement = document.querySelector('.description-toggle-btn');
+                                                    if (descElement.textContent.includes('...')) {
+                                                        descElement.textContent = association.description;
+                                                        btnElement.innerHTML = '<i className="bi bi-chevron-up me-1"></i>Ver menos';
+                                                    } else {
+                                                        descElement.textContent = `${association.description.substring(0, 200)}...`;
+                                                        btnElement.innerHTML = '<i className="bi bi-chevron-down me-1"></i>Ver más';
+                                                    }
+                                                }}
+                                            >
+                                                <i className="bi bi-chevron-down me-1"></i>Ver más
+                                            </button>
+                                        )}
+                                    </div>
                                     <div className="association-detail-cif">
                                         <i className="bi bi-building text-association me-2"></i>
-                                        <span className="text-muted">CIF: {association.cif}</span>
+                                        <span className="text-white">CIF: {association.cif}</span>
                                     </div>
                                 </div>
                             </div>

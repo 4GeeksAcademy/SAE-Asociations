@@ -329,14 +329,17 @@
 /* AssociationCard Elegant Design */
 .association-card {
   background: white;
-  border-radius: 1.5rem;
+  border-radius: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  height: 100%;
+  height: auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   border: none;
+  min-height: 200px;
+  width: 100%;
+  margin-bottom: 1.5rem;
 }
 
 .association-card:hover {
@@ -346,10 +349,18 @@
 
 .association-header {
   background: linear-gradient(135deg, #4dabf7 0%, #3498db 100%);
-  padding: 2rem 1.5rem 1.5rem;
+  padding: 1.5rem;
   position: relative;
   text-align: center;
   overflow: hidden;
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .association-header::before {
@@ -384,8 +395,8 @@
 }
 
 .avatar-image {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
   border: 4px solid white;
@@ -398,7 +409,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  font-size: 2rem;
 }
 
 .association-card:hover .avatar-image {
@@ -410,7 +421,7 @@
 }
 
 .association-name {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: white;
@@ -438,14 +449,42 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .association-description {
+  line-height: 1.6;
   color: #6c757d;
   font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-  flex: 1;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 0.75rem;
+  border-left: 4px solid #4dabf7;
+  position: relative;
+  word-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box;
+  width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.association-description::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(77, 171, 247, 0.03) 100%
+  );
+  pointer-events: none;
 }
 
 .association-stats {
@@ -598,16 +637,11 @@
   gap: 1rem;
   margin-bottom: 1.5rem;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
-.association-description {
-  color: #6c757d;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  margin-bottom: 0;
-  flex: 1;
-  min-width: 0;
-}
+/* Eliminada definición duplicada */
 
 /* Association Stats Inline */
 .association-stats-inline {
@@ -658,30 +692,39 @@
 
 .association-actions {
   display: flex;
-  gap: 0.75rem;
-  margin-top: auto;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
 }
 
 .association-actions .btn {
-  flex: 1;
-  border-radius: 1rem;
-  padding: 0.75rem 1rem;
-  font-weight: 600;
-  font-size: 0.9rem;
+  flex: 0 1 auto;
+  border-radius: 0.75rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.8rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   border: none;
+  min-width: 120px;
 }
 
 .association-actions .btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 /* Responsive para AssociationCard */
 @media (max-width: 768px) {
+  .association-card {
+    flex-direction: column;
+    min-height: auto;
+  }
+
   .association-header {
     padding: 1.5rem 1rem 1rem;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
   }
 
   .avatar-image {
@@ -696,6 +739,11 @@
   .association-contact {
     font-size: 0.9rem;
     margin-top: 0.5rem;
+  }
+
+  .association-description {
+    font-size: 0.95rem;
+    padding: 0.875rem;
   }
 
   .association-stats {
@@ -746,6 +794,9 @@
 
   .association-header {
     padding: 1rem;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
   }
 
   .avatar-image {
@@ -764,6 +815,11 @@
 
   .association-body {
     padding: 1rem;
+  }
+
+  .association-description {
+    font-size: 0.9rem;
+    padding: 0.75rem;
   }
 
   .association-stats {
@@ -900,6 +956,43 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   line-height: 1.3;
+  transition: color 0.3s ease;
+}
+
+.event-title-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  padding-right: 1.5rem;
+}
+
+.event-title-icon {
+  position: relative;
+  color: #20c997;
+  font-size: 1.2rem;
+  opacity: 0.9;
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(32, 201, 151, 0.3);
+  margin-right: 0.5rem;
+}
+
+.event-title-link:hover {
+  text-decoration: none;
+  color: #20c997;
+  transform: translateX(5px);
+}
+
+.event-title-link:hover .event-title-icon {
+  opacity: 1;
+  transform: translateX(3px);
+  text-shadow: 0 2px 4px rgba(32, 201, 151, 0.5);
+}
+
+.event-title-link:hover .event-title {
+  color: #20c997;
 }
 
 .event-description {
@@ -1166,10 +1259,12 @@
 }
 
 .association-detail-description {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  opacity: 0.9;
+  color: #2c3e50 !important;
+  font-size: 1.1rem !important;
+  line-height: 1.6 !important;
+  margin-bottom: 1rem !important;
+  opacity: 0.9 !important;
+  font-weight: 500 !important;
 }
 
 .association-detail-cif {
@@ -1481,7 +1576,8 @@
   }
 
   .association-detail-description {
-    font-size: 1rem;
+    font-size: 1rem !important;
+    color: #2c3e50 !important;
   }
 
   .contact-cards {
@@ -2969,4 +3065,25 @@
     padding: 0.75rem;
     font-size: 0.9rem;
   }
+}
+
+.description-container {
+  margin-bottom: 1rem;
+}
+
+.description-toggle-btn {
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  color: #ffffff !important;
+  font-weight: 600;
+  background: rgba(44, 62, 80, 0.8);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.description-toggle-btn:hover {
+  color: #ffffff !important;
+  background: rgba(44, 62, 80, 1);
 }
