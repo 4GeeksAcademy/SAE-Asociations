@@ -22,6 +22,7 @@ sendgrid = "*"
 flask-migrate = "*"
 stripe = "*"
 flask-cors = "*"
+tomli = "*"
 
 [requires]
 python_version = "3.11"

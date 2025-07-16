@@ -7,6 +7,7 @@ services:
     name: sample-service-name
     env: python # valid values: https://render.com/docs/yaml-spec#environment
     buildCommand: "./render_build.sh"
+    preStartCommand: "pipenv run upgrade"
     startCommand: "gunicorn wsgi --chdir ./src/"
     plan: free # optional; defaults to starter
     numInstances: 1
