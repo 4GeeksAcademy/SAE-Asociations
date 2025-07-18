@@ -57,6 +57,7 @@ class Event(db.Model):
                     "id": ev.volunteer.id,
                     "name": ev.volunteer.name,
                     "lastname": ev.volunteer.lastname,
+                    "profile_image": ev.volunteer.profile_image,
                     "joined_at": ev.joined_at.isoformat()
                 }
                 for ev in self.event_volunteers
