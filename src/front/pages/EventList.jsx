@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import authService from "../services/authService";
 import NotificationModal from '../components/NotificationModal';
 import useNotification from '../hooks/useNotification';
-import '../styles/event-list.css';
+import { FilterModal } from "../components/FilterModal";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -20,13 +20,52 @@ export const EventList = () => {
     const { association_id } = useParams();
     const { notification, hideNotification, showSuccess, showError, showConfirm } = useNotification();
 
-    const getEvents = async (associationId = null) => {
+    /*Estado para los filtros*/
+    const [appliedFilters, setAppliedFilters] = useState({
+        city: '',
+        event_type: '', // Debe coincidir con el nombre del campo en tu backend (schema/modelo)
+        sort_by_date: 'newest' // Valor por defecto para la ordenación
+    });
+
+    /*Visibilidad del modal*/
+    const [showFilterModal, setShowFilterModal] = useState(false);
+
+    /*Abrir y cerrar modal*/
+    const handleOpenFilterModal = () => setShowFilterModal(true);
+    const handleCloseFilterModal = () => setShowFilterModal(false);
+
+    const handleApplyFilters = (filtersFromModal) => {
+        setAppliedFilters(filtersFromModal); // Actualiza los filtros aplicados
+        handleCloseFilterModal(); // Cierra el modal después de aplicar
+    };
+
+    const getEvents = async (currentAssociationId = null, currentFilters = appliedFilters) => {
         try {
             setLoading(true);
-            let url = `${API_BASE_URL}/api/events/`;
+            setError(''); // Limpia errores anteriores
 
-            if (associationId) {
-                url += `?association_id=${associationId}`;
+            let url = `${API_BASE_URL}/api/events`;
+            const queryParams = new URLSearchParams();
+
+            // Lógica existente para filtrar por association_id de la URL
+            if (currentAssociationId) {
+                queryParams.append('association_id', currentAssociationId);
+            }
+
+            // Añadir filtros desde el estado `appliedFilters`
+            if (currentFilters.city) {
+                queryParams.append('city', currentFilters.city);
+            }
+            if (currentFilters.event_type) {
+                queryParams.append('event_type', currentFilters.event_type);
+            }
+            if (currentFilters.sort_by_date) {
+                queryParams.append('sort_by_date', currentFilters.sort_by_date);
+            }
+
+            // Construir la URL final con los query parameters
+            if (queryParams.toString()) {
+                url += `?${queryParams.toString()}`;
             }
 
             const token = authService.getToken();
@@ -36,20 +75,24 @@ export const EventList = () => {
             }
 
             const res = await fetch(url, { headers });
-            if (!res.ok) {
-                throw new Error('Error al cargar eventos');
-            }
 
-            const data = await res.json();
-            // Ordenar eventos por fecha (más nuevos primero)
-            const sortedEvents = data.sort((a, b) => new Date(b.date) - new Date(a.date));
-            setEvents(sortedEvents);
-            setError('');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.events && data.events.length === 0) {
+                    setEvents([]);
+                } else {
+                    setEvents(data);
+                }
+                setError('');
+            } else {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'Error al cargar eventos');
+            }
         } catch (error) {
             console.error("Error fetching events:", error);
             setError(error.message);
-        }
-        finally {
+            setEvents([]);
+        } finally {
             setLoading(false);
         }
     };
@@ -87,29 +130,44 @@ export const EventList = () => {
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
         setUser(currentUser);
+    }, []); // Array de dependencias vacío para que se ejecute solo al montar
 
-        // Si hay un association_id en la URL, usarlo
+    // useEffect principal para cargar eventos cuando cambian las dependencias relevantes
+    useEffect(() => {
+        let currentAssocId = null;
         if (association_id) {
+            currentAssocId = association_id;
             setFilteredByAssociation(association_id);
-            getEvents(association_id);
         } else {
-            // Si no hay association_id, revisar si hay uno en los query params (para mantener compatibilidad)
             const queryParams = new URLSearchParams(location.search);
             const queryAssociationId = queryParams.get('association_id');
 
             if (queryAssociationId) {
+                currentAssocId = queryAssociationId;
                 setFilteredByAssociation(queryAssociationId);
-                getEvents(queryAssociationId);
             } else {
                 setFilteredByAssociation(null);
-                getEvents();
             }
         }
-    }, [location.search, association_id]);
 
-    const handleClearFilter = () => {
-        navigate('/event/list');
+        getEvents(currentAssocId, appliedFilters);
+
+    }, [location.search, association_id, appliedFilters]);
+
+    // Limpiar filtros
+    const handleClearMainFilters = () => {
+        setAppliedFilters({
+            city: '',
+            event_type: '',
+            sort_by_date: 'newest' // Vuelve al valor por defecto
+        });
     };
+
+    // Determinar si alguno de los filtros principales está activo
+    const areMainFiltersActive = appliedFilters.city !== '' ||
+        appliedFilters.event_type !== '' ||
+        appliedFilters.sort_by_date !== 'newest';
+
 
     if (loading) {
         return (
@@ -126,92 +184,97 @@ export const EventList = () => {
 
     if (error) {
         return (
-            <div className="event-list-container">
-                <div className="container">
-                    <div className="alert alert-danger" role="alert">
-                        {error}
-                    </div>
+            <div className="container mt-4">
+                <div className="alert alert-danger" role="alert">
+                    {error}
                 </div>
             </div>
-        );
+        )
     }
-
     return (
-        <div className="event-list-container">
-            <div className="container">
-                <div className="event-list-header d-flex justify-content-between align-items-center">
-                    <h2 className="event-list-title">
-                        {filteredByAssociation
-                            ? "Eventos de la asociación"
-                            : "Eventos disponibles"}
-                    </h2>
+        <div className="container mt-4">
+            <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+                <h1>
+                    {filteredByAssociation
+                        ? `Eventos de la asociación`
+                        : "Eventos disponibles"}
+                </h1>
 
-                    <div className="event-list-actions">
-                        {filteredByAssociation && (
-                            <button
-                                className="btn btn btn-outline-primary me-2"
-                                onClick={handleClearFilter}
-                            >
-                                <i className="bi bi-grid-3x3-gap me-2"></i>
-                                Ver todos los eventos
-                            </button>
-                        )}
+                <div className="d-flex gap-2 align-items-center flex-wrap justify-content-end mt-2 mt-md-0">
+                    {areMainFiltersActive && (
+                        <button
+                            className="btn btn-outline-secondary flex-grow-1 flex-md-grow-0"
+                            onClick={handleClearMainFilters}
+                        >
+                            Ver todos los eventos
+                        </button>
+                    )}
+                    <button
+                        className="btn btn-outline-secondary d-flex align-items-center flex-grow-1 flex-md-grow-0"
+                        onClick={handleOpenFilterModal}
+                        title="Filtrar Eventos"
+                    >
+                        <i className="bi bi-funnel me-1"></i>
+                        <span className="d-none d-sm-inline">Filtros</span>
+                        <i className="bi bi-chevron-down ms-1"></i>
+                    </button>
 
-                        {user?.role === 'association' ? (
-                            <button
-                                className="btn btn-association"
-                                onClick={() => navigate("/event/creation")}
-                            >
-                                <i className="bi bi-plus-circle me-2"></i>
-                                Crear evento
-                            </button>
-                        ) : user?.role === 'volunteer' ? (
-                            <button
-                                className="btn btn-outline-association"
-                                onClick={() => navigate("/register/association")}
-                                title="Regístrate como asociación para poder crear eventos"
-                            >
-                                <i className="bi bi-building me-2"></i>
-                                Registrar asociación
-                            </button>
-                        ) : (
-                            <button
-                                className="btn btn-outline-primary"
-                                onClick={() => navigate("/login")}
-                            >
-                                <i className="bi bi-box-arrow-in-right me-2"></i>
-                                Iniciar sesión
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                <div className="row g-4">
-                    {events.length === 0 ? (
-                        <div className="col-12">
-                            <div className="no-events-message">
-                                <i className="bi bi-calendar-x display-4 d-block mb-3 text-muted"></i>
-                                <h4 className="text-muted">No se encontraron eventos</h4>
-                                <p className="text-muted mb-0">
-                                    {filteredByAssociation
-                                        ? "Esta asociación aún no ha publicado eventos"
-                                        : "No hay eventos disponibles en este momento"}
-                                </p>
-                            </div>
-                        </div>
+                    {/* Botón de crear evento - solo para asociaciones */}
+                    {user?.role === 'association' ? (
+                        <button
+                            className="btn btn-success flex-grow-1 flex-md-grow-0"
+                            onClick={() => navigate("/event/creation")}
+                        >
+                            <i className="bi bi-plus-circle me-2"></i>
+                            Crear evento
+                        </button>
+                    ) : user?.role === 'volunteer' ? (
+                        <button
+                            className="btn btn-outline-info flex-grow-1 flex-md-grow-0"
+                            onClick={() => navigate("/register/association")}
+                            title="Regístrate como asociación para poder crear eventos"
+                        >
+                            <i className="bi bi-building me-2"></i>
+                            Registrar asociación
+                        </button>
                     ) : (
-                        events.map(event => (
-                            <div className="col-md-6 col-lg-4" key={event.id}>
-                                <EventCard
-                                    event={event}
-                                    user={user}
-                                    onDeactivate={handleDeactivateEvent}
-                                />
-                            </div>
-                        ))
+                        <button
+                            className="btn btn-outline-primary flex-grow-1 flex-md-grow-0"
+                            onClick={() => navigate("/login")}
+                        >
+                            <i className="bi bi-box-arrow-in-right me-2"></i>
+                            Iniciar sesión
+                        </button>
                     )}
                 </div>
             </div>
+
+            <FilterModal
+                show={showFilterModal}
+                onClose={handleCloseFilterModal}
+                onApplyFilters={handleApplyFilters}
+                initialFilters={appliedFilters}
+            />
+
+            {events.length === 0 && !loading && !error ? (
+                <div className="col-12">
+                    <div className="alert alert-info text-center">
+                        No se encontraron eventos disponibles con los criterios seleccionados.
+                    </div>
+                </div>
+            ) : (
+                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {events.map(event => (
+                        <div className="col" key={event.id}>
+                            <EventCard
+                                event={event}
+                                user={user}
+                                onDeactivate={handleDeactivateEvent}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
             <NotificationModal
                 show={notification.show}
                 onClose={hideNotification}

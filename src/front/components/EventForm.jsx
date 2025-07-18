@@ -16,8 +16,9 @@ export const EventForm = () => {
         title: '',
         description: '',
         date: '',
-        time: '',
-        location: '',
+        city: '',
+        address: '',
+        event_type: '',
         max_volunteers: '',
         image_url: null
     });
@@ -62,9 +63,14 @@ export const EventForm = () => {
             const token = authService.getToken();
 
             const eventData = {
-                ...formData,
+                title: formData.title,
+                description: formData.description,
+                date: formData.date, 
+                city: formData.city, 
+                address: formData.address || null, 
+                event_type: formData.event_type || null, 
                 association_id: currentUser.association.id,
-                max_volunteers: formData.max_volunteers ? parseInt(formData.max_volunteers) : null
+                max_volunteers: formData.max_volunteers === '' ? null : parseInt(formData.max_volunteers)
             };
 
             const response = await fetch(`${API_BASE_URL}/api/events`, {
@@ -147,7 +153,7 @@ export const EventForm = () => {
                 </div>
 
                 <div className="col-md-6">
-                    <label htmlFor="date" className="form-label">Fecha</label>
+                    <label htmlFor="date" className="form-label">Fecha y hora</label>
                     <input
                         type="datetime-local"
                         className="form-control"
@@ -157,6 +163,53 @@ export const EventForm = () => {
                         onChange={handleChange}
                         required
                     />
+                </div>
+
+                    <div className="col-md-6">
+                    <label htmlFor="city" className="form-label">Ciudad <span className="text-danger">*</span></label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="col-12">
+                    <label htmlFor="address" className="form-label">Dirección (opcional)</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <div className="col-12">
+                    <label htmlFor="event_type" className="form-label">Tipo de Evento <span className="text-danger">*</span></label>
+                    <select
+                        className="form-control"
+                        id="event_type"
+                        name="event_type"
+                        value={formData.event_type}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Selecciona un tipo</option> 
+                        <option value="Medio Ambiente">Medio Ambiente</option>
+                        <option value="Educación">Educación</option>
+                        <option value="Salud">Salud</option>
+                        <option value="Comunidad">Comunidad</option>
+                        <option value="Animales">Animales</option>
+                        <option value="Deporte">Deporte</option>
+                        <option value="Cultura">Cultura</option>
+                        <option value="Otro">Otro</option>
+                    </select>
                 </div>
 
                 <div className="col-md-6">
