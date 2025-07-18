@@ -2,7 +2,6 @@ import React from "react"
 import { Link } from "react-router-dom";
 
 export const EventCard = ({ event, user, onDeactivate }) => {
-    // Verificar si el usuario actual es la asociación propietaria del evento
     const canDeactivate = user &&
         user.role === 'association' &&
         user.association &&
@@ -61,15 +60,53 @@ export const EventCard = ({ event, user, onDeactivate }) => {
                     <Link to={`/event/detail/${event.id}`} className="btn btn-primary flex-grow-1">
                         Ver detalle
                     </Link>
-                    {canDeactivate && (
-                        <button
-                            className="btn btn-outline-danger"
-                            onClick={() => onDeactivate(event.id)}
-                            title="Desactivar evento"
-                        >
-                            <i className="bi bi-trash"></i>
-                        </button>
-                    )}
+                    <div className="event-info-compact">
+                        <div className="info-item">
+                            <i className="bi bi-calendar-event"></i>
+                            <span className="info-value">
+                                {new Date(event.date).toLocaleDateString('es-ES', {
+                                    day: '2-digit',
+                                    month: 'short'
+                                })}
+                            </span>
+                        </div>
+                        <div className="info-item">
+                            <i className="bi bi-people"></i>
+                            <span className="info-value">
+                                {event.Volunteers_count || 0}
+                                {event.max_volunteers ? ` / ${event.max_volunteers}` : ''}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <p className="event-description">
+                    {event.description?.length > 100
+                        ? `${event.description.substring(0, 100)}...`
+                        : event.description || 'Sin descripción disponible'
+                    }
+                </p>
+
+                <div className="event-association">
+                    <div className="association-info">
+                        <div className="association-avatar-small">
+                            <img
+                                src={hasValidImage(event.association_image_url) ? event.association_image_url : getAssociationFallbackImage()}
+                                className="avatar-small"
+                                alt={event.association_name}
+                                loading="lazy"
+                                onError={(e) => {
+                                    // Si la imagen falla, mostrar el fallback
+                                    e.target.src = getAssociationFallbackImage();
+                                }}
+                            />
+                        </div>
+                        <div className="association-details">
+                            <span className="text-truncate text-association" title={event.association_name}>
+                                {event.association_name}
+                            </span>
+                            <small className="text-muted d-block">Organiza este evento</small>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

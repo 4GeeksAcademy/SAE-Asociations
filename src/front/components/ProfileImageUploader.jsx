@@ -90,28 +90,116 @@ const ProfileImageUploader = ({
                 styles: {
                     palette: {
                         window: "#FFFFFF",
-                        windowBorder: "#4dabf7",
+                        windowBorder: "#E1E5E9",
                         tabIcon: "#4dabf7",
                         menuIcons: "#6C757D",
-                        textDark: "#212529",
+                        textDark: "#2C3E50",
                         textLight: "#FFFFFF",
                         link: "#4dabf7",
                         action: "#4dabf7",
                         inactiveTabIcon: "#ADB5BD",
                         error: "#DC3545",
                         inProgress: "#4dabf7",
-                        complete: "#198754",
+                        complete: "#20c997",
                         sourceBg: "#F8F9FA"
                     },
                     fonts: {
                         default: null,
                         "'Inter', 'Segoe UI', sans-serif": {
-                            url: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap",
+                            url: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
                             active: true
                         }
                     },
                     frame: {
-                        background: "#FFFFFF"
+                        background: "#FFFFFF",
+                        border: "1px solid #E1E5E9",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)"
+                    },
+                    button: {
+                        background: "#4dabf7",
+                        border: "none",
+                        borderRadius: "8px",
+                        color: "#FFFFFF",
+                        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+                        fontWeight: "600",
+                        fontSize: "14px",
+                        padding: "12px 24px",
+                        transition: "all 0.3s ease"
+                    },
+                    buttonHover: {
+                        background: "#3498db",
+                        transform: "translateY(-1px)",
+                        boxShadow: "0 4px 12px rgba(77, 171, 247, 0.3)"
+                    },
+                    buttonActive: {
+                        background: "#2980b9"
+                    },
+                    buttonDisabled: {
+                        background: "#ADB5BD",
+                        color: "#6C757D"
+                    },
+                    input: {
+                        border: "2px solid #E1E5E9",
+                        borderRadius: "8px",
+                        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+                        fontSize: "14px",
+                        padding: "12px 16px",
+                        transition: "border-color 0.3s ease"
+                    },
+                    inputFocus: {
+                        borderColor: "#4dabf7",
+                        boxShadow: "0 0 0 3px rgba(77, 171, 247, 0.1)"
+                    },
+                    tab: {
+                        background: "#F8F9FA",
+                        border: "1px solid #E1E5E9",
+                        borderRadius: "8px",
+                        color: "#6C757D",
+                        fontFamily: "'Inter', 'Segoe UI', sans-serif",
+                        fontWeight: "500",
+                        fontSize: "14px",
+                        padding: "12px 20px",
+                        transition: "all 0.3s ease"
+                    },
+                    tabHover: {
+                        background: "#E9ECEF",
+                        color: "#495057"
+                    },
+                    tabActive: {
+                        background: "#4dabf7",
+                        color: "#FFFFFF",
+                        borderColor: "#4dabf7"
+                    },
+                    progressBar: {
+                        background: "#E9ECEF",
+                        borderRadius: "4px",
+                        height: "8px"
+                    },
+                    progressBarFill: {
+                        background: "linear-gradient(135deg, #4dabf7 0%, #3498db 100%)",
+                        borderRadius: "4px"
+                    },
+                    menu: {
+                        background: "#FFFFFF",
+                        border: "1px solid #E1E5E9",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
+                        fontFamily: "'Inter', 'Segoe UI', sans-serif"
+                    },
+                    menuItem: {
+                        padding: "12px 16px",
+                        fontSize: "14px",
+                        color: "#2C3E50",
+                        transition: "background-color 0.3s ease"
+                    },
+                    menuItemHover: {
+                        background: "#F8F9FA",
+                        color: "#4dabf7"
+                    },
+                    menuItemActive: {
+                        background: "#4dabf7",
+                        color: "#FFFFFF"
                     }
                 },
                 buttonClass: 'modern-upload-btn'
@@ -207,7 +295,17 @@ const ProfileImageUploader = ({
                 className="btn btn-outline-primary btn-sm mt-2"
                 onClick={handleUploadClick}
                 disabled={isLoading || isUploading || disabled}
-                style={{ fontSize: '12px', minWidth: '100px' }}
+                style={{
+                    fontSize: '12px',
+                    minWidth: '100px',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '0.75rem',
+                    fontWeight: '600',
+                    border: '2px solid #4dabf7',
+                    color: '#4dabf7',
+                    background: 'white',
+                    transition: 'all 0.3s ease'
+                }}
             >
                 {isLoading ? (
                     <>

@@ -49,6 +49,7 @@ class Event(db.Model):
             "is_active": self.is_active,
             "association_id": self.association_id,
             "association_name": self.association.name if self.association else None,
+            "association_image_url": self.association.image_url if self.association else None,
             "max_volunteers": self.max_volunteers,
             "Volunteers_count": len(self.event_volunteers),
             "volunteers": [

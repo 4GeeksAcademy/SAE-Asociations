@@ -59,7 +59,7 @@ class User(db.Model):
             "phone": self.phone,
             "profile_image": self.profile_image,
             "is_active": self.is_active
-        }
+        } 
     
     def set_password(self, password):
         self.password = generate_password_hash(password)

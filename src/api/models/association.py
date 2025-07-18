@@ -62,7 +62,7 @@ class Association(db.Model):
             "contact_phone": self.contact_phone,
             "contact_email": self.contact_email,
             "user_id": self.user_id
-        }
+        } 
     
     def set_password(self, password):
         self.password = generate_password_hash(password)

@@ -134,7 +134,10 @@ export const EventForm = () => {
                     <label className="form-label fw-medium">Imagen del evento</label>
                     <ImageUploader
                         onUploadSuccess={handleImageUpload}
-                        onUploadError={showError}
+                        onUploadError={(error) => {
+                            console.error('Error uploading image:', error);
+                            showError('Error al subir imagen', 'Hubo un problema al subir la imagen. Por favor, inténtalo de nuevo.');
+                        }}
                         buttonText="Seleccionar imagen"
                         buttonClass="btn-success"
                         currentImageUrl={formData.image_url}

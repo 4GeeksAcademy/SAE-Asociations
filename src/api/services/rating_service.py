@@ -1,6 +1,6 @@
 from typing import Optional, List
 from sqlalchemy import and_, func
-from datetime import datetime
+from datetime import datetime, timedelta
 from ..models import Rating, EventVolunteer, Event, db
 
 
@@ -10,11 +10,13 @@ class RatingService:
     def can_user_rate_association(user_id: int, association_id: int) -> bool:
         """Verificar si el usuario puede valorar la asociación (tiene eventos terminados donde fue voluntario)"""
         # Buscar eventos terminados de la asociación donde el usuario fue voluntario
+        # Usar hora de España (UTC+2) en lugar de UTC
+        spain_now = datetime.now() + timedelta(hours=2)
         finished_events = db.session.query(EventVolunteer).join(Event).filter(
             and_(
                 EventVolunteer.volunteer_id == user_id,
                 Event.association_id == association_id,
-                Event.date < datetime.now()  # Evento ya terminó
+                Event.date < spain_now  # Evento ya terminó (hora España)
             )
         ).all()
         
@@ -35,11 +37,13 @@ class RatingService:
     @staticmethod
     def get_user_finished_events_for_association(user_id: int, association_id: int) -> List[Event]:
         """Obtener eventos terminados de una asociación donde el usuario fue voluntario"""
+        # Usar hora de España (UTC+2) en lugar de UTC
+        spain_now = datetime.now() + timedelta(hours=2)
         finished_events = db.session.query(Event).join(EventVolunteer).filter(
             and_(
                 EventVolunteer.volunteer_id == user_id,
                 Event.association_id == association_id,
-                Event.date < datetime.now()  # Evento ya terminó
+                Event.date < spain_now  # Evento ya terminó (hora España)
             )
         ).all()
         
@@ -158,8 +162,9 @@ class RatingService:
         if not event:
             return False
         
-        # Verificar que el evento ya terminó
-        if event.date >= datetime.now():
+        # Verificar que el evento ya terminó (usar hora España)
+        spain_now = datetime.now() + timedelta(hours=2)
+        if event.date >= spain_now:
             return False
         
         # Verificar que el usuario fue voluntario en este evento

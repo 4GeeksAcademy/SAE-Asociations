@@ -171,11 +171,13 @@ export const EventList = () => {
 
     if (loading) {
         return (
-            <div className="container mt-4 text-center">
-                <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Cargando...</span>
+            <div className="event-list-container d-flex align-items-center justify-content-center">
+                <div className="text-center">
+                    <div className="spinner-border loading-spinner" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                    </div>
+                    <p className="mt-3 text-muted">Cargando eventos...</p>
                 </div>
-                <p className="mt-3">Cargando eventos...</p>
             </div>
         );
     }
