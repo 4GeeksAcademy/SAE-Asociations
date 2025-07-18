@@ -3,36 +3,61 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from ..models import db, Event
 from datetime import datetime
 from ..schemas.event_schema import check_event_data
-from sqlalchemy import desc
+from sqlalchemy import desc, asc
 
 events_bp = Blueprint("events", __name__)
 
 
 @events_bp.route("/", methods=["GET"])
 @jwt_required(optional=True)
-def get_all_events():
-    """Obtener todos los eventos disponibles."""
-    claims = get_jwt()
+def get_all_events(): 
+    """Obtener todos los eventos disponibles con filtros sencillos."""
     
+    # Obtener los parámetros de consulta de la URL (si no existen, serán None)
     association_id_param = request.args.get('association_id')
+    city_filter = request.args.get('city')
+    event_type_filter = request.args.get('event_type')
+    sort_by_date = request.args.get('sort_by_date') # No ponemos 'newest' por defecto aquí. Lo gestionará el frontend.
 
+    # 1. Iniciar la consulta base: Solo eventos activos
+    query = Event.query.filter_by(is_active=True)
+
+    # 2. Aplicar filtro por ID de asociación si está presente y es válido
     if association_id_param:
         try:
             association_id = int(association_id_param)
-            if claims and claims.get('role') == 'association':
-                association_data = claims.get('association')
-                if association_data and association_data['id'] == association_id:
-                    events = Event.query.filter_by(association_id=association_id).all()
-                else:
-                    events = Event.query.filter_by(association_id=association_id, is_active=True).all()
-            else:
-                events = Event.query.filter_by(association_id=association_id, is_active=True).all()
+            query = query.filter_by(association_id=association_id)
         except ValueError:
+            # Si el ID de asociación no es un número, devolvemos un error.
             return jsonify({"error": "ID de asociación inválido."}), 400
+
+    # 3. Aplicar filtro de ciudad si está presente y no está vacío
+    if city_filter:
+        query = query.filter(Event.city.ilike(f"%{city_filter}%"))
+
+    # 4. Aplicar filtro de tipo de evento si está presente y no está vacío
+    # Asumimos una coincidencia exacta para el tipo de evento.
+    if event_type_filter:
+        query = query.filter(Event.event_type == event_type_filter)
+
+    # 5. Aplicar ordenación por fecha si está presente
+    if sort_by_date == 'newest':
+        query = query.order_by(desc(Event.date)) # Más recientes primero
+    elif sort_by_date == 'oldest':
+        query = query.order_by(asc(Event.date)) # Más antiguos primero
+
+    # 6. Ejecutar la consulta
+    events = query.all()
+
+    # 7. Serializar los resultados
+    serialized_events = [event.serialize() for event in events]
+
+    # 8. Devolver la respuesta
+    if not serialized_events:
+        return jsonify({"message": "No se encontraron eventos con los criterios seleccionados.", "events": []}), 200
     else:
-        events = Event.query.filter_by(is_active=True).all()
-    
-    return jsonify([event.serialize() for event in events]), 200
+        # Si hay eventos, se devuelve el array de eventos directamente
+        return jsonify(serialized_events), 200
 
 
 @events_bp.route("/<int:event_id>", methods=["GET"])
@@ -92,6 +117,9 @@ def create_event():
             description=data.get("description"),
             image_url=data.get("image_url"),
             date=datetime.fromisoformat(data["date"]),
+            city=data["city"],
+            address=data.get("address"),
+            event_type=data.get("event_type"),
             association_id=association_data['id'],
             max_volunteers=max_volunteers_value
         )
@@ -130,10 +158,18 @@ def update_event(event_id):
     if data is None:
         return jsonify({"error": "Formato de petición JSON inválido."}), 400
 
+    # Revalidar los datos que llegan en la actualización
+    validation_error_response = check_event_data(data)
+    if validation_error_response:
+        return validation_error_response
+
     try:
         event.title = data.get("title", event.title)
         event.description = data.get("description", event.description)
         event.image_url = data.get("image_url", event.image_url)
+        event.city = data.get("city", event.city)
+        event.address = data.get("address", event.address)
+        event.event_type = data.get("event_type", event.event_type) 
 
         if data.get("date"):
             event.date = datetime.fromisoformat(data["date"])
