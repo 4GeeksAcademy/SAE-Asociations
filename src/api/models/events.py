@@ -29,6 +29,9 @@ class Event(db.Model):
     )
     ratings = relationship("Rating", back_populates="event")
 
+    comments = relationship("Comment", back_populates="event", cascade="all, delete-orphan")
+
+
     @property
     def volunteers(self):
         return [ev.volunteer for ev in self.event_volunteers]
@@ -54,5 +57,14 @@ class Event(db.Model):
                     "joined_at": ev.joined_at.isoformat()
                 }
                 for ev in self.event_volunteers
-            ]
+            ],
+            "comments": [
+                {
+                    "id": c.id,
+                    "user_id": c.user_id,
+                    "content": c.content,
+                    "created_at": c.created_at.isoformat()
+                }
+                for c in self.comments
+            ],
         }

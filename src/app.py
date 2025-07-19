@@ -29,6 +29,7 @@ app.url_map.strict_slashes = False
 
 # Initialize CORS
 CORS(app)
+CORS(app, origins=["VITE_FRONTEND_URL"])
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -89,9 +90,6 @@ def serve_any_other_file(path):
     response = send_from_directory(static_file_dir, path)
     response.cache_control.max_age = 0  # avoid cache memory
     return response
-
-
-
 
 
 # this only runs if `$ python src/main.py` is executed

@@ -19,10 +19,11 @@ wtforms = "==3.1.2"
 sqlalchemy = "*"
 python-dotenv = "*"
 sendgrid = "*"
-flask-migrate = "*"
 stripe = "*"
-flask-cors = "*"
 tomli = "*"
+marshmallow = "*"
+flask-migrate = "*"
+flask-cors = "*"
 
 [requires]
 python_version = "3.11"

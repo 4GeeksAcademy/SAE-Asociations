@@ -8,3 +8,4 @@ from .association import Association
 from .event_volunteers import EventVolunteer
 from .donation import Donation
 from .rating import Rating
+from .comment import Comment

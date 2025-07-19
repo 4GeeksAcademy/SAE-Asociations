@@ -141,6 +141,7 @@ const authService = {
       // Guardar datos en localStorage
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
+        localStorage.setItem("acces_token",data.access_token);//necesario para el registro en comentarios
         localStorage.removeItem("refresh_token"); // Limpiar token anterior si existe
         localStorage.setItem("refresh_token", data.refresh_token);
         localStorage.setItem("user", JSON.stringify(data.user));

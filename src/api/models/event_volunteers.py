@@ -1,7 +1,7 @@
 from sqlalchemy import ForeignKey, DateTime
 from datetime import datetime, timezone
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from . import db
+from api.models import db
 
 
 class EventVolunteer(db.Model):

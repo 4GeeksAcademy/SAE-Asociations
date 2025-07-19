@@ -24,6 +24,8 @@ class User(db.Model):
     
     # Relationship with Rating (one-to-many)
     ratings = relationship("Rating", back_populates="user")
+
+    comments = relationship('Comment', back_populates='user')
     
     # Recovery fields
     reset_token: Mapped[str] = mapped_column(String(256), unique=True, nullable=True, default=None)

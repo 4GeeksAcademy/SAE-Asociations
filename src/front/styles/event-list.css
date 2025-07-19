@@ -3087,3 +3087,95 @@
   color: #ffffff !important;
   background: rgba(44, 62, 80, 1);
 }
+
+/* Contenedor principal de comentarios */
+.event-comments-container {
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+  background-color: #f8f9fa; /* fondo suave */
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* Título de comentarios */
+.event-comments-container h4 {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #343a40;
+}
+
+/* Lista de comentarios */
+.comment-list {
+  max-height: 300px; /* altura fija con scroll */
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding-right: 0.5rem;
+}
+
+/* Comentario individual */
+.comment-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 0.95rem;
+  color: #495057;
+}
+
+/* Último comentario no tiene borde */
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+/* Formulario de agregar comentario */
+.comment-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.comment-form textarea {
+  flex-grow: 1;
+  resize: vertical;
+  min-height: 60px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.comment-form button {
+  background-color: #0d6efd;
+  border: none;
+  color: white;
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
+}
+
+.comment-form button:hover {
+  background-color: #084298;
+}
+
+/* Responsive ajustes */
+@media (max-width: 576px) {
+  .comment-form {
+    flex-direction: column;
+  }
+
+  .comment-form button {
+    width: 100%;
+  }
+}
+
+.comment-actions {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.comment-edit-area {
+  width: 100%;
+  resize: vertical;
+  min-height: 60px;
+}
