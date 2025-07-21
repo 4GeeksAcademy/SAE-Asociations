@@ -12,6 +12,9 @@ class Event(db.Model):
     description: Mapped[str] = mapped_column(Text, nullable=True)
     image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    city: Mapped[str] = mapped_column(String(100), nullable=False)
+    address: Mapped[str] = mapped_column(String(255), nullable=True)
+    event_type: Mapped[str] = mapped_column(String(100), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     is_active: Mapped[bool] = mapped_column(
@@ -40,6 +43,9 @@ class Event(db.Model):
             "description": self.description,
             "image_url": self.image_url,
             "date": self.date.isoformat(),
+            "city": self.city,
+            "address": self.address,
+            "event_type": self.event_type,
             "is_active": self.is_active,
             "association_id": self.association_id,
             "association_name": self.association.name if self.association else None,

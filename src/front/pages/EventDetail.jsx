@@ -295,6 +295,32 @@ export const EventDetail = () => {
                                             </span>
                                         </div>
                                     </div>
+                                    <div className="meta-item">
+                                        <i className="bi bi-geo-alt text-association"></i>
+                                        <div className="meta-content">
+                                            <span className="meta-label">Ubicación</span>
+                                            <span className="meta-value">
+                                                {event.city}
+                                                {event.address && (
+                                                    <>
+                                                        <br />
+                                                        <small className="text-muted" style={{ fontSize: '0.85em' }}>
+                                                            {event.address}
+                                                        </small>
+                                                    </>
+                                                )}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="meta-item">
+                                        <i className="bi bi-tag text-association"></i>
+                                        <div className="meta-content">
+                                            <span className="meta-label">Categoría</span>
+                                            <span className="meta-value">
+                                                {event.event_type || 'Sin categoría'}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

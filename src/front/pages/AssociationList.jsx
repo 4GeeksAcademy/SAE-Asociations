@@ -94,7 +94,7 @@ export const AssociationList = () => {
                     <div className="event-list-actions">
                         {user?.role === 'volunteer' ? (
                             <button
-                                className="btn btn-outline-association"
+                                className="btn btn-association"
                                 onClick={() => navigate("/register/association")}
                                 title="Regístrate como asociación para poder crear eventos"
                             >

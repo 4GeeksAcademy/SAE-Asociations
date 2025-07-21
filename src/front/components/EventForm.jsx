@@ -16,14 +16,14 @@ export const EventForm = () => {
         title: '',
         description: '',
         date: '',
-        time: '',
-        location: '',
+        city: '',
+        address: '',
+        event_type: '',
         max_volunteers: '',
         image_url: null
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [error, setError] = useState('');
 
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
@@ -43,6 +43,7 @@ export const EventForm = () => {
             return;
         }
         setFormData(prev => ({ ...prev, image_url: url }));
+        showSuccess('¡Imagen subida!', 'La imagen se ha subido correctamente');
     };
 
     const handleSubmit = async (e) => {
@@ -51,20 +52,25 @@ export const EventForm = () => {
         const currentUser = authService.getCurrentUser();
 
         if (!currentUser || !currentUser.association) {
-            showError('Acceso denegado', 'Debes iniciar sesión para crear un evento.');
+            showError('Acceso denegado', 'Debes iniciar sesión como asociación para crear un evento.');
             return;
         }
 
         setIsSubmitting(true);
-        setError('');
 
         try {
             const token = authService.getToken();
 
             const eventData = {
-                ...formData,
+                title: formData.title,
+                description: formData.description,
+                image_url: formData.image_url || null,
+                date: formData.date,
+                city: formData.city,
+                address: formData.address || null,
+                event_type: formData.event_type,
                 association_id: currentUser.association.id,
-                max_volunteers: formData.max_volunteers ? parseInt(formData.max_volunteers) : null
+                max_volunteers: formData.max_volunteers === '' ? null : parseInt(formData.max_volunteers)
             };
 
             const response = await fetch(`${API_BASE_URL}/api/events`, {
@@ -79,18 +85,16 @@ export const EventForm = () => {
             const result = await response.json();
 
             if (response.ok) {
-                showSuccess('¡Evento creado!', 'El evento ha sido creado con éxito');
+                showSuccess('¡Evento creado!', 'El evento ha sido creado con éxito. Serás redirigido a la lista de eventos.');
                 setTimeout(() => {
                     navigate('/event/list');
                 }, 2000);
             } else {
-                setError(result.error || 'Error al crear el evento');
-                showError('Error al crear evento', result.error || 'Hubo un error al crear el evento');
+                showError('Error al crear evento', result.error || 'Error al crear el evento. Por favor, verifica los datos e inténtalo de nuevo.');
             }
         } catch (error) {
             console.error('Error creating event:', error);
-            setError('Error de conexión');
-            showError('Error de conexión', 'Hubo un error al crear el evento');
+            showError('Error de conexión', 'Error de conexión. Por favor, verifica tu conexión a internet e inténtalo de nuevo.');
         } finally {
             setIsSubmitting(false);
         }
@@ -147,7 +151,7 @@ export const EventForm = () => {
                 </div>
 
                 <div className="col-md-6">
-                    <label htmlFor="date" className="form-label">Fecha</label>
+                    <label htmlFor="date" className="form-label">Fecha y hora</label>
                     <input
                         type="datetime-local"
                         className="form-control"
@@ -157,6 +161,53 @@ export const EventForm = () => {
                         onChange={handleChange}
                         required
                     />
+                </div>
+
+                <div className="col-md-6">
+                    <label htmlFor="city" className="form-label">Ciudad <span className="text-danger">*</span></label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="city"
+                        name="city"
+                        value={formData.city}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+
+                <div className="col-12">
+                    <label htmlFor="address" className="form-label">Dirección (opcional)</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                    />
+                </div>
+
+                <div className="col-12">
+                    <label htmlFor="event_type" className="form-label">Tipo de Evento <span className="text-danger">*</span></label>
+                    <select
+                        className="form-control"
+                        id="event_type"
+                        name="event_type"
+                        value={formData.event_type}
+                        onChange={handleChange}
+                        required
+                    >
+                        <option value="">Selecciona un tipo</option>
+                        <option value="Medio Ambiente">Medio Ambiente</option>
+                        <option value="Educación">Educación</option>
+                        <option value="Salud">Salud</option>
+                        <option value="Comunidad">Comunidad</option>
+                        <option value="Animales">Animales</option>
+                        <option value="Deporte">Deporte</option>
+                        <option value="Cultura">Cultura</option>
+                        <option value="Otro">Otro</option>
+                    </select>
                 </div>
 
                 <div className="col-md-6">

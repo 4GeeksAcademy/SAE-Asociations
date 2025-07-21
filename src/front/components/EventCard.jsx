@@ -8,24 +8,21 @@ export const EventCard = ({ event, user, onDeactivate }) => {
         user.association.id === event.association_id &&
         event.is_active;
 
-    // Función para verificar si hay una imagen válida
     const hasValidImage = (imageUrl) => {
         return imageUrl && imageUrl.trim() !== '';
     };
 
-    // Función para generar la imagen de fallback de la asociación
     const getAssociationFallbackImage = () => {
         const initial = event.association_name?.charAt(0) || 'A';
         return `https://placehold.co/40x40/4dabf7/ffffff?text=${initial}`;
     };
 
-    // Función para generar la imagen de fallback del evento
     const getEventFallbackImage = () => {
         return 'https://placehold.co/400x200/6c757d/ffffff?text=Evento';
     };
 
     return (
-        <div className="event-card">
+        <div className="event-card d-flex flex-column h-100">
             <div className="event-header position-relative">
                 <img
                     src={hasValidImage(event.image_url) ? event.image_url : getEventFallbackImage()}
@@ -33,7 +30,6 @@ export const EventCard = ({ event, user, onDeactivate }) => {
                     alt={event.title}
                     loading="lazy"
                     onError={(e) => {
-                        // Si la imagen falla, mostrar el fallback
                         e.target.src = getEventFallbackImage();
                     }}
                 />
@@ -57,59 +53,83 @@ export const EventCard = ({ event, user, onDeactivate }) => {
             </div>
 
             <div className="event-body">
-                <div className="event-info">
-                    <Link
-                        to={`/event/detail/${event.id}`}
-                        className="event-title-link"
-                        title={event.title}
-                    >
-                        <h5 className="event-title mb-0">
-                            <i className="bi bi-search event-title-icon" style={{ marginRight: '0.5rem' }}></i>
-                            {event.title}
+                <div className="d-flex justify-content-between align-items-start">
+                    {/* Título y descripción */}
+                    <div className="d-flex flex-column flex-grow-1">
+                        <h5 className="event-title">
+                            <Link
+                                to={`/event/detail/${event.id}`}
+                                className="event-title-link"
+                                title={event.title}
+                            >
+                                <span className="d-flex align-items-center">
+                                    <i className="bi bi-search event-title-icon"></i>
+                                    {event.title?.length > 40
+                                        ? `${event.title.substring(0, 40)}...`
+                                        : event.title
+                                    }
+                                </span>
+                            </Link>
                         </h5>
-                    </Link>
-                    <div className="event-info-compact">
-                        <div className="info-item">
+
+                        {/* Descripción */}
+                        <p className="event-description">
+                            {event.description?.length > 75
+                                ? `${event.description.substring(0, 75)}...`
+                                : event.description || 'Sin descripción disponible'
+                            }
+                        </p>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="event-stats-inline">
+                        <div className="stat-inline">
                             <i className="bi bi-calendar-event"></i>
-                            <span className="info-value">
+                            <span className="stat-value-inline">
                                 {new Date(event.date).toLocaleDateString('es-ES', {
                                     day: '2-digit',
                                     month: 'short'
                                 })}
                             </span>
                         </div>
-                        <div className="info-item">
+                        {event.city && (
+                            <div className="stat-inline">
+                                <i className="bi bi-geo-alt"></i>
+                                <span className="stat-value-inline">{event.city}</span>
+                            </div>
+                        )}
+                        {event.event_type && (
+                            <div className="stat-inline">
+                                <i className="bi bi-tag"></i>
+                                <span className="stat-value-inline">{event.event_type}</span>
+                            </div>
+                        )}
+                        <div className="stat-inline">
                             <i className="bi bi-people"></i>
-                            <span className="info-value">
+                            <span className="stat-value-inline">
                                 {event.Volunteers_count || 0}
                                 {event.max_volunteers ? ` / ${event.max_volunteers}` : ''}
                             </span>
                         </div>
                     </div>
                 </div>
-                <p className="event-description">
-                    {event.description?.length > 100
-                        ? `${event.description.substring(0, 100)}...`
-                        : event.description || 'Sin descripción disponible'
-                    }
-                </p>
 
-                <div className="event-association">
-                    <div className="association-info">
-                        <div className="association-avatar-small">
+                {/* Información de la asociación */}
+                <div className="event-association border-top pt-2">
+                    <div className="association-info d-flex align-items-center">
+                        <div className="association-avatar-small me-2">
                             <img
                                 src={hasValidImage(event.association_image_url) ? event.association_image_url : getAssociationFallbackImage()}
-                                className="avatar-small"
+                                className="avatar-small rounded-circle"
                                 alt={event.association_name}
                                 loading="lazy"
                                 onError={(e) => {
-                                    // Si la imagen falla, mostrar el fallback
                                     e.target.src = getAssociationFallbackImage();
                                 }}
                             />
                         </div>
                         <div className="association-details">
-                            <span className="text-truncate text-association" title={event.association_name}>
+                            <span className="text-truncate text-association d-block" title={event.association_name}>
                                 {event.association_name}
                             </span>
                             <small className="text-muted d-block">Organiza este evento</small>
