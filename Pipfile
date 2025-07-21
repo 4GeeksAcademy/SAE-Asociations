@@ -21,8 +21,8 @@ python-dotenv = "*"
 sendgrid = "*"
 flask-cors = "*"
 tomli = "*"
-flask-migrate = "*"
 stripe = "*"
+flask-migrate = "*"
 
 [requires]
 python_version = "3.11"
