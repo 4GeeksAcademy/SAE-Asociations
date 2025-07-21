@@ -1,11 +1,11 @@
 .event-list-container {
-  padding: 2rem 0;
+  padding: 0 0 2rem 0;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   min-height: calc(100vh - 76px); /* Adjust based on navbar height */
 }
 
 .event-list-header {
-  margin-bottom: 2.5rem;
+  margin: 2rem 0 2.5rem 0;
   padding: 0 1rem;
 }
 
@@ -1030,7 +1030,16 @@
 .d-flex.flex-column.flex-grow-1 {
   min-width: 0;
   flex: 1;
-  max-width: calc(100% - 110px);
+}
+
+/* Fix para evitar overflow horizontal */
+body {
+  overflow-x: hidden;
+}
+
+.container,
+.container-fluid {
+  overflow-x: hidden;
 }
 
 .event-info {
