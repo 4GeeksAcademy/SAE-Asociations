@@ -52,7 +52,7 @@ export const AssociationList = () => {
     useEffect(() => {
         const currentUser = authService.getCurrentUser();
         setUser(currentUser);
-        getAssociations();
+        getAssociations(setAssociations, setLoading, setError);
         getStatistics();
     }, []);
 

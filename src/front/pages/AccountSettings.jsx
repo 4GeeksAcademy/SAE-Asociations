@@ -74,14 +74,20 @@ export const AccountSettings = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
         showSuccess('¡Imagen actualizada!', 'Tu imagen de perfil ha sido actualizada correctamente');
 
         // Actualizar el usuario en localStorage
-        const updatedUser = { ...user, profile_image: imageUrl };
+        const updatedUser = {
+          ...user,
+          profile_image: imageUrl,
+          association: user.association ? {
+            ...user.association,
+            image_url: imageUrl
+          } : null
+        };
         localStorage.setItem('user', JSON.stringify(updatedUser));
 
-        // Recargar la página para mostrar la nueva imagen
+        // Recargar la página para mostrar la nueva imagen en todos los componentes
         window.location.reload();
       } else {
         const errorData = await response.json();

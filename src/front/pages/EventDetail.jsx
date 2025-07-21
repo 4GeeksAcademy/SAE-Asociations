@@ -421,7 +421,19 @@ export const EventDetail = () => {
                                             {event.volunteers.map((volunteer) => (
                                                 <div key={volunteer.id} className="volunteer-item">
                                                     <div className="volunteer-avatar">
-                                                        <i className="bi bi-person-circle"></i>
+                                                        {volunteer.profile_image ? (
+                                                            <img
+                                                                src={volunteer.profile_image}
+                                                                alt={`${volunteer.name} ${volunteer.lastname}`}
+                                                                className="volunteer-image"
+                                                                onError={(e) => {
+                                                                    e.target.style.display = 'none';
+                                                                    e.target.nextSibling.style.display = 'block';
+                                                                }}
+                                                            />
+                                                        ) : (
+                                                            <i className="bi bi-person-circle"></i>
+                                                        )}
                                                     </div>
                                                     <div className="volunteer-info">
                                                         <span className="volunteer-name">

@@ -83,6 +83,11 @@ def update_profile_image():
     try:
         # Actualizar la imagen de perfil en la base de datos
         user.profile_image = image_url
+        
+        # Si el usuario es una asociación, actualizar también su imagen
+        if user.association:
+            user.association.image_url = image_url
+        
         db.session.commit()
 
         return jsonify({

@@ -58,24 +58,32 @@ def login():
 def get_profile():
     """Endpoint para obtener el perfil del usuario autenticado"""
     try:
-        current_user_id = int(get_jwt_identity())  # Convertir de string a int
-        claims = get_jwt()
-        
-        # Buscar usuario en base de datos como fallback
+        current_user_id = int(get_jwt_identity())
         user = User.query.get(current_user_id)
         if not user:
             return jsonify({'message': 'Usuario no encontrado'}), 404
         
-        # Usar claims del JWT si están disponibles, sino usar datos de BD
-        return jsonify({
-            'user_id': current_user_id,
-            'email': claims.get('email', user.email),
-            'name': claims.get('name', user.name),
-            'lastname': claims.get('lastname', user.lastname),
-            'phone': claims.get('phone', user.phone),
-            'role': claims.get('role', 'volunteer'),
-            'association': claims.get('association', None)
-        }), 200
+        # Siempre devolver los datos actuales de la base de datos
+        response = {
+            'user_id': user.id,
+            'email': user.email,
+            'name': user.name,
+            'lastname': user.lastname,
+            'phone': user.phone,
+            'profile_image': user.profile_image,
+            'role': 'association' if user.association else 'volunteer'
+        }
+
+        # Si es una asociación, incluir sus datos
+        if user.association:
+            response['association'] = {
+                'id': user.association.id,
+                'name': user.association.name,
+                'cif': user.association.cif,
+                'image_url': user.association.image_url
+            }
+
+        return jsonify(response), 200
         
     except Exception as e:
         return jsonify({'error': f'Error al obtener perfil: {str(e)}'}), 500

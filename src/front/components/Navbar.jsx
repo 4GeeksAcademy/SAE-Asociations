@@ -14,15 +14,12 @@ const Navbar = () => {
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      // Verificar si el token está expirado primero (validación local rápida)
       const isExpired = authService.isTokenExpired();
-
       if (isExpired) {
         setIsAuthenticated(false);
         setUser(null);
         return;
       }
-
       const authenticated = authService.isAuthenticated();
       const currentUser = authService.getCurrentUser();
       setIsAuthenticated(authenticated);
@@ -30,8 +27,16 @@ const Navbar = () => {
     };
 
     checkAuthStatus();
+
+    // Escuchar cambios en localStorage (de otras pestañas)
     window.addEventListener('storage', checkAuthStatus);
-    return () => window.removeEventListener('storage', checkAuthStatus);
+    // Escuchar cambios en localStorage (de la misma pestaña)
+    window.addEventListener('localStorageUpdated', checkAuthStatus);
+
+    return () => {
+      window.removeEventListener('storage', checkAuthStatus);
+      window.removeEventListener('localStorageUpdated', checkAuthStatus);
+    };
   }, [location]);
 
   const handleLogout = () => {
