@@ -17,6 +17,8 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+  z-index: 1030;
+  overflow: visible;
 }
 
 /* Logo container */
@@ -80,6 +82,21 @@
 }
 
 /* Dropdown del perfil */
+.profile-dropdown {
+  position: relative;
+}
+
+/* Asegurar que nada recorte el dropdown */
+.navbar-main .container,
+.navbar-main .navbar-nav,
+.navbar-main .navbar-collapse {
+  overflow: visible;
+}
+
+.profile-dropdown .dropdown-menu.show {
+  display: block;
+}
+
 .profile-dropdown .dropdown-toggle {
   background: rgba(255, 255, 255, 0.1);
   border: none;
@@ -109,7 +126,10 @@
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   padding: 0.5rem;
-  overflow: hidden;
+  z-index: 9999;
+  position: absolute;
+  top: 100%;
+  right: 0;
 }
 
 .profile-dropdown .dropdown-item {
@@ -177,6 +197,7 @@
     padding: 1rem;
     border-radius: 1.5rem;
     box-shadow: var(--shadow-md);
+    overflow: visible;
   }
 
   .nav-link-custom {
