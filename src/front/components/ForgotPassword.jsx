@@ -59,7 +59,7 @@ export const ForgotPassword = () => {
                                         required
                                     />
                                 </div>
-                                <div className="d-grid gap-2"> 
+                                <div className="d-grid gap-2">
                                     <button type="submit" className="btn btn-primary">Enviar Enlace</button>
                                 </div>
                             </form>

@@ -31,13 +31,13 @@ const communityAvatars = [
 ];
 
 const heroBubbles = [
-  // Izquierda del título: Playa
+  // Izquierda del título: Playa - Posiciones originales restauradas
   { src: 'https://plus.unsplash.com/premium_photo-1663126366512-62a1e0494bad?q=80&w=3243&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', className: 'bubble bubble-hero bubble-left', style: { top: '120px', left: 'calc(50% - 320px)', zIndex: 1, opacity: 0.8, width: '80px', height: '80px' } },
-  // Derecha del título: Recogida de alimentos
+  // Derecha del título: Recogida de alimentos - Posiciones originales restauradas
   { src: 'https://images.unsplash.com/photo-1557660559-42497f78035b?q=80&w=1892&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', className: 'bubble bubble-hero bubble-right', style: { top: '120px', left: 'calc(50% + 250px)', zIndex: 1, opacity: 0.8, width: '80px', height: '80px' } },
-  // Arriba izquierda del título: Ayuda a los necesitados (alternativa Unsplash)
+  // Arriba izquierda del título: Ayuda a los necesitados - Posiciones originales restauradas
   { src: 'https://images.unsplash.com/photo-1526976668912-1a811878dd37?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', className: 'bubble bubble-hero bubble-topleft', style: { top: '70px', left: 'calc(50% - 180px)', zIndex: 1, opacity: 0.7, width: '60px', height: '60px' } },
-  // Arriba derecha del título: Voluntariado en grupo
+  // Arriba derecha del título: Voluntariado en grupo - Posiciones originales restauradas
   { src: 'https://plus.unsplash.com/premium_photo-1681140560555-2a054c898b66?q=80&w=3271&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', className: 'bubble bubble-hero bubble-topright', style: { top: '70px', left: 'calc(50% + 120px)', zIndex: 1, opacity: 0.7, width: '60px', height: '60px' } },
 ];
 
@@ -61,15 +61,13 @@ const Home = () => {
           <div className="row justify-content-center">
             <div className="col-12 col-md-10 col-lg-8 text-center">
               {/* Logo */}
-              <div className="mb-4 d-flex justify-content-center">
-                <div className="logo-container mb-3">
-                  <div className="logo-wrapper">
-                    <img
-                      src={saeLogo}
-                      alt="SAE Logo"
-                      className="logo-image"
-                    />
-                  </div>
+              <div className="logo-container mb-4 mx-auto">
+                <div className="logo-wrapper">
+                  <img
+                    src={saeLogo}
+                    alt="SAE Logo"
+                    className="logo-image"
+                  />
                 </div>
               </div>
 
@@ -105,15 +103,18 @@ const Home = () => {
       </div>
 
       {/* Fila de avatares de la comunidad mejor integrada */}
-      <div className="container">
-        <div className="community-avatars-integrated d-flex align-items-center justify-content-center">
-          {communityAvatars.map((url, idx) => (
-            <img src={url} alt={`Voluntario ${idx + 1}`} className="avatar-img-integrated" key={idx} />
-          ))}
-          <div className="avatar-img-integrated avatar-plus">
-            <i className="bi bi-people-fill"></i>
+      <div className="container-fluid px-3">
+        <div className="d-flex justify-content-center">
+          <div className="community-avatars-integrated d-flex align-items-center justify-content-center">
+            {communityAvatars.map((url, idx) => (
+              <img src={url} alt={`Voluntario ${idx + 1}`} className="avatar-img-integrated" key={idx} />
+            ))}
+            <div className="avatar-img-integrated avatar-plus">
+              <i className="bi bi-people-fill"></i>
+            </div>
+            <span className="ms-3 text-secondary fw-bold d-none d-sm-inline">Únete a nuestra comunidad</span>
+            <span className="ms-2 text-secondary fw-bold d-inline d-sm-none">Únete</span>
           </div>
-          <span className="ms-3 text-secondary fw-bold">Únete a nuestra comunidad</span>
         </div>
       </div>
 

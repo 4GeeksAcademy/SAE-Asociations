@@ -82,9 +82,9 @@ p,
 /* Hero Section */
 .hero-section {
   background: var(--page-bg);
-  padding: 6rem 0 4rem;
+  padding: 4rem 0 4rem;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .hero-section::before {
@@ -97,7 +97,7 @@ p,
   background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234dabf7' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
   opacity: 0.5;
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
 }
 
 /* Asegurar que el contenido esté por encima del fondo */
@@ -119,7 +119,8 @@ p,
     inset 0 0 20px rgba(77, 171, 247, 0.15);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  z-index: 1020;
 }
 
 .logo-container:hover {
@@ -128,6 +129,8 @@ p,
   box-shadow: 0 12px 40px rgba(77, 171, 247, 0.3),
     inset 0 0 0 4px rgba(77, 171, 247, 0.3),
     inset 0 0 25px rgba(77, 171, 247, 0.2);
+  z-index: 100;
+  position: relative;
 }
 
 .logo-container::before {
@@ -140,7 +143,7 @@ p,
   background: linear-gradient(135deg, rgba(77, 171, 247, 0.4), transparent);
   border-radius: 50%;
   opacity: 0.5;
-  z-index: 2;
+  z-index: 0;
   transition: all 0.4s ease;
 }
 
@@ -153,7 +156,7 @@ p,
   width: 100%;
   height: 100%;
   position: relative;
-  z-index: 1;
+  z-index: 3;
   border-radius: 50%;
   padding: 4px;
   transition: all 0.4s ease;
@@ -166,6 +169,8 @@ p,
   border-radius: 50%;
   transition: all 0.4s ease;
   filter: drop-shadow(0 2px 4px rgba(77, 171, 247, 0.2));
+  position: relative;
+  z-index: 4;
 }
 
 .logo-container:hover .logo-wrapper {
@@ -1233,6 +1238,9 @@ p,
   display: inline-flex;
   z-index: 10;
   position: relative;
+  max-width: calc(100vw - 2rem);
+  overflow: hidden;
+  flex-wrap: nowrap;
 }
 
 .avatar-img-integrated {
@@ -1242,10 +1250,13 @@ p,
   border: 2px solid #fff;
   box-shadow: 0 2px 8px rgba(77, 171, 247, 0.1);
   object-fit: cover;
+  object-position: center;
   margin-left: -12px;
   background: #f8f9fa;
   transition: transform 0.2s, box-shadow 0.2s;
   z-index: 1;
+  flex-shrink: 0;
+  display: block;
 }
 .avatar-img-integrated:first-child {
   margin-left: 0;
@@ -1266,6 +1277,32 @@ p,
   border: none;
 }
 
+/* Media queries para avatares responsive */
+@media (max-width: 576px) {
+  .community-avatars-integrated {
+    padding: 0.4rem 1rem;
+    max-width: calc(100vw - 1rem);
+  }
+
+  .avatar-img-integrated {
+    width: 40px;
+    height: 40px;
+    margin-left: -8px;
+  }
+
+  .avatar-img-integrated:first-child {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .avatar-img-integrated {
+    width: 36px;
+    height: 36px;
+    margin-left: -6px;
+  }
+}
+
 /* Burbujas integradas en el hero */
 .bubble-hero {
   position: absolute;
@@ -1275,6 +1312,48 @@ p,
   object-fit: cover;
   pointer-events: none;
   transition: transform 0.3s;
+}
+
+/* En tablets mantener el patrón pero más cerca del centro para evitar overflow */
+@media (min-width: 768px) and (max-width: 991px) {
+  .bubble-hero.bubble-left {
+    left: calc(50% - 250px) !important;
+  }
+  .bubble-hero.bubble-right {
+    left: calc(50% + 180px) !important;
+  }
+  .bubble-hero.bubble-topleft {
+    left: calc(50% - 150px) !important;
+  }
+  .bubble-hero.bubble-topright {
+    left: calc(50% + 90px) !important;
+  }
+}
+
+/* En móviles desde iPhone 12 Pro (390px) mostrar solo 2 burbujas */
+@media (min-width: 390px) and (max-width: 767px) {
+  .bubble-hero.bubble-topleft,
+  .bubble-hero.bubble-topright {
+    display: none !important;
+  }
+
+  .bubble-hero.bubble-left {
+    left: calc(50% - 150px) !important;
+    width: 60px !important;
+    height: 60px !important;
+  }
+  .bubble-hero.bubble-right {
+    left: calc(50% + 90px) !important;
+    width: 60px !important;
+    height: 60px !important;
+  }
+}
+
+/* En móviles muy pequeños (menos de 390px) ocultar las burbujas completamente */
+@media (max-width: 389px) {
+  .bubble-hero {
+    display: none !important;
+  }
 }
 
 /* El tamaño y la posición ahora se controlan por el style inline en el JSX */

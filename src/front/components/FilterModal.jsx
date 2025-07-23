@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 export const FilterModal = ({ show, onClose, onApplyFilters, initialFilters }) => {
-    
+
     const [currentFilters, setCurrentFilters] = useState(
         JSON.parse(JSON.stringify(initialFilters))
     );
@@ -30,78 +30,107 @@ export const FilterModal = ({ show, onClose, onApplyFilters, initialFilters }) =
 
     return (
         <div
-            className="modal fade show" // Clases de Bootstrap para un modal visible
-            tabIndex="-1"
-            role="dialog" // Rol de accesibilidad
-            style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
-            aria-labelledby="filterModalLabel"
-            aria-hidden={!show}
-            onClick={onClose} // Permite cerrar el modal al hacer clic fuera del contenido
+            className="filter-modal-overlay"
+            onClick={onClose}
         >
-            {/* Contenido del modal. El onClick de aquí previene que el modal se cierre al hacer clic DENTRO del contenido. */}
-            <div className="modal-dialog modal-dialog-centered" role="document" onClick={e => e.stopPropagation()}>
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title" id="filterModalLabel">Filtrar Eventos</h5>
-                        <button type="button" className="btn-close" aria-label="Close" onClick={onClose}></button>
+            <div className="filter-modal-dialog" onClick={e => e.stopPropagation()}>
+                <div className="filter-modal-content">
+                    <div className="filter-modal-header">
+                        <div className="filter-modal-title-section">
+                            <div className="filter-modal-icon">
+                                <i className="bi bi-funnel-fill"></i>
+                            </div>
+                            <h5 className="filter-modal-title">Filtrar Eventos</h5>
+                        </div>
+                        <button
+                            type="button"
+                            className="filter-modal-close"
+                            onClick={onClose}
+                            aria-label="Cerrar"
+                        >
+                            <i className="bi bi-x-lg"></i>
+                        </button>
                     </div>
+
                     <form onSubmit={handleSubmit}>
-                        <div className="modal-body">
+                        <div className="filter-modal-body">
                             {/* Filtro por Ciudad */}
-                            <div className="mb-3">
-                                <label htmlFor="cityFilter" className="form-label">Ciudad:</label>
+                            <div className="filter-group">
+                                <label htmlFor="cityFilter" className="filter-label">
+                                    <i className="bi bi-geo-alt-fill me-2"></i>
+                                    Ciudad
+                                </label>
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="filter-input"
                                     id="cityFilter"
-                                    name="city" // <-- Coincide con el nombre del parámetro en el backend
+                                    name="city"
                                     value={currentFilters.city}
                                     onChange={handleChange}
-                                    placeholder="Ej: Jaén"
+                                    placeholder="Ej: Jaén, Madrid, Barcelona..."
                                 />
                             </div>
 
                             {/* Filtro por Tipo de Evento */}
-                            {/* Lo moví aquí para que coincida con el orden de tu EventList.jsx para claridad */}
-                            <div className="mb-3">
-                                <label htmlFor="eventTypeFilter" className="form-label">Tipo de Evento:</label>
+                            <div className="filter-group">
+                                <label htmlFor="eventTypeFilter" className="filter-label">
+                                    <i className="bi bi-tag-fill me-2"></i>
+                                    Tipo de Evento
+                                </label>
                                 <select
-                                    className="form-select"
+                                    className="filter-select"
                                     id="eventTypeFilter"
-                                    name="event_type" // <-- Coincide con el nombre del parámetro en el backend
+                                    name="event_type"
                                     value={currentFilters.event_type}
                                     onChange={handleChange}
                                 >
                                     <option value="">Todos los tipos</option>
-                                    <option value="Medio Ambiente">Medio Ambiente</option>
-                                    <option value="Educación">Educación</option>
-                                    <option value="Salud">Salud</option>
-                                    <option value="Comunidad">Comunidad</option>
-                                    <option value="Animales">Animales</option>
-                                    <option value="Deporte">Deporte</option>
-                                    <option value="Cultura">Cultura</option>
-                                    <option value="Otro">Otro</option>
+                                    <option value="Medio Ambiente">🌱 Medio Ambiente</option>
+                                    <option value="Educación">📚 Educación</option>
+                                    <option value="Salud">🏥 Salud</option>
+                                    <option value="Comunidad">🏘️ Comunidad</option>
+                                    <option value="Animales">🐾 Animales</option>
+                                    <option value="Deporte">⚽ Deporte</option>
+                                    <option value="Cultura">🎭 Cultura</option>
+                                    <option value="Otro">📝 Otro</option>
                                 </select>
                             </div>
 
                             {/* Filtro por Ordenación de Fecha */}
-                            <div className="mb-3">
-                                <label htmlFor="dateSortFilter" className="form-label">Fecha:</label>
+                            <div className="filter-group">
+                                <label htmlFor="dateSortFilter" className="filter-label">
+                                    <i className="bi bi-calendar-event-fill me-2"></i>
+                                    Ordenar por Fecha
+                                </label>
                                 <select
-                                    className="form-select"
+                                    className="filter-select"
                                     id="dateSortFilter"
                                     name="sort_by_date"
                                     value={currentFilters.sort_by_date}
                                     onChange={handleChange}
                                 >
-                                    <option value="newest">Más recientes</option>
-                                    <option value="oldest">Más antiguos</option>
+                                    <option value="newest">📅 Más recientes</option>
+                                    <option value="oldest">📆 Más antiguos</option>
                                 </select>
                             </div>
                         </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={onClose}>Cerrar</button>
-                            <button type="submit" className="btn btn-primary">Aplicar Filtros</button>
+
+                        <div className="filter-modal-footer">
+                            <button
+                                type="button"
+                                className="filter-btn filter-btn-secondary"
+                                onClick={onClose}
+                            >
+                                <i className="bi bi-x-circle me-2"></i>
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                className="filter-btn filter-btn-primary"
+                            >
+                                <i className="bi bi-check-circle me-2"></i>
+                                Aplicar Filtros
+                            </button>
                         </div>
                     </form>
                 </div>

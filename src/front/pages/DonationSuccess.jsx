@@ -80,115 +80,176 @@ const DonationSuccess = () => {
 
     if (loading) {
         return (
-            <div className="container py-5 text-center">
-                <div className="spinner-border text-success" role="status">
-                    <span className="visually-hidden">Cargando...</span>
+            <div className="donation-page">
+                <div className="container py-5 text-center">
+                    <div className="loading-container">
+                        <div className="loading-spinner">
+                            <div className="spinner-border text-success" role="status">
+                                <span className="visually-hidden">Cargando...</span>
+                            </div>
+                        </div>
+                        <p className="loading-text mt-3">Verificando donación...</p>
+                    </div>
                 </div>
-                <p className="mt-3">Verificando donación...</p>
             </div>
         );
     }
 
     return (
-        <div className="container py-5">
-            <div className="row justify-content-center">
-                <div className="col-12 col-md-8 col-lg-6">
-                    <div className="card shadow-lg border-0">
-                        <div className="card-body text-center p-5">
-                            {/* Icono de éxito */}
-                            <div className="mb-4">
-                                <div className="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle" style={{ width: '80px', height: '80px' }}>
-                                    <i className="bi bi-check-lg" style={{ fontSize: '2.5rem' }}></i>
+        <div className="donation-page success-page">
+            <div className="container py-5">
+                <div className="row justify-content-center">
+                    <div className="col-12 col-md-8 col-lg-6">
+                        <div className="donation-card success-card">
+                            <div className="card-header-gradient success-gradient">
+                                <div className="success-icon-container">
+                                    <div className="success-icon">
+                                        <i className="bi bi-check-circle-fill"></i>
+                                    </div>
+                                    <div className="success-particles">
+                                        <div className="particle"></div>
+                                        <div className="particle"></div>
+                                        <div className="particle"></div>
+                                        <div className="particle"></div>
+                                    </div>
                                 </div>
+                                <h1 className="success-title">¡Donación Exitosa!</h1>
+                                <p className="success-subtitle">
+                                    Tu generosidad marca la diferencia
+                                </p>
                             </div>
 
-                            {/* Título principal */}
-                            <h1 className="h3 text-success mb-3">¡Donación Exitosa!</h1>
+                            <div className="donation-card-body">
+                                {/* Mensaje de agradecimiento */}
+                                <div className="thank-you-section">
+                                    <div className="thank-you-icon">
+                                        <i className="bi bi-heart-fill"></i>
+                                    </div>
+                                    <p className="thank-you-message">
+                                        Gracias por tu apoyo. Tu donación ha sido procesada exitosamente
+                                        y ayudará a crear un impacto positivo en nuestra comunidad.
+                                    </p>
+                                </div>
 
-                            {/* Mensaje de agradecimiento */}
-                            <p className="text-muted mb-4">
-                                Tu donación ha sido procesada exitosamente. Gracias por tu generosidad y por apoyar esta causa.
-                            </p>
-
-                            {/* Detalles de la donación */}
-                            {donationData && (
-                                <div className="card bg-light mb-4">
-                                    <div className="card-body">
-                                        <h5 className="card-title text-success">Detalles de la Donación</h5>
-                                        <div className="row text-start">
-                                            <div className="col-6">
-                                                <strong>Monto:</strong>
+                                {/* Detalles de la donación */}
+                                {donationData && (
+                                    <div className="donation-details-card">
+                                        <div className="details-header">
+                                            <div className="details-icon">
+                                                <i className="bi bi-receipt"></i>
                                             </div>
-                                            <div className="col-6">
-                                                €{donationData.amount}
+                                            <h3 className="details-title">Detalles de tu Donación</h3>
+                                        </div>
+                                        <div className="details-content">
+                                            <div className="detail-row">
+                                                <div className="detail-label">
+                                                    <i className="bi bi-currency-euro"></i>
+                                                    Monto
+                                                </div>
+                                                <div className="detail-value amount-value">
+                                                    €{donationData.amount}
+                                                </div>
                                             </div>
-                                            <div className="col-6">
-                                                <strong>Asociación:</strong>
-                                            </div>
-                                            <div className="col-6">
-                                                {donationData.association?.name || 'No especificada'}
+                                            <div className="detail-row">
+                                                <div className="detail-label">
+                                                    <i className="bi bi-building"></i>
+                                                    Asociación
+                                                </div>
+                                                <div className="detail-value">
+                                                    {donationData.association?.name || 'No especificada'}
+                                                </div>
                                             </div>
                                             {donationData.event && (
-                                                <>
-                                                    <div className="col-6">
-                                                        <strong>Evento:</strong>
+                                                <div className="detail-row">
+                                                    <div className="detail-label">
+                                                        <i className="bi bi-calendar-event"></i>
+                                                        Evento
                                                     </div>
-                                                    <div className="col-6">
+                                                    <div className="detail-value">
                                                         {donationData.event.title}
                                                     </div>
-                                                </>
+                                                </div>
                                             )}
-                                            <div className="col-6">
-                                                <strong>Fecha:</strong>
-                                            </div>
-                                            <div className="col-6">
-                                                {new Date(donationData.created_at).toLocaleDateString('es-ES', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })}
+                                            <div className="detail-row">
+                                                <div className="detail-label">
+                                                    <i className="bi bi-clock"></i>
+                                                    Fecha
+                                                </div>
+                                                <div className="detail-value">
+                                                    {new Date(donationData.created_at).toLocaleDateString('es-ES', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit'
+                                                    })}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                )}
+
+                                {/* Mensaje informativo */}
+                                <div className="info-banner">
+                                    <div className="info-icon">
+                                        <i className="bi bi-envelope-check"></i>
+                                    </div>
+                                    <div className="info-content">
+                                        <h4>Confirmación enviada</h4>
+                                        <p>Recibirás un email con todos los detalles de tu donación</p>
+                                    </div>
                                 </div>
-                            )}
 
-                            {/* Mensaje adicional */}
-                            <div className="alert alert-info">
-                                <i className="bi bi-info-circle me-2"></i>
-                                <small>
-                                    Recibirás un email de confirmación con los detalles de tu donación.
-                                </small>
-                            </div>
+                                {/* Botones de acción */}
+                                <div className="action-buttons">
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary action-btn primary-btn"
+                                        onClick={handleViewAssociations}
+                                    >
+                                        <i className="bi bi-building"></i>
+                                        Ver Más Asociaciones
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary action-btn secondary-btn"
+                                        onClick={handleGoHome}
+                                    >
+                                        <i className="bi bi-house"></i>
+                                        Ir al Inicio
+                                    </button>
+                                </div>
 
-                            {/* Botones de acción */}
-                            <div className="d-flex gap-3 justify-content-center">
-                                <button
-                                    type="button"
-                                    className="btn btn-outline-secondary"
-                                    onClick={handleGoHome}
-                                >
-                                    <i className="bi bi-house me-2"></i>
-                                    Ir al Inicio
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-success"
-                                    onClick={handleViewAssociations}
-                                >
-                                    <i className="bi bi-building me-2"></i>
-                                    Ver Asociaciones
-                                </button>
-                            </div>
+                                {/* Enlaces adicionales */}
+                                <div className="additional-links">
+                                    <Link to="/event/list" className="additional-link">
+                                        <div className="link-content">
+                                            <div className="link-icon">
+                                                <i className="bi bi-calendar-event"></i>
+                                            </div>
+                                            <div className="link-text">
+                                                <h5>Descubre Eventos</h5>
+                                                <p>Participa como voluntario</p>
+                                            </div>
+                                            <div className="link-arrow">
+                                                <i className="bi bi-arrow-right"></i>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                </div>
 
-                            {/* Link adicional */}
-                            <div className="mt-4">
-                                <Link to="/associations" className="text-decoration-none">
-                                    <i className="bi bi-building me-1"></i>
-                                    Ver más asociaciones para apoyar
-                                </Link>
+                                {/* Mensaje motivacional final */}
+                                <div className="motivation-card">
+                                    <div className="motivation-content">
+                                        <div className="motivation-icon">
+                                            <i className="bi bi-heart-pulse"></i>
+                                        </div>
+                                        <div className="motivation-text">
+                                            <h4>Tu impacto importa</h4>
+                                            <p>Cada donación ayuda a construir un mundo mejor. Juntos creamos cambios positivos en nuestra comunidad.</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

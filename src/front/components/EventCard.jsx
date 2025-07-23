@@ -64,8 +64,8 @@ export const EventCard = ({ event, user, onDeactivate }) => {
                             >
                                 <span className="d-flex align-items-center">
                                     <i className="bi bi-search event-title-icon"></i>
-                                    {event.title?.length > 40
-                                        ? `${event.title.substring(0, 40)}...`
+                                    {event.title?.length > 21
+                                        ? `${event.title.substring(0, 21)}...`
                                         : event.title
                                     }
                                 </span>

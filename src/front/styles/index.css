@@ -34,6 +34,44 @@ body {
   background-color: #f8f9fa;
   color: #333;
   line-height: 1.6;
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+html {
+  overflow-x: hidden !important;
+  max-width: 100vw !important;
+}
+
+.container,
+.container-fluid {
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+/* Reglas generales para prevenir scroll horizontal */
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  max-width: 100%;
+}
+
+.col,
+.col-*,
+[class*="col-"] {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  max-width: 100%;
 }
 
 /* Asegurar que el layout ocupe toda la altura de la ventana */
@@ -208,4 +246,1023 @@ label {
 .card-title,
 .navbar-brand {
   font-weight: 600 !important;
+}
+
+/* Elementos que necesitan peso extra bold */
+.event-list-title {
+  font-weight: 800 !important;
+}
+
+/* Títulos de tarjetas de eventos */
+.event-title {
+  font-weight: 600 !important;
+}
+
+/* ==============================
+   FILTRO MODAL ESTILOS
+   ============================== */
+
+/* Overlay del modal */
+.filter-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 20px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Dialog del modal */
+.filter-modal-dialog {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Contenido del modal */
+.filter-modal-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  border: 1px solid rgba(77, 171, 247, 0.1);
+}
+
+/* Header del modal */
+.filter-modal-header {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-light)
+  );
+  color: white;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: none;
+}
+
+.filter-modal-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filter-modal-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.filter-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+.filter-modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.filter-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* Body del modal */
+.filter-modal-body {
+  padding: 32px 24px;
+  background: #fafbfc;
+}
+
+/* Grupos de filtros */
+.filter-group {
+  margin-bottom: 24px;
+}
+
+.filter-group:last-child {
+  margin-bottom: 0;
+}
+
+/* Labels */
+.filter-label {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: var(--dark-color);
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.filter-label i {
+  color: var(--primary-color);
+}
+
+/* Inputs y selects */
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  background: white;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.1);
+  background: white;
+}
+
+.filter-input::placeholder {
+  color: #adb5bd;
+  font-style: italic;
+}
+
+.filter-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Footer del modal */
+.filter-modal-footer {
+  padding: 20px 24px;
+  background: white;
+  border-top: 1px solid #f1f3f4;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* Botones del filtro */
+.filter-btn {
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.filter-btn-secondary {
+  background: #f8f9fa;
+  color: var(--dark-color);
+  border: 1px solid #dee2e6;
+}
+
+.filter-btn-secondary:hover {
+  background: #e9ecef;
+  transform: translateY(-1px);
+}
+
+.filter-btn-primary {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color),
+    var(--primary-dark)
+  );
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-btn-primary:hover {
+  background: linear-gradient(
+    135deg,
+    var(--primary-dark),
+    var(--primary-color)
+  );
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Responsive design */
+@media (max-width: 576px) {
+  .filter-modal-overlay {
+    padding: 16px;
+  }
+
+  .filter-modal-header {
+    padding: 16px 20px;
+  }
+
+  .filter-modal-body {
+    padding: 24px 20px;
+  }
+
+  .filter-modal-footer {
+    padding: 16px 20px;
+    flex-direction: column;
+  }
+
+  .filter-btn {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .filter-modal-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .filter-modal-dialog {
+    max-width: calc(100vw - 32px);
+  }
+
+  .filter-group {
+    margin-bottom: 20px;
+  }
+
+  .filter-input,
+  .filter-select {
+    padding: 10px 14px;
+    font-size: 16px; /* Evita zoom en iOS */
+  }
+}
+
+/* ===============================
+   PÁGINAS DE DONACIÓN (STRIPE)
+   =============================== */
+
+/* Contenedor principal */
+.donation-page {
+  min-height: calc(100vh - 76px);
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 2rem 0;
+  display: flex;
+  align-items: center;
+  animation: pageEnter 0.6s ease-out;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card principal */
+.donation-card {
+  background: white;
+  border-radius: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  border: none;
+  animation: cardSlide 0.8s ease-out 0.2s both;
+}
+
+@keyframes cardSlide {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header con gradiente */
+.card-header-gradient {
+  padding: 3rem 2rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.success-gradient {
+  background: linear-gradient(135deg, #20c997 0%, #1ba085 50%, #17a673 100%);
+}
+
+.cancel-gradient {
+  background: linear-gradient(135deg, #ffc107 0%, #f0b90b 50%, #e3a857 100%);
+}
+
+/* Iconos principales con animaciones */
+.success-icon-container,
+.cancel-icon-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.success-icon,
+.cancel-icon {
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 3rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: iconPulse 2s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+
+@keyframes iconPulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Partículas animadas */
+.success-particles,
+.cancel-particles {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150px;
+  height: 150px;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  animation: particleFloat 3s ease-in-out infinite;
+}
+
+.particle:nth-child(1) {
+  top: 20%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+  top: 20%;
+  right: 20%;
+  animation-delay: 0.5s;
+}
+
+.particle:nth-child(3) {
+  bottom: 20%;
+  left: 20%;
+  animation-delay: 1s;
+}
+
+.particle:nth-child(4) {
+  bottom: 20%;
+  right: 20%;
+  animation-delay: 1.5s;
+}
+
+@keyframes particleFloat {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* Títulos */
+.success-title,
+.cancel-title {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.success-subtitle,
+.cancel-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Cuerpo de la card */
+.donation-card-body {
+  padding: 2.5rem;
+}
+
+/* Sección de agradecimiento */
+.thank-you-section,
+.reassurance-section {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 1.5rem;
+  border-left: 5px solid #20c997;
+}
+
+.reassurance-section {
+  border-left-color: #ffc107;
+}
+
+.thank-you-icon,
+.reassurance-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #20c997 0%, #1ba085 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 8px 20px rgba(32, 201, 151, 0.3);
+}
+
+.reassurance-icon {
+  background: linear-gradient(135deg, #ffc107 0%, #f0b90b 100%);
+  box-shadow: 0 8px 20px rgba(255, 193, 7, 0.3);
+}
+
+.thank-you-message,
+.reassurance-message {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Card de detalles */
+.donation-details-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(32, 201, 151, 0.1);
+}
+
+.details-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f8f9fa;
+}
+
+.details-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #20c997 0%, #1ba085 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.25rem;
+}
+
+.details-title {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.detail-row:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.detail-label i {
+  color: #20c997;
+  font-size: 1.1rem;
+}
+
+.detail-value {
+  font-weight: 700;
+  color: #2c3e50;
+  font-size: 1rem;
+}
+
+.amount-value {
+  color: #20c997;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+/* Banner informativo */
+.info-banner {
+  background: linear-gradient(135deg, #4dabf7 0%, #3498db 100%);
+  border-radius: 1.5rem;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  color: white;
+}
+
+.info-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.info-content h4 {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.info-content p {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Botones de acción */
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  flex: 1;
+  min-width: 200px;
+  padding: 1rem 2rem;
+  border-radius: 1.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #20c997 0%, #1ba085 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(32, 201, 151, 0.3);
+}
+
+.primary-btn:hover {
+  background: linear-gradient(135deg, #1ba085 0%, #17a673 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(32, 201, 151, 0.4);
+  color: white;
+}
+
+.secondary-btn {
+  background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+}
+
+.secondary-btn:hover {
+  background: linear-gradient(135deg, #545b62 0%, #3d4449 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(108, 117, 125, 0.4);
+  color: white;
+}
+
+.action-btn i {
+  font-size: 1.2rem;
+}
+
+/* Enlaces adicionales */
+.additional-links,
+.explore-section {
+  margin-bottom: 2.5rem;
+}
+
+.explore-title {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.explore-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.additional-link,
+.explore-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.link-content {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.link-content:hover {
+  border-color: #20c997;
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(32, 201, 151, 0.15);
+}
+
+.link-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #20c997;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.link-content:hover .link-icon {
+  background: linear-gradient(135deg, #20c997 0%, #1ba085 100%);
+  color: white;
+  transform: scale(1.1);
+}
+
+.link-text {
+  flex: 1;
+}
+
+.link-text h5 {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.link-text p {
+  color: #6c757d;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.link-arrow {
+  color: #20c997;
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.link-content:hover .link-arrow {
+  transform: translateX(5px);
+}
+
+/* Card motivacional */
+.motivation-card {
+  background: linear-gradient(
+    135deg,
+    rgba(32, 201, 151, 0.05) 0%,
+    rgba(27, 160, 133, 0.05) 100%
+  );
+  border-radius: 1.5rem;
+  padding: 2rem;
+  border: 2px solid rgba(32, 201, 151, 0.1);
+  text-align: center;
+}
+
+.motivation-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.motivation-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #20c997 0%, #1ba085 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  animation: heartBeat 2s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.1);
+  }
+  50% {
+    transform: scale(1);
+  }
+}
+
+.motivation-text h4 {
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.motivation-text p {
+  color: #6c757d;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Estadísticas motivacionales */
+.motivation-stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #20c997 0%, #1ba085 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.1rem;
+}
+
+.stat-text h5 {
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.stat-text p {
+  color: #6c757d;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Loading específico */
+.loading-container {
+  background: white;
+  border-radius: 2rem;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.loading-spinner {
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  color: #6c757d;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .donation-page {
+    padding: 1rem 0;
+  }
+
+  .donation-card {
+    border-radius: 1.5rem;
+    margin: 0 1rem;
+  }
+
+  .card-header-gradient {
+    padding: 2rem 1.5rem 1.5rem;
+  }
+
+  .success-title,
+  .cancel-title {
+    font-size: 2rem;
+  }
+
+  .success-subtitle,
+  .cancel-subtitle {
+    font-size: 1rem;
+  }
+
+  .success-icon,
+  .cancel-icon {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+  }
+
+  .donation-card-body {
+    padding: 2rem 1.5rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    min-width: auto;
+  }
+
+  .motivation-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .motivation-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .details-content {
+    gap: 0.75rem;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    text-align: left;
+  }
+
+  .link-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+
+  .link-arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-header-gradient {
+    padding: 1.5rem 1rem;
+  }
+
+  .success-title,
+  .cancel-title {
+    font-size: 1.75rem;
+  }
+
+  .donation-card-body {
+    padding: 1.5rem 1rem;
+  }
+
+  .success-icon,
+  .cancel-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
+  }
+
+  .action-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .donation-details-card {
+    padding: 1.5rem;
+  }
 }

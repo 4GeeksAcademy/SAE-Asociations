@@ -17,8 +17,16 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
-  z-index: 1030;
-  overflow: visible;
+  z-index: 1050;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.navbar-main .container {
+  max-width: 100% !important;
 }
 
 /* Logo container */
@@ -84,13 +92,15 @@
 /* Dropdown del perfil */
 .profile-dropdown {
   position: relative;
+  z-index: 99999;
 }
 
 /* Asegurar que nada recorte el dropdown */
+.navbar-main,
 .navbar-main .container,
 .navbar-main .navbar-nav,
 .navbar-main .navbar-collapse {
-  overflow: visible;
+  overflow: visible !important;
 }
 
 .profile-dropdown .dropdown-menu.show {
@@ -126,10 +136,14 @@
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   padding: 0.5rem;
-  z-index: 9999;
-  position: absolute;
-  top: 100%;
+  z-index: 99999 !important;
+  min-width: 200px;
   right: 0;
+  left: auto;
+  position: absolute !important;
+  top: 100% !important;
+  transform: none !important;
+  will-change: auto;
 }
 
 .profile-dropdown .dropdown-item {
@@ -193,11 +207,17 @@
 @media (max-width: 991.98px) {
   .navbar-collapse {
     background: rgba(255, 255, 255, 0.98);
-    margin: 1rem -1rem -0.75rem;
+    margin: 1rem 0 -0.75rem 0;
     padding: 1rem;
     border-radius: 1.5rem;
     box-shadow: var(--shadow-md);
-    overflow: visible;
+    overflow: visible !important;
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    right: 0;
+    max-height: calc(100vh - 120px);
+    position: relative;
   }
 
   .nav-link-custom {
