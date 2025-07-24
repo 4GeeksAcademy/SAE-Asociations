@@ -924,13 +924,11 @@
   color: #2c3e50;
   font-size: 1.1rem;
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.4;
   margin-bottom: 0;
-  padding-left: 0.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 220px;
 }
 
 .event-title-link {
@@ -944,18 +942,18 @@
 .event-title-link:hover {
   text-decoration: none;
   color: #20c997;
-  transform: translateX(5px);
+  transform: translateX(3px);
 }
 
 .event-title-icon {
   color: #20c997;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-right: 0.5rem;
   transition: all 0.3s ease;
 }
 
 .event-title-link:hover .event-title-icon {
-  transform: translateX(3px);
+  transform: translateX(2px);
 }
 
 .event-description {
@@ -1310,8 +1308,11 @@ body {
   }
 
   .event-title {
-    font-size: 1.1rem;
-    max-width: 200px;
+    font-size: 1rem;
+  }
+
+  .event-title-icon {
+    font-size: 1rem;
   }
 
   .event-stats {
@@ -1334,8 +1335,11 @@ body {
   }
 
   .event-title {
-    font-size: 1rem;
-    max-width: 280px;
+    font-size: 0.95rem;
+  }
+
+  .event-title-icon {
+    font-size: 0.95rem;
   }
 
   .event-body {
@@ -1348,6 +1352,54 @@ body {
 
   .event-stats .stat-value {
     font-size: 1rem;
+  }
+}
+
+/* Dispositivos alargados - iPad Pro, Samsung S8+, etc */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  /* iPad Pro en horizontal */
+  .row-cols-md-2 > * {
+    flex: 0 0 auto;
+    width: 50% !important; /* Mantener solo 2 columnas */
+  }
+
+  .event-title {
+    font-size: 1.05rem;
+  }
+}
+
+@media (min-width: 344px) and (max-width: 414px) and (min-height: 700px) {
+  /* Samsung S8+, Z Fold y dispositivos muy altos y estrechos */
+  .event-title {
+    font-size: 0.9rem;
+  }
+
+  .event-body {
+    padding: 0.8rem;
+  }
+
+  .event-stats-inline {
+    gap: 0.3rem;
+  }
+
+  .stat-inline {
+    padding: 0.2rem 0.4rem;
+  }
+
+  .stat-value-inline {
+    font-size: 0.8rem;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1366px) {
+  /* iPad Pro y tablets grandes */
+  .row-cols-lg-3 > * {
+    flex: 0 0 auto;
+    width: 50% !important; /* Solo 2 columnas en lugar de 3 */
+  }
+
+  .event-title {
+    font-size: 1.1rem;
   }
 }
 

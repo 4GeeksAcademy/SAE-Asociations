@@ -21,6 +21,30 @@ export const EventCard = ({ event, user, onDeactivate }) => {
         return 'https://placehold.co/400x200/6c757d/ffffff?text=Evento';
     };
 
+    const getTruncatedTitle = (title) => {
+        if (!title) return '';
+
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        let maxLength = 20; // Límite por defecto para la mayoría de pantallas
+
+        // Solo para dispositivos MUY específicos y problemáticos
+        if (screenWidth === 360 && screenHeight === 740) {
+            // Samsung S8+ exacto
+            maxLength = 16;
+        } else if (screenWidth === 344 && screenHeight === 882) {
+            // Z Fold exacto  
+            maxLength = 16;
+        } else if (screenWidth >= 1024 && screenWidth <= 1366) {
+            // Solo tablets grandes/iPad Pro
+            maxLength = 25;
+        }
+
+        return title.length > maxLength
+            ? `${title.substring(0, maxLength)}...`
+            : title;
+    };
+
     return (
         <div className="event-card d-flex flex-column h-100">
             <div className="event-header position-relative">
@@ -62,13 +86,8 @@ export const EventCard = ({ event, user, onDeactivate }) => {
                                 className="event-title-link"
                                 title={event.title}
                             >
-                                <span className="d-flex align-items-center">
-                                    <i className="bi bi-search event-title-icon"></i>
-                                    {event.title?.length > 21
-                                        ? `${event.title.substring(0, 21)}...`
-                                        : event.title
-                                    }
-                                </span>
+                                <i className="bi bi-search event-title-icon"></i>
+                                {getTruncatedTitle(event.title)}
                             </Link>
                         </h5>
 
