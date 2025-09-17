@@ -2,9 +2,13 @@
 # exit on error
 set -o errexit
 
-npm install
-npm run build
+# PRIMERO instalar pipenv
+pip install pipenv
 
+# LUEGO instalar dependencias Python
 pipenv install
 
+# FINALMENTE el build de Node.js y el upgrade
+npm install
+npm run build
 pipenv run upgrade

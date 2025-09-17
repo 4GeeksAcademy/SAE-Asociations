@@ -25,7 +25,7 @@ stripe = "*"
 flask-migrate = "*"
 
 [requires]
-python_version = "3.11"
+python_version = "3.13"
 
 [scripts]
 start="flask --app src/app.py run -p 3001 -h 0.0.0.0"
