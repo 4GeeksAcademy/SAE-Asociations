@@ -3,7 +3,7 @@
 # Schema documented at https://render.com/docs/yaml-spec
 services:
   - type: web # valid values: https://render.com/docs/yaml-spec#type
-    region: ohio
+    region: frankfurt
     name: sample-service-name
     env: python # valid values: https://render.com/docs/yaml-spec#environment
     buildCommand: "./render_build.sh"
@@ -23,11 +23,11 @@ services:
         value: 3.10.6
       - key: DATABASE_URL # Render PostgreSQL database
         fromDatabase:
-          name: postgresql-trapezoidal-42170
+          name: SAE Associations
           property: connectionString
 
 databases: # Render PostgreSQL database
-  - name: postgresql-trapezoidal-42170
-    region: ohio
+  - name: SAE Associations
+    region: frankfurt
     ipAllowList: [] # only allow internal connections
     plan: free # optional; defaults to starter
