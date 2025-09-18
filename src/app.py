@@ -54,6 +54,16 @@ jwt = JWTManager(app)
 MIGRATE = Migrate(app, db, compare_type=True)
 db.init_app(app)
 
+# Auto-run migrations on startup for free tier compatibility
+if ENV == "production":
+    try:
+        with app.app_context():
+            from flask_migrate import upgrade
+            upgrade()
+            print("✅ Database migrations completed successfully")
+    except Exception as e:
+        print(f"⚠️ Migration warning: {str(e)}")
+
 # add the admin
 setup_admin(app)
 # add the admin
