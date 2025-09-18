@@ -57,12 +57,28 @@ db.init_app(app)
 # Auto-run migrations on startup for free tier compatibility
 if ENV == "production":
     try:
+        import os
+        # Change to project root where migrations folder exists
+        original_cwd = os.getcwd()
+        project_root = os.path.dirname(original_cwd)
+        os.chdir(project_root)
+        print(f"🔄 Changed directory to: {os.getcwd()}")
+        print(f"📁 Migrations folder exists: {os.path.exists('migrations')}")
+        
         with app.app_context():
             from flask_migrate import upgrade
             upgrade()
             print("✅ Database migrations completed successfully")
+        
+        # Change back to original directory
+        os.chdir(original_cwd)
     except Exception as e:
         print(f"⚠️ Migration warning: {str(e)}")
+        # Change back to original directory even if there's an error
+        try:
+            os.chdir(original_cwd)
+        except:
+            pass
 
 # add the admin
 setup_admin(app)
