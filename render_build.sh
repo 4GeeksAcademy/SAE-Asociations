@@ -8,7 +8,6 @@ pip install pipenv
 # LUEGO instalar dependencias Python
 pipenv install
 
-# FINALMENTE el build de Node.js y el upgrade
+# FINALMENTE el build de Node.js
 npm install
 npm run build
-pipenv run upgrade

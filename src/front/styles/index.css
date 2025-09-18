@@ -67,7 +67,6 @@ img {
 }
 
 .col,
-.col-*,
 [class*="col-"] {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
