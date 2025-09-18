@@ -37,29 +37,49 @@ class Event(db.Model):
         return [ev.volunteer for ev in self.event_volunteers]
 
     def serialize(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "description": self.description,
-            "image_url": self.image_url,
-            "date": self.date.isoformat(),
-            "city": self.city,
-            "address": self.address,
-            "event_type": self.event_type,
-            "is_active": self.is_active,
-            "association_id": self.association_id,
-            "association_name": self.association.name if self.association else None,
-            "association_image_url": self.association.image_url if self.association else None,
-            "max_volunteers": self.max_volunteers,
-            "Volunteers_count": len(self.event_volunteers),
-            "volunteers": [
-                {
-                    "id": ev.volunteer.id,
-                    "name": ev.volunteer.name,
-                    "lastname": ev.volunteer.lastname,
-                    "profile_image": ev.volunteer.profile_image,
-                    "joined_at": ev.joined_at.isoformat()
-                }
-                for ev in self.event_volunteers
-            ]
-        }
+        try:
+            return {
+                "id": self.id,
+                "title": self.title,
+                "description": self.description,
+                "image_url": self.image_url,
+                "date": self.date.isoformat() if self.date else None,
+                "city": self.city,
+                "address": self.address,
+                "event_type": self.event_type,
+                "is_active": self.is_active,
+                "association_id": self.association_id,
+                "association_name": self.association.name if self.association else None,
+                "association_image_url": self.association.image_url if self.association else None,
+                "max_volunteers": self.max_volunteers,
+                "Volunteers_count": len(self.event_volunteers) if self.event_volunteers else 0,
+                "volunteers": [
+                    {
+                        "id": ev.volunteer.id,
+                        "name": ev.volunteer.name,
+                        "lastname": ev.volunteer.lastname,
+                        "profile_image": ev.volunteer.profile_image,
+                        "joined_at": ev.joined_at.isoformat() if ev.joined_at else None
+                    }
+                    for ev in self.event_volunteers if ev.volunteer
+                ] if self.event_volunteers else []
+            }
+        except Exception as e:
+            # Fallback serialization in case of errors
+            return {
+                "id": self.id,
+                "title": self.title,
+                "description": self.description,
+                "image_url": self.image_url,
+                "date": self.date.isoformat() if self.date else None,
+                "city": self.city,
+                "address": self.address,
+                "event_type": self.event_type,
+                "is_active": self.is_active,
+                "association_id": self.association_id,
+                "association_name": None,
+                "association_image_url": None,
+                "max_volunteers": self.max_volunteers,
+                "Volunteers_count": 0,
+                "volunteers": []
+            }

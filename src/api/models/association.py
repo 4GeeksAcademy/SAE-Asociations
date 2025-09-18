@@ -48,21 +48,39 @@ class Association(db.Model):
         self.twitter_url = twitter_url
 
     def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "cif": self.cif,
-            "description": self.description,
-            "image_url": self.image_url,
-            "website_url": self.website_url,
-            "social_media_url": self.social_media_url,
-            "facebook_url": self.facebook_url,
-            "instagram_url": self.instagram_url,
-            "twitter_url": self.twitter_url,
-            "contact_phone": self.contact_phone,
-            "contact_email": self.contact_email,
-            "user_id": self.user_id
-        } 
+        try:
+            return {
+                "id": self.id,
+                "name": self.name,
+                "cif": self.cif,
+                "description": self.description,
+                "image_url": self.image_url,
+                "website_url": self.website_url,
+                "social_media_url": self.social_media_url,
+                "facebook_url": self.facebook_url,
+                "instagram_url": self.instagram_url,
+                "twitter_url": self.twitter_url,
+                "contact_phone": self.contact_phone,
+                "contact_email": self.contact_email,
+                "user_id": self.user_id
+            }
+        except Exception as e:
+            # Fallback serialization in case of errors
+            return {
+                "id": getattr(self, 'id', None),
+                "name": getattr(self, 'name', ''),
+                "cif": getattr(self, 'cif', ''),
+                "description": getattr(self, 'description', ''),
+                "image_url": getattr(self, 'image_url', None),
+                "website_url": getattr(self, 'website_url', None),
+                "social_media_url": getattr(self, 'social_media_url', None),
+                "facebook_url": getattr(self, 'facebook_url', None),
+                "instagram_url": getattr(self, 'instagram_url', None),
+                "twitter_url": getattr(self, 'twitter_url', None),
+                "contact_phone": getattr(self, 'contact_phone', None),
+                "contact_email": getattr(self, 'contact_email', ''),
+                "user_id": getattr(self, 'user_id', None)
+            } 
     
     def set_password(self, password):
         self.password = generate_password_hash(password)

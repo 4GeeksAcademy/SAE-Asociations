@@ -13,51 +13,58 @@ events_bp = Blueprint("events", __name__)
 def get_all_events(): 
     """Obtener todos los eventos disponibles con filtros sencillos."""
     
-    # Obtener los parámetros de consulta de la URL (si no existen, serán None)
-    association_id_param = request.args.get('association_id')
-    city_filter = request.args.get('city')
-    event_type_filter = request.args.get('event_type')
-    sort_by_date = request.args.get('sort_by_date') # No ponemos 'newest' por defecto aquí. Lo gestionará el frontend.
+    try:
+        # Obtener los parámetros de consulta de la URL (si no existen, serán None)
+        association_id_param = request.args.get('association_id')
+        city_filter = request.args.get('city')
+        event_type_filter = request.args.get('event_type')
+        sort_by_date = request.args.get('sort_by_date') # No ponemos 'newest' por defecto aquí. Lo gestionará el frontend.
 
-    # 1. Iniciar la consulta base: Solo eventos activos
-    query = Event.query.filter_by(is_active=True)
+        # 1. Iniciar la consulta base: Solo eventos activos
+        query = Event.query.filter_by(is_active=True)
 
-    # 2. Aplicar filtro por ID de asociación si está presente y es válido
-    if association_id_param:
-        try:
-            association_id = int(association_id_param)
-            query = query.filter_by(association_id=association_id)
-        except ValueError:
-            # Si el ID de asociación no es un número, devolvemos un error.
-            return jsonify({"error": "ID de asociación inválido."}), 400
+        # 2. Aplicar filtro por ID de asociación si está presente y es válido
+        if association_id_param:
+            try:
+                association_id = int(association_id_param)
+                query = query.filter_by(association_id=association_id)
+            except ValueError:
+                # Si el ID de asociación no es un número, devolvemos un error.
+                return jsonify({"error": "ID de asociación inválido."}), 400
 
-    # 3. Aplicar filtro de ciudad si está presente y no está vacío
-    if city_filter:
-        query = query.filter(Event.city.ilike(f"%{city_filter}%"))
+        # 3. Aplicar filtro de ciudad si está presente y no está vacío
+        if city_filter:
+            query = query.filter(Event.city.ilike(f"%{city_filter}%"))
 
-    # 4. Aplicar filtro de tipo de evento si está presente y no está vacío
-    # Asumimos una coincidencia exacta para el tipo de evento.
-    if event_type_filter:
-        query = query.filter(Event.event_type == event_type_filter)
+        # 4. Aplicar filtro de tipo de evento si está presente y no está vacío
+        # Asumimos una coincidencia exacta para el tipo de evento.
+        if event_type_filter:
+            query = query.filter(Event.event_type == event_type_filter)
 
-    # 5. Aplicar ordenación por fecha si está presente
-    if sort_by_date == 'newest':
-        query = query.order_by(desc(Event.date)) # Más recientes primero
-    elif sort_by_date == 'oldest':
-        query = query.order_by(asc(Event.date)) # Más antiguos primero
+        # 5. Aplicar ordenación por fecha si está presente
+        if sort_by_date == 'newest':
+            query = query.order_by(desc(Event.date)) # Más recientes primero
+        elif sort_by_date == 'oldest':
+            query = query.order_by(asc(Event.date)) # Más antiguos primero
 
-    # 6. Ejecutar la consulta
-    events = query.all()
+        # 6. Ejecutar la consulta
+        events = query.all()
 
-    # 7. Serializar los resultados
-    serialized_events = [event.serialize() for event in events]
+        # 7. Serializar los resultados
+        serialized_events = [event.serialize() for event in events]
 
-    # 8. Devolver la respuesta
-    if not serialized_events:
-        return jsonify({"message": "No se encontraron eventos con los criterios seleccionados.", "events": []}), 200
-    else:
-        # Si hay eventos, se devuelve el array de eventos directamente
-        return jsonify(serialized_events), 200
+        # 8. Devolver la respuesta
+        if not serialized_events:
+            return jsonify({"message": "No se encontraron eventos con los criterios seleccionados.", "events": []}), 200
+        else:
+            # Si hay eventos, se devuelve el array de eventos directamente
+            return jsonify(serialized_events), 200
+    
+    except Exception as e:
+        return jsonify({
+            "error": "Error interno del servidor al obtener eventos",
+            "message": str(e)
+        }), 500
 
 
 @events_bp.route("/<int:event_id>", methods=["GET"])
