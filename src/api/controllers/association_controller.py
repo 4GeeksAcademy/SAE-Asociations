@@ -12,10 +12,21 @@ def get_all_associations():
             "associations": serialized_associations
         }
     except Exception as e:
-        return {
-            "success": False,
-            "message": f"Error al obtener asociaciones: {str(e)}"
-        }
+        error_message = str(e)
+        # No mostrar errores técnicos de base de datos al frontend
+        if "psycopg2" in error_message or "could not translate host name" in error_message:
+            return {
+                "success": False,
+                "error": "Servicio temporalmente no disponible",
+                "message": "Estamos experimentando problemas técnicos. Por favor, inténtalo más tarde.",
+                "associations": []
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Ha ocurrido un error inesperado. Por favor, inténtalo más tarde.",
+                "associations": []
+            }
 
 def get_association_by_id(association_id):
     try:
@@ -33,10 +44,19 @@ def get_association_by_id(association_id):
             }, 404
     
     except Exception as e:
-        return {
-            "success": False,
-            "message": f"Error al buscar asociación: {str(e)}"
-        }, 500
+        error_message = str(e)
+        # No mostrar errores técnicos de base de datos al frontend
+        if "psycopg2" in error_message or "could not translate host name" in error_message:
+            return {
+                "success": False,
+                "error": "Servicio temporalmente no disponible", 
+                "message": "Estamos experimentando problemas técnicos. Por favor, inténtalo más tarde."
+            }, 503
+        else:
+            return {
+                "success": False,
+                "message": "Ha ocurrido un error inesperado. Por favor, inténtalo más tarde."
+            }, 500
 
 def filter_associations_post(filter_data):
     try:
@@ -78,7 +98,18 @@ def filter_associations_post(filter_data):
         }
     
     except Exception as e:
-        return {
-            "success": False,
-            "message": f"Error al filtrar asociaciones: {str(e)}"
-        }
+        error_message = str(e)
+        # No mostrar errores técnicos de base de datos al frontend
+        if "psycopg2" in error_message or "could not translate host name" in error_message:
+            return {
+                "success": False,
+                "error": "Servicio temporalmente no disponible",
+                "message": "Estamos experimentando problemas técnicos. Por favor, inténtalo más tarde.",
+                "associations": []
+            }
+        else:
+            return {
+                "success": False,
+                "message": "Ha ocurrido un error inesperado. Por favor, inténtalo más tarde.",
+                "associations": []
+            }

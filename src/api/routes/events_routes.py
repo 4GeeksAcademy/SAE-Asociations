@@ -61,10 +61,20 @@ def get_all_events():
             return jsonify(serialized_events), 200
     
     except Exception as e:
-        return jsonify({
-            "error": "Error interno del servidor al obtener eventos",
-            "message": str(e)
-        }), 500
+        error_message = str(e)
+        # No mostrar errores técnicos de base de datos al frontend
+        if "psycopg2" in error_message or "could not translate host name" in error_message:
+            return jsonify({
+                "error": "Servicio temporalmente no disponible",
+                "message": "Estamos experimentando problemas técnicos. Por favor, inténtalo más tarde.",
+                "events": []
+            }), 503
+        else:
+            return jsonify({
+                "error": "Error interno del servidor al obtener eventos",
+                "message": "Ha ocurrido un error inesperado. Por favor, inténtalo más tarde.",
+                "events": []
+            }), 500
 
 
 @events_bp.route("/<int:event_id>", methods=["GET"])

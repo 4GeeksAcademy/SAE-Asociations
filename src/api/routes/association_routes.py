@@ -56,12 +56,24 @@ def get_associations_statistics():
         }), 200
         
     except Exception as e:
-        print(f"Error in get_associations_statistics: {str(e)}")  # Para debugging
-        return jsonify({
-            "success": False,
-            "error": "Error interno del servidor al obtener estadísticas",
-            "message": str(e)
-        }), 500
+        error_message = str(e)
+        print(f"Error in get_associations_statistics: {error_message}")  # Para debugging
+        
+        # No mostrar errores técnicos de base de datos al frontend
+        if "psycopg2" in error_message or "could not translate host name" in error_message:
+            return jsonify({
+                "success": False,
+                "error": "Servicio temporalmente no disponible",
+                "message": "Estamos experimentando problemas técnicos. Por favor, inténtalo más tarde.",
+                "statistics": {}
+            }), 503
+        else:
+            return jsonify({
+                "success": False,
+                "error": "Error interno del servidor al obtener estadísticas",
+                "message": "Ha ocurrido un error inesperado. Por favor, inténtalo más tarde.",
+                "statistics": {}
+            }), 500
 
 # Filtrar asociaciones
 @association_bp.route('/filter', methods=['POST'])
